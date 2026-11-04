@@ -70,10 +70,10 @@
           <!-- Fit to Screen -->
           <button
             @click="fitDiagramToView()"
-            title="Fit All Tables to Screen (Ctrl+0)"
-            class="h-7 w-7 rounded-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 transition cursor-pointer"
+            title="Fit all tables to screen"
+            class="canvas-fit h-7 px-2 gap-1.5 rounded-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 transition cursor-pointer"
           >
-            <Maximize2 class="w-3.5 h-3.5" />
+            <Maximize2 class="w-3.5 h-3.5" /><span>Fit</span>
           </button>
         </div>
       </div>
@@ -93,7 +93,7 @@
               class="h-full px-2 sm:px-2.5 hover:bg-indigo-100/80 dark:hover:bg-indigo-900/60 font-medium transition flex items-center gap-1.5 cursor-pointer text-xs"
             >
               <component :is="currentAutoArrangeIcon" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              <span v-if="canvasWidth >= 780" class="font-medium">Auto Arrange</span>
+              <span v-if="canvasWidth >= 780" class="font-medium">Arrange</span>
               <span v-else-if="canvasWidth >= 620" class="font-medium">Arrange</span>
               <span class="text-[10px] px-1 py-0.2 bg-indigo-200/70 dark:bg-indigo-900/80 text-indigo-800 dark:text-indigo-200 rounded font-semibold">{{ currentAutoArrangeShortLabel }}</span>
             </button>
@@ -449,7 +449,7 @@
           class="h-8 px-2 sm:px-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-150 flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 text-xs"
         >
           <Plus class="w-3.5 h-3.5 shrink-0" />
-          <span v-if="canvasWidth >= 620">Add Table</span>
+          <span v-if="canvasWidth >= 620">Add table</span>
           <span v-else>Table</span>
         </button>
 
@@ -460,7 +460,7 @@
           class="h-8 px-2 sm:px-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-all duration-150 flex items-center gap-1.5 cursor-pointer active:scale-95 text-xs"
         >
           <Link class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
-          <span v-if="canvasWidth >= 780">New Ref</span>
+          <span v-if="canvasWidth >= 780">Add relation</span>
           <span v-else-if="canvasWidth >= 520">Ref</span>
         </button>
 
@@ -474,7 +474,7 @@
           class="h-8 px-2 sm:px-2.5 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 font-semibold rounded-lg transition-all duration-150 flex items-center gap-1.5 cursor-pointer active:scale-95 text-xs shadow-2xs"
         >
           <Camera class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span v-if="canvasWidth >= 880">Export Diagram</span>
+          <span v-if="canvasWidth >= 880">Export</span>
           <span v-else-if="canvasWidth >= 620">Export</span>
         </button>
       </div>
@@ -921,7 +921,7 @@ function fitDiagramToView(padding = 50) {
 
   const scaleX = availableWidth / diagramWidth;
   const scaleY = availableHeight / diagramHeight;
-  const targetZoom = Math.min(1.0, Math.max(0.42, Math.min(scaleX, scaleY)));
+  const targetZoom = Math.min(1.0, Math.max(0.1, Math.min(scaleX, scaleY)));
 
   const scaledWidth = diagramWidth * targetZoom;
   const scaledHeight = diagramHeight * targetZoom;
@@ -1731,7 +1731,7 @@ function zoomIn() {
 }
 
 function zoomOut() {
-  state.zoomLevel = Math.max(0.4, state.zoomLevel - 0.15);
+  state.zoomLevel = Math.max(0.1, state.zoomLevel - 0.15);
 }
 
 function resetZoom() {

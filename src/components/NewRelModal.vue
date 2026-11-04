@@ -1,8 +1,8 @@
 <template>
   <div v-if="state.modals.newRel" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-4">
-    <div role="dialog" aria-modal="true" aria-label="New relationship" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden">
+    <div v-dialog role="dialog" aria-modal="true" aria-label="New relationship" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden">
       <div class="app-dialog-heading px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-xs">Add Foreign Key Relationship</h3>
+        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-xs">New relationship</h3>
         <button aria-label="Close dialog" @click="state.modals.newRel = false" class="p-1 text-slate-400 hover:text-slate-600 rounded">
           <X class="w-4 h-4" />
         </button>

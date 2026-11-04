@@ -201,21 +201,7 @@
         </div>
 
         <!-- Bottom Row: Category Filter Pills -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs">
-          <button
-            v-for="cat in MARKETPLACE_CATEGORIES"
-            :key="cat.id"
-            @click="selectedCategory = cat.id"
-            class="px-3 py-1.5 rounded-xl font-semibold transition cursor-pointer shrink-0"
-            :class="[
-              selectedCategory === cat.id
-                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs'
-                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-            ]"
-          >
-            {{ cat.label }}
-          </button>
-        </div>
+        <label class="marketplace-category"><span>Category</span><select v-model="selectedCategory" aria-label="Template category"><option v-for="cat in MARKETPLACE_CATEGORIES" :key="cat.id" :value="cat.id">{{ cat.label }}</option></select></label>
       </div>
 
       <!-- TEMPLATES GRID -->
@@ -432,7 +418,7 @@
       class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-950/70  flex items-center justify-center p-4 sm:p-6"
       @click.self="selectedPreviewTemplate = null"
     >
-      <div role="dialog" aria-modal="true" aria-label="Blueprint preview"
+      <div v-dialog role="dialog" aria-modal="true" aria-label="Blueprint preview"
         class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 animate-in fade-in zoom-in-95 duration-150"
       >
         <!-- Preview Header -->

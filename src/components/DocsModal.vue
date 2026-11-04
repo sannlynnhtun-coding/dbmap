@@ -4,7 +4,7 @@
     class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-950/70  flex items-center justify-center p-3 sm:p-6 select-none animate-fadeIn"
     @click.self="state.modals.docs = false"
   >
-    <div
+    <div v-dialog
       role="dialog" aria-modal="true" aria-label="Data dictionary" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-6xl h-[88vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 relative"
     >
       <!-- Header Toolbar -->
@@ -93,7 +93,7 @@
         class="app-dialog-backdrop absolute inset-0 z-50 bg-slate-950/80  flex items-center justify-center p-4 animate-fadeIn"
         @click.self="showPublishConfigModal = false"
       >
-        <div role="dialog" aria-modal="true" aria-label="Dictionary publication" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  p-6 max-w-md w-full space-y-4 text-slate-800 dark:text-slate-100">
+        <div v-dialog role="dialog" aria-modal="true" aria-label="Dictionary publication" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  p-6 max-w-md w-full space-y-4 text-slate-800 dark:text-slate-100">
           <div class="app-dialog-heading flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <div class="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
@@ -217,7 +217,7 @@
         class="app-dialog-backdrop absolute inset-0 z-50 bg-slate-950/80  flex items-center justify-center p-4 animate-fadeIn"
         @click.self="showPublishedSuccessModal = false"
       >
-        <div role="dialog" aria-modal="true" aria-label="Dictionary publication" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  p-6 max-w-lg w-full space-y-4 text-slate-800 dark:text-slate-100">
+        <div v-dialog role="dialog" aria-modal="true" aria-label="Dictionary publication" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  p-6 max-w-lg w-full space-y-4 text-slate-800 dark:text-slate-100">
           <div class="app-dialog-heading flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">

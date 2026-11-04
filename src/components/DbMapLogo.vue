@@ -7,28 +7,28 @@
     class="shrink-0 select-none"
   >
     <defs>
-      <!-- Brand Gradient 1: Indigo to Electric Blue -->
+      <!-- Brand Gradient 1: Deep teal -->
       <linearGradient id="dbmap-grad-primary" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#6366f1" />
-        <stop offset="50%" stop-color="#3b82f6" />
-        <stop offset="100%" stop-color="#14b8a6" />
+        <stop offset="0%" stop-color="#0f766e" />
+        <stop offset="50%" stop-color="#0d8274" />
+        <stop offset="100%" stop-color="#115e59" />
       </linearGradient>
 
       <!-- Gradient 2: Map Pin Accent -->
       <linearGradient id="dbmap-grad-accent" x1="24" y1="4" x2="44" y2="28" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#f59e0b" />
-        <stop offset="100%" stop-color="#f43f5e" />
+        <stop offset="0%" stop-color="#f5cc7f" />
+        <stop offset="100%" stop-color="#b98031" />
       </linearGradient>
 
       <!-- Cylinder Top Shimmer -->
       <linearGradient id="dbmap-grad-cap" x1="8" y1="8" x2="30" y2="18" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#818cf8" />
-        <stop offset="100%" stop-color="#38bdf8" />
+        <stop offset="0%" stop-color="#73dbc1" />
+        <stop offset="100%" stop-color="#2db7a3" />
       </linearGradient>
 
       <!-- Subtle Shadow Filter -->
       <filter id="dbmap-shadow" x="-10%" y="-10%" width="120%" height="120%" filterUnits="userSpaceOnUse">
-        <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#0f172a" flood-opacity="0.2" />
+        <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#182e26" flood-opacity="0.2" />
       </filter>
     </defs>
 
@@ -102,7 +102,7 @@
       />
       <!-- Inner Pin Target Center Node -->
       <circle cx="36" cy="25.5" r="3" fill="#ffffff" />
-      <circle cx="36" cy="25.5" r="1.2" fill="#f43f5e" />
+      <circle cx="36" cy="25.5" r="1.2" fill="#b98031" />
     </g>
   </svg>
 </template>

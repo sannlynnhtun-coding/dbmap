@@ -54,44 +54,44 @@
 /* Shared workbench palette keeps existing utility-based components in one system. */
 @theme {
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --color-slate-50: #f6f8f9;
-  --color-slate-100: #edf1f3;
-  --color-slate-200: #e0e5e8;
-  --color-slate-300: #c9d0d5;
-  --color-slate-400: #87949d;
-  --color-slate-500: #64717a;
-  --color-slate-600: #4c5963;
-  --color-slate-700: #343d44;
-  --color-slate-800: #252a2e;
-  --color-slate-900: #191d20;
-  --color-slate-950: #101315;
-  --color-indigo-50: #edf5fb;
-  --color-indigo-100: #dcecf8;
-  --color-indigo-200: #bbd8ef;
-  --color-indigo-300: #91bedf;
-  --color-indigo-400: #65a2d1;
-  --color-indigo-500: #367fb5;
-  --color-indigo-600: #246797;
-  --color-indigo-700: #1d537b;
-  --color-indigo-800: #1c4565;
-  --color-indigo-900: #18384f;
-  --color-indigo-950: #142b3b;
+  --color-slate-50: #f5f8f7;
+  --color-slate-100: #edf2f0;
+  --color-slate-200: #dfe7e3;
+  --color-slate-300: #c6d3cd;
+  --color-slate-400: #889b93;
+  --color-slate-500: #63766d;
+  --color-slate-600: #4b6056;
+  --color-slate-700: #34473e;
+  --color-slate-800: #25352e;
+  --color-slate-900: #192820;
+  --color-slate-950: #101c16;
+  --color-indigo-50: #effcf8;
+  --color-indigo-100: #d1faec;
+  --color-indigo-200: #a3edd8;
+  --color-indigo-300: #73dbc1;
+  --color-indigo-400: #2db7a3;
+  --color-indigo-500: #0d8274;
+  --color-indigo-600: #0f766e;
+  --color-indigo-700: #115e59;
+  --color-indigo-800: #134e4a;
+  --color-indigo-900: #123f3c;
+  --color-indigo-950: #082b29;
 }
 :root {
-  --page-ground: #f6f8f9;
-  --page-surface: #fff;
-  --page-ink: #182b38;
-  --page-muted: #536572;
-  --page-accent: #246797;
-  --page-well: #eaf0f4;
+  --page-ground: #f5f8f7;
+  --page-surface: #ffffff;
+  --page-ink: #182e26;
+  --page-muted: #4c6358;
+  --page-accent: #0f766e;
+  --page-well: #eaf1ed;
 }
 .dark {
-  --page-ground: #101315;
-  --page-surface: #191d20;
-  --page-ink: #edf2f5;
-  --page-muted: #a8b6bf;
-  --page-accent: #91bedf;
-  --page-well: #252a2e;
+  --page-ground: #101c16;
+  --page-surface: #192820;
+  --page-ink: #eef5f1;
+  --page-muted: #afc1b7;
+  --page-accent: #73dbc1;
+  --page-well: #25352e;
 }
 body {
   font-family: var(--font-sans) !important;
@@ -1209,17 +1209,17 @@ select:focus-visible {
   }
 }
 @theme {
-  --color-blue-50: #edf5fb;
-  --color-blue-100: #dcecf8;
-  --color-blue-200: #bbd8ef;
-  --color-blue-300: #91bedf;
-  --color-blue-400: #65a2d1;
-  --color-blue-500: #367fb5;
-  --color-blue-600: #246797;
-  --color-blue-700: #1d537b;
-  --color-blue-800: #1c4565;
-  --color-blue-900: #18384f;
-  --color-blue-950: #142b3b;
+  --color-blue-50: #effcf8;
+  --color-blue-100: #d1faec;
+  --color-blue-200: #a3edd8;
+  --color-blue-300: #73dbc1;
+  --color-blue-400: #2db7a3;
+  --color-blue-500: #0d8274;
+  --color-blue-600: #0f766e;
+  --color-blue-700: #115e59;
+  --color-blue-800: #134e4a;
+  --color-blue-900: #123f3c;
+  --color-blue-950: #082b29;
 }
 .app-loading {
   background: var(--page-ground);
@@ -1353,4 +1353,108 @@ select:focus-visible {
 }
 @media (max-width: 767px) {
   .docs-sidebar, .app-dictionary-page > div > aside { max-height: 200px; }
+}
+
+/* Navigation describes the job; the canvas keeps the working space. */
+.studio-shell #tour-sidebar.w-14 { width: 80px; }
+.sidebar-rail > button, .sidebar-rail-tabs > button { width: 64px; min-height: 56px; gap: 6px; padding: 10px 4px; border-radius: 8px; }
+.rail-label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; line-height: 1.2; white-space: nowrap; }
+.sidebar-rail > button { background: transparent; color: var(--page-accent); box-shadow: none; }
+.sidebar-rail-tabs > button { color: var(--page-muted); }
+.sidebar-rail-tabs > button[aria-pressed="true"] { color: var(--page-ink); background: var(--color-slate-200); box-shadow: none; }
+.dark .sidebar-rail-tabs > button[aria-pressed="true"] { background: var(--color-slate-700); }
+.sidebar-scrim { display: none; }
+.view-mode-label { font-size: 12px; }
+.studio-shell #tour-view-modes { padding: 3px; gap: 2px; background: var(--page-ground); border: 0; border-radius: 8px; }
+.studio-shell #tour-view-modes button { padding: 8px 12px; min-height: 34px; border-radius: 6px; }
+.studio-shell #tour-view-modes button[aria-pressed="true"] { background: var(--page-surface); color: var(--page-ink); box-shadow: none; }
+.marketplace-category { display: flex; align-items: center; gap: 12px; color: var(--page-muted); font-size: 13px; }
+.marketplace-category select { min-height: 40px; padding: 8px 32px 8px 12px; max-width: 100%; min-width: 0; border: 1px solid var(--color-slate-300); background: var(--page-surface); color: var(--page-ink); border-radius: 6px; }
+.dark .marketplace-category select { border-color: var(--color-slate-700); }
+.app-dialog[aria-label="Schema marketplace"] > div:nth-child(2) > div:last-child { flex-wrap: wrap; overflow: visible; }
+@media (min-width: 768px) and (max-width: 1199px) {
+  .studio-shell #tour-view-modes button { padding-inline: 8px; }
+  .studio-shell #tour-collaboration { display: none; }
+}
+@media (max-width: 767px) {
+  .studio-workspace { flex-direction: column; }
+  .studio-workspace > main { order: 1; min-height: 0; }
+  .studio-shell #tour-sidebar.w-14 { order: 2; width: 100%; height: calc(72px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--color-slate-200); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .dark .studio-shell #tour-sidebar.w-14 { border-color: var(--color-slate-700); }
+  .sidebar-rail { flex-direction: row; padding: 6px; gap: 4px; }
+  .sidebar-rail > button { width: 44px; min-height: 52px; flex-shrink: 0; }
+  .sidebar-rail-tabs { flex: 1; flex-direction: row; gap: 2px; justify-content: space-between; min-width: 0; }
+  .sidebar-rail-tabs > button { flex: 1; width: auto; min-width: 0; padding: 6px 1px; min-height: 52px; }
+  .rail-divider, .sidebar-rail-footer { display: none; }
+  .rail-label { font-size: 11px; }
+  .studio-shell #tour-sidebar:not(.w-14) { width: min(360px, calc(100% - 32px)); inset: 0 auto 0 0; }
+  .sidebar-scrim { display: block; position: absolute; inset: 0; z-index: 30; background: rgb(16 19 21 / .5); }
+  .studio-shell #tour-view-modes button[aria-label="Split view"] { display: none; }
+  .studio-shell #tour-view-modes button { padding: 8px; min-height: 36px; }
+  .studio-shell #tour-view-modes { margin-inline: 4px; }
+  .studio-shell #tour-header-project > div:last-child { min-width: 0; }
+  .studio-shell #tour-view-modes svg { display: none; }
+  .marketplace-category { width: 100%; justify-content: space-between; }
+  .marketplace-category select { flex: 1; width: 100%; max-width: 280px; }
+  .app-dialog[aria-label="Export schema"] > div:nth-child(2) { overflow: visible; }
+  .app-dialog[aria-label="Export schema"] > div:nth-child(2) > div:first-child { width: 100%; flex-wrap: wrap; gap: 4px; }
+  .app-dialog[aria-label="Export schema"] > div:nth-child(2) > div:first-child button { flex: 1; padding: 8px 6px; font-size: 12px; justify-content: center; min-height: 44px; }
+  .app-dialog[aria-label="Export schema"] > div:nth-child(2) > div:first-child button > span:not(:first-of-type) { display: none; }
+  .app-dialog[aria-label="Export schema"] > div:nth-child(2) > div:first-child button svg { display: none; }
+}
+
+.studio-shell #tour-sidebar { transition-property: width; }
+@media (max-width: 767px) { .studio-shell #tour-sidebar { transition: none; } }
+@media (max-width: 767px) {
+  .sidebar-rail-tabs > button[aria-label="Version Control"],
+  .sidebar-rail-tabs > button[aria-label="Dialect Settings"] { display: none; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .studio-shell main:has(> div[title^="Drag handle"]) > div:first-child { width: 45% !important; }
+}
+
+/* Keep the editable project title inside its share of the header. */
+.studio-shell > header { gap: 16px; }
+.studio-shell #tour-header-project { flex: 1; min-width: 0; overflow: hidden; }
+.studio-shell #tour-header-project > div.relative { flex: 1; min-width: 0; overflow: hidden; }
+.studio-shell #tour-header-project h1 { display: block; flex: 1; min-width: 0; width: 100%; overflow: hidden; }
+.studio-shell #tour-header-project h1 > span[aria-hidden="true"] { display: none; }
+.studio-shell #tour-header-project input { min-width: 0; max-width: 100%; width: 100%; text-overflow: ellipsis; font-family: var(--font-sans); font-weight: 500; }
+.studio-shell #tour-view-modes, .studio-shell > header > div:last-child { flex-shrink: 0; }
+.studio-shell #tour-canvas-toolbar { font-family: var(--font-sans); font-size: 13px; line-height: 1.4; }
+.studio-shell #tour-canvas-toolbar button { white-space: nowrap; font-weight: 500; }
+.studio-shell #tour-canvas-toolbar [class*="text-[10px]"] { font-size: 11px; }
+.app-dialog-heading :is(h2, h3) { text-wrap: pretty; letter-spacing: -.015em; }
+.app-dialog-heading p { max-width: 60ch; }
+.app-dialog button { font-weight: 500; line-height: 1.4; }
+.dark :is(.studio-shell, .app-dialog) :is([class~="dark:text-slate-500"], [class~="dark:text-slate-400"]) { color: var(--page-muted); }
+@media (max-width: 767px) {
+  .studio-shell > header { gap: 8px; }
+  .studio-shell #tour-header-project input { font-size: 13px; }
+  .app-dialog[aria-label="Export schema"] > div:nth-child(2) > div:first-child button { font-size: 13px; }
+}
+
+@theme {
+  --color-purple-50: var(--color-blue-50);
+  --color-purple-100: var(--color-blue-100);
+  --color-purple-200: var(--color-blue-200);
+  --color-purple-300: var(--color-blue-300);
+  --color-purple-400: var(--color-blue-400);
+  --color-purple-500: var(--color-blue-500);
+  --color-purple-600: var(--color-blue-600);
+  --color-purple-700: var(--color-blue-700);
+  --color-purple-800: var(--color-blue-800);
+  --color-purple-900: var(--color-blue-900);
+  --color-purple-950: var(--color-blue-950);
+  --color-violet-50: var(--color-blue-50);
+  --color-violet-100: var(--color-blue-100);
+  --color-violet-200: var(--color-blue-200);
+  --color-violet-300: var(--color-blue-300);
+  --color-violet-400: var(--color-blue-400);
+  --color-violet-500: var(--color-blue-500);
+  --color-violet-600: var(--color-blue-600);
+  --color-violet-700: var(--color-blue-700);
+  --color-violet-800: var(--color-blue-800);
+  --color-violet-900: var(--color-blue-900);
+  --color-violet-950: var(--color-blue-950);
 }

@@ -1117,7 +1117,7 @@
       v-if="showAddUserModal"
       class="app-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70  p-4 overflow-y-auto"
     >
-      <div role="dialog" aria-modal="true" aria-label="Admin details" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-150">
+      <div v-dialog role="dialog" aria-modal="true" aria-label="Admin details" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-150">
         <!-- Header -->
         <div class="app-dialog-heading px-6 py-4    text-white flex items-center justify-between bg-blue-700">
           <div class="flex items-center gap-2.5">
@@ -1274,7 +1274,7 @@
       v-if="showExactCreditsModal && editingUser"
       class="app-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70  p-4 overflow-y-auto"
     >
-      <div role="dialog" aria-modal="true" aria-label="Admin details" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-sm overflow-hidden p-6 space-y-4 text-xs">
+      <div v-dialog role="dialog" aria-modal="true" aria-label="Admin details" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-sm overflow-hidden p-6 space-y-4 text-xs">
         <div>
           <h3 class="font-bold text-sm text-slate-900 dark:text-white">Adjust Exact Credit Balance</h3>
           <p class="text-slate-500 dark:text-slate-400 mt-1">

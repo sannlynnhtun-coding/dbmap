@@ -66,8 +66,9 @@
     </div>
 
     <!-- Main Workspace Layout -->
-    <div class="flex-1 flex overflow-hidden relative">
+    <div class="studio-workspace flex-1 flex overflow-hidden relative">
       <!-- Left Sidebar (Tables, Relationships, Folders, History, Settings) -->
+      <button v-if="!state.isSidebarCollapsed" class="sidebar-scrim" aria-label="Close navigation" @click="state.isSidebarCollapsed = true"></button>
       <Sidebar />
 
       <!-- Center Workspace (Split / Canvas / Editor Views) -->
@@ -257,7 +258,16 @@ const handlePopState = () => {
   }
 };
 
+const compactWorkspace = window.matchMedia('(max-width: 1023px)');
+function adaptWorkspace() {
+  if (!compactWorkspace.matches) return;
+  if (state.viewMode === 'split') state.viewMode = 'canvas';
+  state.isSidebarCollapsed = true;
+}
+
 onMounted(async () => {
+  adaptWorkspace();
+  compactWorkspace.addEventListener('change', adaptWorkspace);
   const urlParams = new URLSearchParams(window.location.search);
   const paidParam = urlParams.get('paid');
   const pgwPayload = urlParams.get('payload');
@@ -406,6 +416,7 @@ function stopResize() {
 }
 
 onUnmounted(() => {
+  compactWorkspace.removeEventListener('change', adaptWorkspace);
   stopResize();
   window.removeEventListener('popstate', handlePopState);
 });

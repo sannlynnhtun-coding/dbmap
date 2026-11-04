@@ -4,7 +4,7 @@
     class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-3 sm:p-5"
     @click.self="closeModal"
   >
-    <div
+    <div v-dialog
       role="dialog" aria-modal="true" aria-label="Marketplace submission" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 transition-all animate-in fade-in zoom-in-95 duration-150"
     >
       <!-- MODAL HEADER -->

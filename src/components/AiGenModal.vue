@@ -1,6 +1,6 @@
 <template>
   <div v-if="state.modals.aiGen" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/70  flex items-center justify-center p-4">
-    <div role="dialog" aria-modal="true" aria-label="AI schema generator" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div v-dialog role="dialog" aria-modal="true" aria-label="AI schema generator" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
       <div class="app-dialog-heading px-5 py-4     text-white flex items-center justify-between bg-blue-700">
         <div class="flex items-center gap-2.5">

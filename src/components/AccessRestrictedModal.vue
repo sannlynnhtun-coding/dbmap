@@ -3,7 +3,7 @@
     v-if="state.collaborationAccessRestricted.active && !isProtectedSchemaPublic"
     class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/75  flex items-center justify-center p-4"
   >
-    <div role="dialog" aria-modal="true" aria-label="Collaboration access" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+    <div v-dialog role="dialog" aria-modal="true" aria-label="Collaboration access" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
       <!-- Top banner -->
       <div
         class="app-dialog-heading p-6 text-center border-b border-slate-100 dark:border-slate-700/60"

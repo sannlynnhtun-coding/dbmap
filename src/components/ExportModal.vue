@@ -1,6 +1,6 @@
 <template>
   <div v-if="state.modals.export" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-3 sm:p-4 select-none">
-    <div role="dialog" aria-modal="true" aria-label="Export schema" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
+    <div v-dialog role="dialog" aria-modal="true" aria-label="Export schema" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
 
       <!-- Modal Header -->
       <div class="app-dialog-heading px-5 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
@@ -10,13 +10,11 @@
           </div>
           <div>
             <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-2">
-              Export Center
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-800">
-                Academic &amp; Reports
-              </span>
+              Export schema
+
             </h3>
             <p class="text-[11px] text-slate-500 dark:text-slate-400">
-              Download high-definition schema diagrams (JPG, PNG, PDF, SVG), Markdown tables, or SQL scripts.
+              Download your diagram, documentation, or schema code.
             </p>
           </div>
         </div>
@@ -29,7 +27,7 @@
         </button>
       </div>
 
-      <!-- Segmented Main Tabs: Visual Diagram (HD) vs Markdown Tables vs SQL/DBML Scripts -->
+      <!-- Segmented Main Tabs: Diagram vs Markdown vs SQL/DBML Scripts -->
       <div class="px-5 pt-3 border-b border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/40 flex items-center justify-between gap-3 shrink-0 overflow-x-auto">
         <div class="flex items-center gap-1 shrink-0">
           <!-- Tab 1: HD Schema Diagram -->
@@ -42,13 +40,13 @@
               : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50'"
           >
             <Image class="w-3.5 h-3.5" />
-            <span>Visual Diagram (HD)</span>
+            <span>Diagram</span>
             <span class="text-[9px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 rounded font-bold">
               JPG • PNG • PDF • SVG
             </span>
           </button>
 
-          <!-- Tab 2: Markdown Tables -->
+          <!-- Tab 2: Markdown -->
           <button
             type="button"
             @click="activeMainTab = 'markdown'"
@@ -58,7 +56,7 @@
               : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50'"
           >
             <Table2 class="w-3.5 h-3.5" />
-            <span>Markdown Tables</span>
+            <span>Markdown</span>
             <span class="text-[9px] px-1.5 py-0.2 bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 rounded font-bold">
               Pure MD
             </span>
@@ -74,7 +72,7 @@
               : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50'"
           >
             <FileCode class="w-3.5 h-3.5" />
-            <span>SQL &amp; DBML Scripts</span>
+            <span>SQL / DBML</span>
             <span class="text-[9px] px-1.5 py-0.2 bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 rounded font-bold uppercase">
               DDL
             </span>
@@ -491,7 +489,7 @@
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition flex items-center gap-2  cursor-pointer"
           >
             <Copy class="w-4 h-4" />
-            <span>Copy Markdown Tables</span>
+            <span>Copy Markdown</span>
           </button>
 
           <button

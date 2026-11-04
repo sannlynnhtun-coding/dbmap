@@ -3,7 +3,7 @@
     v-if="state.modals.billing && isUpgradeCreditsEnabled"
     class="app-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75  p-4 overflow-y-auto"
   >
-    <div
+    <div v-dialog
       role="dialog" aria-modal="true" aria-label="Plan and AI credits" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in duration-150 my-6"
     >
       <!-- Header -->

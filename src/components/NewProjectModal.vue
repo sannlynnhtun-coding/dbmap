@@ -4,7 +4,7 @@
     class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150"
     @keydown.esc="closeModal"
   >
-    <div
+    <div v-dialog
       role="dialog" aria-modal="true" aria-label="New database" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden text-slate-800 dark:text-slate-100 flex flex-col max-h-[90vh]"
     >
       <!-- Modal Header -->
@@ -14,8 +14,8 @@
             <Database class="w-4 h-4" />
           </div>
           <div>
-            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Create New Database</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">Initialize schema canvas or start from a blueprint</p>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">New database</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Start blank or use a template.</p>
           </div>
         </div>
         <button
@@ -48,7 +48,7 @@
 
         <!-- Database Dialect / Engine -->
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Database Engine / SQL Dialect</label>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Database engine</label>
           <div class="grid grid-cols-4 gap-2">
             <button
               v-for="d in dialects"
@@ -70,7 +70,7 @@
 
         <!-- Starter Template Selection -->
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Starter Blueprint</label>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Starting template</label>
           <select
             v-model="template"
             class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 text-xs cursor-pointer"
@@ -114,7 +114,7 @@
 
         <!-- Privacy & Database Isolation Mode -->
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Access & Isolation</label>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Sharing access</label>
           <select
             v-model="accessMode"
             class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 text-xs cursor-pointer"
@@ -172,7 +172,7 @@
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl  transition flex items-center gap-1.5 cursor-pointer"
           >
             <Plus class="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Create Database</span>
+            <span>Create database</span>
           </button>
         </div>
       </div>

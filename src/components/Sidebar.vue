@@ -1,11 +1,13 @@
 <template>
   <aside
     id="tour-sidebar"
+    aria-label="Schema navigation"
+    @keydown.esc="state.isSidebarCollapsed = true"
     class="h-full bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/80 flex flex-col select-none text-xs transition-all duration-200 shrink-0 overflow-hidden"
     :class="[state.isSidebarCollapsed ? 'w-14' : 'w-80 sm:w-88 md:w-92 xl:w-96']"
   >
     <!-- Collapsed Compact Strip -->
-    <div v-if="state.isSidebarCollapsed" class="flex-1 flex flex-col items-center py-2.5 gap-2">
+    <div v-if="state.isSidebarCollapsed" class="sidebar-rail flex-1 flex flex-col items-center py-2.5 gap-2">
       <!-- Direct Quick Create Database Button in Left Vertical Menu Bar -->
       <button
         id="btn-rail-new-database"
@@ -13,17 +15,15 @@
         class="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-xs transition flex flex-col items-center justify-center relative group cursor-pointer shrink-0"
         title="Create New Database (Ctrl+N)"
       >
-        <Plus class="w-4.5 h-4.5 stroke-[2.5]" />
+        <Plus class="w-4.5 h-4.5 stroke-[2.5]" /><span class="rail-label">New</span>
         <!-- Hover Tooltip -->
-        <span class="absolute left-14 px-2.5 py-1 bg-slate-900 dark:bg-slate-950 text-slate-100 text-[11px] font-medium rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none z-50 transition-opacity border border-slate-800">
-          Create New Database <span class="text-blue-300 font-mono text-[10px] ml-1">(Ctrl+N)</span>
-        </span>
+
       </button>
 
-      <div class="w-6 h-[1px] bg-slate-200 dark:bg-slate-700/80 my-0.5"></div>
+      <div class="rail-divider w-6 h-[1px] bg-slate-200 dark:bg-slate-700/80 my-0.5"></div>
 
       <!-- Vertical Icon Rail -->
-      <div class="flex flex-col gap-1.5">
+      <div class="sidebar-rail-tabs flex flex-col gap-1.5">
         <button
           v-for="tab in tabs"
           :key="tab.id"
@@ -34,14 +34,12 @@
               ? 'bg-blue-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
               : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50'
           ]"
-          :title="tab.label"
+          :title="tab.label" :aria-label="tab.label" :aria-pressed="state.activeTab === tab.id"
         >
-          <component :is="tab.icon" class="w-4.5 h-4.5" />
+          <component :is="tab.icon" class="w-4.5 h-4.5" /><span class="rail-label">{{ tab.shortLabel }}</span>
 
           <!-- Hover Tooltip -->
-          <span class="absolute left-14 px-2 py-1 bg-slate-900 dark:bg-slate-950 text-slate-100 text-[11px] font-medium rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none z-50 transition-opacity border border-slate-800">
-            {{ tab.label }}
-          </span>
+
         </button>
 
         <!-- Marketplace Button in Collapsed Rail -->
@@ -50,15 +48,13 @@
           class="p-2.5 rounded-xl transition flex flex-col items-center justify-center relative group text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
           title="Marketplace & Templates"
         >
-          <Store class="w-4.5 h-4.5" />
-          <span class="absolute left-14 px-2 py-1 bg-slate-900 dark:bg-slate-950 text-slate-100 text-[11px] font-medium rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none z-50 transition-opacity border border-slate-800">
-            Marketplace Blueprints
-          </span>
+          <Store class="w-4.5 h-4.5" /><span class="rail-label">Templates</span>
+
         </button>
       </div>
 
       <!-- Expand Sidebar Action at Bottom of Collapsed Rail -->
-      <div class="mt-auto w-full flex flex-col items-center pb-2 pt-2 border-t border-slate-200 dark:border-slate-700/80 shrink-0">
+      <div class="sidebar-rail-footer mt-auto w-full flex flex-col items-center pb-2 pt-2 border-t border-slate-200 dark:border-slate-700/80 shrink-0">
         <button
           id="btn-expand-sidebar-rail"
           @click="state.isSidebarCollapsed = false"
@@ -66,9 +62,7 @@
           title="Expand sidebar (Ctrl+B)"
         >
           <PanelLeftOpen class="w-4.5 h-4.5 text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
-          <span class="absolute left-14 px-2 py-1 bg-slate-900 dark:bg-slate-950 text-slate-100 text-[11px] font-medium rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none z-50 transition-opacity border border-slate-800">
-            Expand sidebar <span class="text-slate-400 font-mono text-[10px] ml-1">(Ctrl+B)</span>
-          </span>
+
         </button>
       </div>
     </div>
@@ -87,7 +81,7 @@
               ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
               : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
           ]"
-          :title="tab.label"
+          :title="tab.label" :aria-label="tab.label" :aria-pressed="state.activeTab === tab.id"
         >
           <component :is="tab.icon" class="w-4 h-4" />
           <span class="text-[10px] font-semibold tracking-tight">{{ tab.shortLabel }}</span>
@@ -1881,7 +1875,7 @@ function handleMoveProject(projId, targetFolderId) {
 const tabs = [
   { id: 'explorer', label: 'Databases & Schemas', shortLabel: 'Databases', icon: Database },
   { id: 'tables', label: 'Tables & Fields', shortLabel: 'Tables', icon: Layers },
-  { id: 'relationships', label: 'Entity Relationships', shortLabel: 'Refs', icon: Link },
+  { id: 'relationships', label: 'Entity Relationships', shortLabel: 'Relations', icon: Link },
   { id: 'history', label: 'Version Control', shortLabel: 'History', icon: GitCommit },
   { id: 'settings', label: 'Dialect Settings', shortLabel: 'Dialect', icon: Settings }
 ];

@@ -82,7 +82,7 @@
     <!-- Center Section: View Mode Switcher (Icons-only on small screens, Icons + Text on md+ screens) -->
     <div id="tour-view-modes" class="flex items-center bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shrink-0">
       <button
-        @click="state.viewMode = 'split'"
+        @click="state.viewMode = 'split'" :aria-pressed="state.viewMode === 'split'" aria-label="Split view"
         class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
         :class="[
           state.viewMode === 'split'
@@ -91,11 +91,11 @@
         ]"
         title="Split View (Editor & ERD Canvas)"
       >
-        <Columns class="w-3.5 h-3.5 shrink-0" />
+        <Columns class="w-3.5 h-3.5 shrink-0" /><span class="view-mode-label">Split</span>
       </button>
 
       <button
-        @click="state.viewMode = 'canvas'"
+        @click="state.viewMode = 'canvas'" :aria-pressed="state.viewMode === 'canvas'" aria-label="Diagram view"
         class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
         :class="[
           state.viewMode === 'canvas'
@@ -104,11 +104,11 @@
         ]"
         title="Canvas View (Full ERD Diagram)"
       >
-        <LayoutGrid class="w-3.5 h-3.5 shrink-0" />
+        <LayoutGrid class="w-3.5 h-3.5 shrink-0" /><span class="view-mode-label">Diagram</span>
       </button>
 
       <button
-        @click="state.viewMode = 'editor'"
+        @click="state.viewMode = 'editor'" :aria-pressed="state.viewMode === 'editor'" aria-label="DBML view"
         class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
         :class="[
           state.viewMode === 'editor'
@@ -117,7 +117,7 @@
         ]"
         title="Code View (DBML Schema Editor)"
       >
-        <Code2 class="w-3.5 h-3.5 shrink-0" />
+        <Code2 class="w-3.5 h-3.5 shrink-0" /><span class="view-mode-label">DBML</span>
       </button>
     </div>
 

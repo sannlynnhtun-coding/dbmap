@@ -1,11 +1,11 @@
 <template>
   <div v-if="state.modals.auth" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-4">
-    <div role="dialog" aria-modal="true" aria-label="Account and sign in" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden">
+    <div v-dialog role="dialog" aria-modal="true" aria-label="Account and sign in" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden">
       <!-- Header -->
       <div class="app-dialog-heading px-5 py-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <ShieldCheck class="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm">Account & Google SSO</h3>
+          <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm">Account & sign-in</h3>
         </div>
         <button aria-label="Close dialog"
           @click="state.modals.auth = false"

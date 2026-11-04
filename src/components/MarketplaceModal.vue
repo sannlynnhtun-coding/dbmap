@@ -5,7 +5,7 @@
     class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-2 sm:p-4 md:p-6"
     @click.self="closeMarketplace"
   >
-    <div
+    <div v-dialog
       role="dialog" aria-modal="true" aria-label="Schema marketplace" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 transition-all"
     >
       <!-- MODAL HEADER -->
@@ -131,21 +131,7 @@
 
         <!-- Category Pills & Dialect Selector -->
         <div class="flex items-center gap-2 overflow-x-auto scrollbar-none">
-          <div class="flex items-center gap-1 shrink-0">
-            <button
-              v-for="cat in MARKETPLACE_CATEGORIES"
-              :key="cat.id"
-              @click="selectedCategory = cat.id"
-              class="px-2.5 py-1 rounded-lg font-medium transition cursor-pointer shrink-0 text-[11px]"
-              :class="[
-                selectedCategory === cat.id
-                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-              ]"
-            >
-              {{ cat.label }}
-            </button>
-          </div>
+          <label class="marketplace-category"><span>Category</span><select v-model="selectedCategory" aria-label="Template category"><option v-for="cat in MARKETPLACE_CATEGORIES" :key="cat.id" :value="cat.id">{{ cat.label }}</option></select></label>
 
           <!-- Dialect Selector -->
           <div class="flex items-center gap-1.5 shrink-0 pl-2 border-l border-slate-200 dark:border-slate-800">
@@ -383,7 +369,7 @@
       class="app-dialog-backdrop fixed inset-0 z-60 bg-slate-950/70  flex items-center justify-center p-3 sm:p-6"
       @click.self="selectedPreviewTemplate = null"
     >
-      <div role="dialog" aria-modal="true" aria-label="Blueprint preview"
+      <div v-dialog role="dialog" aria-modal="true" aria-label="Blueprint preview"
         class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 animate-in fade-in zoom-in-95 duration-150"
       >
         <!-- Preview Header -->
