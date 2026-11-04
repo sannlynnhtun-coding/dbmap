@@ -1,5 +1,5 @@
 <template>
-  <div id="tour-code-editor" ref="editorRootRef" class="h-full flex flex-col bg-slate-900 text-slate-100 font-mono text-sm border-r border-slate-800 select-text relative">
+  <div data-ui id="tour-code-editor" ref="editorRootRef" class="h-full flex flex-col bg-slate-900 text-slate-100 font-mono text-sm border-r border-slate-800 select-text relative">
     <!-- Editor Top Header -->
     <div class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs select-none gap-1.5 sm:gap-2 min-w-0">
       <!-- Left: File Badge & Title -->

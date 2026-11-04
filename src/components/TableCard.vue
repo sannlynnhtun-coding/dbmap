@@ -16,7 +16,7 @@
     <!-- Table Header -->
     <div
       class="relative px-3.5 py-2.5 rounded-t-xl text-white font-semibold flex items-start justify-between gap-2 text-sm"
-      :style="{ backgroundColor: table.headerColor || '#3b82f6' }"
+      :style="{ backgroundColor: `color-mix(in srgb, ${table.headerColor || '#3b82f6'} 45%, #101315)` }"
     >
       <!-- Table Name & Identity (Full name display, wraps naturally without truncation) -->
       <div class="flex items-start gap-2 font-mono flex-1 min-w-0">
@@ -280,7 +280,7 @@
     </div>
 
     <!-- Quick Footer Action -->
-    <div class="p-1.5 bg-slate-50 dark:bg-slate-800/80 rounded-b-xl border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 px-3 font-mono">
+    <div class="p-1.5 bg-slate-50 dark:bg-slate-800/80 rounded-b-xl border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300 px-3 font-mono">
       <span v-if="state.tableDisplayMode === 'keys'">
         {{ visibleColumnsWithIdx.length }} of {{ table.columns.length }} keys
       </span>

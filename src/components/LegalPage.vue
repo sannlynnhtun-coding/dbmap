@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col transition-colors duration-200 selection:bg-indigo-500 selection:text-white">
+  <div class="app-page app-reading-page min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col transition-colors duration-200 selection:bg-blue-500 selection:text-white">
     <!-- Top Navigation Bar -->
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 transition-colors">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90  border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 transition-colors">
       <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
         <!-- Logo & Brand -->
         <div class="flex items-center gap-3">
           <button
             @click="goToHome"
-            class="flex items-center gap-2 font-bold text-indigo-600 dark:text-indigo-400 text-lg hover:opacity-90 transition cursor-pointer"
+            class="flex items-center gap-2 font-bold text-blue-600 dark:text-blue-400 text-lg hover:opacity-90 transition cursor-pointer"
             title="Return to dbmaps Home"
           >
             <DbMapLogo class-name="w-8 h-8 drop-shadow-sm" />
             <span class="font-mono tracking-tight text-slate-900 dark:text-slate-100 text-lg">
-              db<span class="text-indigo-600 dark:text-indigo-400">maps</span>
+              db<span class="text-blue-600 dark:text-blue-400">maps</span>
             </span>
           </button>
           <span class="hidden sm:inline-block text-slate-300 dark:text-slate-700">/</span>
@@ -27,7 +27,7 @@
             @click="goToHome"
             class="px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
           >
-            <Sparkles class="w-4 h-4 shrink-0 text-indigo-500" />
+            <Sparkles class="w-4 h-4 shrink-0 text-blue-500" />
             <span>Home</span>
           </button>
           <button
@@ -35,7 +35,7 @@
             class="px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 cursor-pointer"
             :class="[
               isPrivacyPolicy
-                ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm'
+                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-sm'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             ]"
           >
@@ -47,7 +47,7 @@
             class="px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 cursor-pointer"
             :class="[
               !isPrivacyPolicy
-                ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm'
+                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-sm'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             ]"
           >
@@ -69,7 +69,7 @@
 
           <button
             @click="goToStudio"
-            class="px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl font-semibold text-xs transition flex items-center gap-1.5 shadow-sm hover:shadow cursor-pointer"
+            class="px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl font-semibold text-xs transition flex items-center gap-1.5   cursor-pointer"
           >
             <ArrowLeft class="w-3.5 h-3.5" />
             <span class="hidden sm:inline">Back to</span> Studio
@@ -86,11 +86,8 @@
       <article v-if="isPrivacyPolicy" class="space-y-10 animate-in fade-in duration-200">
         <!-- Header Banner -->
         <div class="border-b border-slate-200 dark:border-slate-800 pb-8">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-4">
-            <ShieldCheck class="w-3.5 h-3.5" />
-            <span>Privacy & Data Protection Notice</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white">
+
+          <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-950 dark:text-white">
             Privacy Policy for dbmaps
           </h1>
           <p class="text-sm text-slate-500 dark:text-slate-400 mt-3 leading-relaxed max-w-3xl">
@@ -106,26 +103,26 @@
         </div>
 
         <!-- Quick Summary Box -->
-        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 space-y-3">
-          <div class="flex items-center gap-2 font-bold text-sm text-indigo-950 dark:text-indigo-200">
-            <CheckCircle2 class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+        <div class="p-5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 space-y-3">
+          <div class="flex items-center gap-2 font-bold text-sm text-blue-950 dark:text-blue-200">
+            <CheckCircle2 class="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>Summary: What You Need to Know</span>
           </div>
           <ul class="text-xs text-slate-700 dark:text-slate-300 space-y-2 leading-relaxed">
             <li class="flex items-start gap-2">
-              <span class="text-indigo-600 dark:text-indigo-400 font-bold">&bull;</span>
+              <span class="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
               <span><strong>You Own Your Schemas:</strong> You retain 100% intellectual property ownership of all database structures, tables, relationships, and queries designed inside dbmaps.</span>
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-indigo-600 dark:text-indigo-400 font-bold">&bull;</span>
+              <span class="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
               <span><strong>Google SSO Minimal Data:</strong> When logging in via Google SSO, we only store your email address, display name, avatar photo, and Firebase user ID. We never see or store your Google password.</span>
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-indigo-600 dark:text-indigo-400 font-bold">&bull;</span>
+              <span class="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
               <span><strong>No Selling of Data:</strong> We never sell, rent, or monetize your schema architectures, personal information, or AI prompts to third parties or advertising networks.</span>
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-indigo-600 dark:text-indigo-400 font-bold">&bull;</span>
+              <span class="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
               <span><strong>Full Export Freedom:</strong> You can export your schemas to SQL DDL (Postgres, MySQL, SQLite, MSSQL), DBML, PDF, PNG, SVG, or JSON anytime without lock-in.</span>
             </li>
           </ul>
@@ -144,7 +141,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
                 <h3 class="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm flex items-center gap-2">
-                  <UserCheck class="w-4 h-4 text-indigo-500" />
+                  <UserCheck class="w-4 h-4 text-blue-500" />
                   <span>Account & Authentication Data</span>
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
@@ -277,7 +274,7 @@
             <ul class="list-disc list-inside space-y-1.5 pl-2 text-slate-700 dark:text-slate-300 text-xs sm:text-sm">
               <li><strong>Right to Export (Portability):</strong> You can export all your database schemas at any time in open SQL DDL, DBML text, PDF documentation, or PNG/SVG images.</li>
               <li><strong>Right to Deletion:</strong> You can delete any schema, commit history checkpoint, or folder directly from the sidebar. You can also request complete account deletion by contacting us.</li>
-              <li><strong>Right to Revoke Access:</strong> You can revoke dbmaps' Google SSO permissions anytime via your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 underline font-semibold">Google Account Security Settings</a>.</li>
+              <li><strong>Right to Revoke Access:</strong> You can revoke dbmaps' Google SSO permissions anytime via your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline font-semibold">Google Account Security Settings</a>.</li>
             </ul>
           </div>
         </section>
@@ -285,7 +282,7 @@
         <!-- Section 6: Contact & Inquiries -->
         <section class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
           <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
-            <Mail class="w-5 h-5 text-indigo-500" />
+            <Mail class="w-5 h-5 text-blue-500" />
             <span>Contact Information</span>
           </h2>
           <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -298,7 +295,7 @@
             </div>
             <a
               href="mailto:aungkyawminn.aya@gmail.com?subject=dbmaps%20Privacy%20Inquiry"
-              class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition"
+              class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
             >
               Send Email
             </a>
@@ -312,11 +309,8 @@
       <article v-else class="space-y-10 animate-in fade-in duration-200">
         <!-- Header Banner -->
         <div class="border-b border-slate-200 dark:border-slate-800 pb-8">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-4">
-            <FileText class="w-3.5 h-3.5" />
-            <span>Terms & Conditions Agreement</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white">
+
+          <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-950 dark:text-white">
             Terms of Service for dbmaps
           </h1>
           <p class="text-sm text-slate-500 dark:text-slate-400 mt-3 leading-relaxed max-w-3xl">
@@ -456,7 +450,7 @@
         <!-- Section 9: Governing Law & Inquiries -->
         <section class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
           <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
-            <Mail class="w-5 h-5 text-indigo-500" />
+            <Mail class="w-5 h-5 text-blue-500" />
             <span>Questions & Notices</span>
           </h2>
           <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -469,7 +463,7 @@
             </div>
             <a
               href="mailto:aungkyawminn.aya@gmail.com?subject=dbmaps%20Terms%20Inquiry"
-              class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition"
+              class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
             >
               Send Notice
             </a>
@@ -478,16 +472,16 @@
       </article>
 
       <!-- Bottom Action Banner: Return to Studio -->
-      <div class="mt-14 p-6 rounded-3xl bg-gradient-to-r from-indigo-900 to-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+      <div class="mt-14 p-6 rounded-3xl    text-white flex flex-col sm:flex-row items-center justify-between gap-4  bg-blue-700">
         <div>
           <h3 class="text-lg font-bold">Ready to design your database?</h3>
-          <p class="text-xs text-indigo-200 mt-1">
+          <p class="text-xs text-blue-200 mt-1">
             Build clean ERD models, write DBML, and generate production-ready SQL scripts.
           </p>
         </div>
         <button
           @click="goToStudio"
-          class="px-5 py-2.5 bg-white text-indigo-950 hover:bg-indigo-50 rounded-xl font-bold text-xs transition flex items-center gap-2 shadow-sm shrink-0 cursor-pointer"
+          class="px-5 py-2.5 bg-white text-blue-950 hover:bg-blue-50 rounded-xl font-bold text-xs transition flex items-center gap-2  shrink-0 cursor-pointer"
         >
           <span>Launch dbmaps Studio</span>
           <ArrowRight class="w-4 h-4" />
@@ -507,30 +501,30 @@
         <div class="flex items-center gap-4 text-xs">
           <button
             @click="goToHome"
-            class="hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
           >
             Home
           </button>
           <span>&bull;</span>
           <button
             @click="switchView('/privacy-policy')"
-            class="hover:text-indigo-600 dark:hover:text-indigo-400 transition underline cursor-pointer"
-            :class="{ 'font-bold text-indigo-600 dark:text-indigo-400': isPrivacyPolicy }"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition underline cursor-pointer"
+            :class="{ 'font-bold text-blue-600 dark:text-blue-400': isPrivacyPolicy }"
           >
             Privacy Policy
           </button>
           <span>&bull;</span>
           <button
             @click="switchView('/terms-of-service')"
-            class="hover:text-indigo-600 dark:hover:text-indigo-400 transition underline cursor-pointer"
-            :class="{ 'font-bold text-indigo-600 dark:text-indigo-400': !isPrivacyPolicy }"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition underline cursor-pointer"
+            :class="{ 'font-bold text-blue-600 dark:text-blue-400': !isPrivacyPolicy }"
           >
             Terms of Service
           </button>
           <span>&bull;</span>
           <button
             @click="goToStudio"
-            class="hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-indigo-600 dark:text-indigo-400 transition cursor-pointer"
+            class="hover:text-blue-600 dark:hover:text-blue-400 font-semibold text-blue-600 dark:text-blue-400 transition cursor-pointer"
           >
             Launch Studio
           </button>

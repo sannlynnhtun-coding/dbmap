@@ -1,10 +1,10 @@
 <template>
-  <div v-if="state.modals.aiGen" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+  <div v-if="state.modals.aiGen" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/70  flex items-center justify-center p-4">
+    <div role="dialog" aria-modal="true" aria-label="AI schema generator" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="px-5 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white flex items-center justify-between">
+      <div class="app-dialog-heading px-5 py-4     text-white flex items-center justify-between bg-blue-700">
         <div class="flex items-center gap-2.5">
-          <div class="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
+          <div class="p-2 bg-white/10 rounded-xl">
             <Sparkles class="w-5 h-5 text-amber-300 animate-pulse" />
           </div>
           <div>
@@ -19,15 +19,15 @@
               </span>
               <span
                 v-else
-                class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-amber-400 text-slate-900 shadow-xs"
+                class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-amber-400 text-slate-900"
               >
                 Account Required
               </span>
             </h3>
-            <p class="text-[11px] text-indigo-100 opacity-90">Instant ERD database design powered by Gemini AI</p>
+            <p class="text-[11px] text-blue-100 opacity-90">Instant ERD database design powered by Gemini AI</p>
           </div>
         </div>
-        <button @click="state.modals.aiGen = false" class="p-1 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition">
+        <button aria-label="Close dialog" @click="state.modals.aiGen = false" class="p-1 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition">
           <X class="w-4 h-4" />
         </button>
       </div>
@@ -39,7 +39,7 @@
           <span>
             <span v-if="state.userProfile?.tier === 'free'">Free Credits Left: </span>
             <span v-else>Credits Left: </span>
-            <strong class="font-mono text-indigo-600 dark:text-indigo-400">{{ (state.userProfile?.creditsRemaining || 0).toLocaleString() }}</strong>
+            <strong class="font-mono text-blue-600 dark:text-blue-400">{{ (state.userProfile?.creditsRemaining || 0).toLocaleString() }}</strong>
             <span class="text-slate-400"> / {{ (state.userProfile?.monthlyCreditAllowance || 0).toLocaleString() }}</span>
           </span>
         </div>
@@ -47,7 +47,7 @@
         <button
           v-if="isUpgradeCreditsEnabled"
           @click="openBilling"
-          class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+          class="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
         >
           <span>Upgrade Tier</span>
           <ExternalLink class="w-3 h-3" />
@@ -58,7 +58,7 @@
       <div class="p-5 overflow-y-auto space-y-4 text-xs flex-1">
         <!-- Guest Mode Sign-In Required Gate -->
         <div v-if="!state.currentUser?.isLoggedIn" class="py-3 px-2 text-center space-y-5">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-blue-600 flex items-center justify-center mx-auto shadow-xl shadow-indigo-500/20 text-white">
+          <div class="w-16 h-16 rounded-2xl     flex items-center justify-center mx-auto  shadow-blue-500/20 text-white bg-blue-700">
             <Sparkles class="w-8 h-8 text-amber-300 animate-pulse" />
           </div>
 
@@ -73,7 +73,7 @@
 
           <!-- Feature perks grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-md mx-auto text-left text-xs">
-            <div class="p-3 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800/60 rounded-xl flex items-start gap-2.5">
+            <div class="p-3 bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-800/60 rounded-xl flex items-start gap-2.5">
               <Zap class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
               <div>
                 <strong class="text-slate-800 dark:text-slate-200">50,000 Free Credits</strong>
@@ -81,8 +81,8 @@
               </div>
             </div>
 
-            <div class="p-3 bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-800/60 rounded-xl flex items-start gap-2.5">
-              <CheckCircle2 class="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
+            <div class="p-3 bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-800/60 rounded-xl flex items-start gap-2.5">
+              <CheckCircle2 class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
               <div>
                 <strong class="text-slate-800 dark:text-slate-200">Multi-Engine Dialects</strong>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400">PostgreSQL, MySQL, SQLite & MSSQL</p>
@@ -111,7 +111,7 @@
             <button
               @click="handleSignIn"
               :disabled="state.isLoggingIn"
-              class="w-full py-3 px-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed text-slate-800 dark:text-slate-100 font-bold border border-slate-300 dark:border-slate-600 rounded-xl transition flex items-center justify-center gap-3 shadow-md group cursor-pointer"
+              class="w-full py-3 px-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed text-slate-800 dark:text-slate-100 font-bold border border-slate-300 dark:border-slate-600 rounded-xl transition flex items-center justify-center gap-3  group cursor-pointer"
             >
               <svg v-if="!state.isLoggingIn" class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -119,7 +119,7 @@
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
               </svg>
-              <div v-else class="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+              <div v-else class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
               <span>{{ state.isLoggingIn ? 'Connecting to Google...' : 'Sign in with Google to Continue' }}</span>
             </button>
             <p class="text-[11px] text-slate-400 dark:text-slate-500">
@@ -160,7 +160,7 @@
               <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Target Mode</label>
               <select
                 v-model="mode"
-                class="w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-indigo-500 font-medium"
+                class="w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 font-medium"
               >
                 <option value="new">✨ Create New Project</option>
                 <option value="extend">🧩 Extend Active Project ({{ activeProject ? activeProject.name : 'Current' }})</option>
@@ -171,7 +171,7 @@
               <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">SQL Dialect</label>
               <select
                 v-model="dialect"
-                class="w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-indigo-500 font-mono"
+                class="w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 font-mono"
               >
                 <option value="postgres">PostgreSQL 15+</option>
                 <option value="mysql">MySQL 8.0+</option>
@@ -200,7 +200,7 @@
               v-model="userPrompt"
               rows="4"
               placeholder="e.g. An online food delivery app with customers, restaurants, menu items, orders, order items, delivery riders, driver locations, and customer reviews."
-              class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-xs leading-relaxed resize-none font-sans"
+              class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-xs leading-relaxed resize-none font-sans"
               :class="{ 'border-rose-500 focus:ring-rose-500': userPrompt.length > state.userProfile.maxPromptLength }"
             ></textarea>
 
@@ -217,29 +217,29 @@
                 v-for="(chip, idx) in samplePrompts"
                 :key="idx"
                 @click="userPrompt = chip.prompt"
-                class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 dark:hover:text-indigo-300 text-slate-600 dark:text-slate-300 rounded-lg text-[11px] transition text-left border border-slate-200/60 dark:border-slate-700 flex items-center gap-1.5"
+                class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700/60 hover:bg-blue-50 dark:hover:bg-blue-950/60 hover:text-blue-600 dark:hover:text-blue-300 text-slate-600 dark:text-slate-300 rounded-lg text-[11px] transition text-left border border-slate-200/60 dark:border-slate-700 flex items-center gap-1.5"
               >
-                <Wand2 class="w-3 h-3 text-indigo-500 shrink-0" />
+                <Wand2 class="w-3 h-3 text-blue-500 shrink-0" />
                 <span>{{ chip.label }}</span>
               </button>
             </div>
           </div>
 
           <!-- Generated Result Preview -->
-          <div v-if="previewResult" class="p-4 bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 rounded-xl space-y-3">
+          <div v-if="previewResult" class="p-4 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/60 rounded-xl space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <CheckCircle2 class="w-4 h-4 text-emerald-500" />
                 <span class="font-bold text-slate-800 dark:text-slate-100 text-xs">{{ previewResult.schemaName || 'Generated Schema' }}</span>
               </div>
-              <span class="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-mono text-[10px]">
+              <span class="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-mono text-[10px]">
                 {{ previewResult.tables ? previewResult.tables.length : 0 }} Tables • {{ previewResult.relationships ? previewResult.relationships.length : 0 }} Refs
               </span>
             </div>
             <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">{{ previewResult.description }}</p>
 
-            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-indigo-200/60 dark:border-indigo-800/40 text-[11px]">
-              <div v-for="tbl in previewResult.tables" :key="tbl.name" class="p-2 bg-white dark:bg-slate-800 rounded-lg border border-indigo-100 dark:border-slate-700 flex items-center justify-between">
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-blue-200/60 dark:border-blue-800/40 text-[11px]">
+              <div v-for="tbl in previewResult.tables" :key="tbl.name" class="p-2 bg-white dark:bg-slate-800 rounded-lg border border-blue-100 dark:border-slate-700 flex items-center justify-between">
                 <span class="font-mono font-semibold text-slate-700 dark:text-slate-200">{{ tbl.name }}</span>
                 <span class="text-[10px] text-slate-400 font-mono">{{ tbl.columns ? tbl.columns.length : 0 }} cols</span>
               </div>
@@ -260,7 +260,7 @@
         <div v-if="!state.currentUser?.isLoggedIn" class="flex items-center gap-2">
           <button
             @click="handleSignIn"
-            class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
+            class="px-4 py-2      text-white font-semibold rounded-xl transition flex items-center gap-2  cursor-pointer bg-blue-700"
           >
             <span>Sign in with Google</span>
           </button>
@@ -270,7 +270,7 @@
           <button
             v-if="previewResult"
             @click="applySchema"
-            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition flex items-center gap-1.5 shadow-md"
+            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition flex items-center gap-1.5"
           >
             <Check class="w-3.5 h-3.5" />
             <span>Apply to Diagram</span>
@@ -279,7 +279,7 @@
           <button
             @click="generateSchema"
             :disabled="isLoading || !userPrompt.trim() || userPrompt.length > state.userProfile.maxPromptLength"
-            class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl transition flex items-center gap-1.5 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-5 py-2      text-white font-medium rounded-xl transition flex items-center gap-1.5  disabled:opacity-50 disabled:cursor-not-allowed bg-blue-700"
           >
             <Loader2 v-if="isLoading" class="w-3.5 h-3.5 animate-spin" />
             <Sparkles v-else class="w-3.5 h-3.5 text-amber-300" />

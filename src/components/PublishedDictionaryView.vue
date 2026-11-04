@@ -1,7 +1,7 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans">
+  <div class="app-page app-dictionary-page w-screen h-dvh overflow-hidden flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans">
     <!-- Top Navigation Header -->
-    <header class="h-14 px-4 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 shadow-xs z-30">
+    <header class="h-14 px-4 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0  z-30">
       <div class="flex items-center gap-3">
         <DbMapLogo class-name="w-8 h-8" />
         <div>
@@ -9,7 +9,7 @@
             <span class="font-bold text-sm tracking-tight font-sans text-slate-900 dark:text-slate-100">
               {{ dictionaryData ? dictionaryData.title : isLocked ? lockedTitle : 'Loading Dictionary...' }}
             </span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
               dbdictionary
             </span>
             <span
@@ -38,9 +38,9 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search tables, fields, notes..."
-            class="pl-8 pr-3 py-1.5 w-56 lg:w-64 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition text-slate-800 dark:text-slate-100"
+            class="pl-8 pr-3 py-1.5 w-56 lg:w-64 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-blue-500 transition text-slate-800 dark:text-slate-100"
           />
-          <button
+          <button aria-label="Clear search"
             v-if="searchQuery"
             @click="searchQuery = ''"
             class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
@@ -54,7 +54,7 @@
           <button
             @click="displayTab = 'dictionary'"
             class="px-2.5 py-1 rounded-lg transition flex items-center gap-1"
-            :class="displayTab === 'dictionary' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'"
+            :class="displayTab === 'dictionary' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <BookOpen class="w-3.5 h-3.5" />
             <span class="hidden sm:inline">Dictionary</span>
@@ -62,7 +62,7 @@
           <button
             @click="displayTab = 'canvas'"
             class="px-2.5 py-1 rounded-lg transition flex items-center gap-1"
-            :class="displayTab === 'canvas' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'"
+            :class="displayTab === 'canvas' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <LayoutGrid class="w-3.5 h-3.5" />
             <span class="hidden sm:inline">ERD Canvas</span>
@@ -72,7 +72,7 @@
         <!-- Copy Link Button -->
         <button
           @click="copyShareLink"
-          class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-xl transition text-xs font-semibold flex items-center gap-1.5 border border-indigo-200 dark:border-indigo-800"
+          class="px-3 py-1.5 bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-xl transition text-xs font-semibold flex items-center gap-1.5 border border-blue-200 dark:border-blue-800"
         >
           <Check v-if="linkCopied" class="w-3.5 h-3.5 text-emerald-500 stroke-[3]" />
           <Share2 v-else class="w-3.5 h-3.5" />
@@ -91,7 +91,7 @@
         <!-- Exit to Full Schema Editor -->
         <button
           @click="openSchemaEditor"
-          class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+          class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition text-xs font-semibold flex items-center gap-1.5"
         >
           <Edit3 class="w-3.5 h-3.5" />
           <span>Edit Schema</span>
@@ -101,7 +101,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex-1 flex flex-col items-center justify-center p-6 text-center">
-      <Loader2 class="w-10 h-10 text-indigo-500 animate-spin mb-3" />
+      <Loader2 class="w-10 h-10 text-blue-500 animate-spin mb-3" />
       <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Loading dbdictionary...</h3>
       <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs mt-1">
         Fetching published database documentation from cloud storage
@@ -119,7 +119,7 @@
       </p>
       <button
         @click="openSchemaEditor"
-        class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition"
+        class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition"
       >
         Go to ERD Schema Studio
       </button>
@@ -127,9 +127,9 @@
 
     <!-- Password Protection Gate -->
     <div v-else-if="isLocked" class="flex-1 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-200">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl p-8 max-w-md w-full space-y-5 text-left">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl  p-8 max-w-md w-full space-y-5 text-left">
         <div class="text-center space-y-2">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-inner">
+          <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
             <Key class="w-7 h-7" />
           </div>
           <h3 class="font-bold text-lg text-slate-900 dark:text-slate-100">
@@ -151,7 +151,7 @@
                 v-model="enteredPassword"
                 placeholder="Enter dictionary password..."
                 autofocus
-                class="w-full pl-3 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 text-sm font-mono outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
+                class="w-full pl-3 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 text-sm font-mono outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                 :class="{ 'border-red-500 focus:border-red-500': passwordError }"
               />
               <button
@@ -172,7 +172,7 @@
 
           <button
             type="submit"
-            class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"
+            class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"
           >
             <Key class="w-3.5 h-3.5" />
             <span>Unlock Database Dictionary</span>
@@ -181,7 +181,7 @@
 
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>Need access?</span>
-          <button @click="openSchemaEditor" class="text-indigo-600 dark:text-indigo-400 hover:underline">
+          <button @click="openSchemaEditor" class="text-blue-600 dark:text-blue-400 hover:underline">
             Back to Schema Studio
           </button>
         </div>
@@ -206,12 +206,12 @@
           class="w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition text-left"
           :class="[
             activeTableFilter === null
-              ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-800'
+              ? 'bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           ]"
         >
           <span class="flex items-center gap-2">
-            <Layers class="w-4 h-4 text-indigo-500" /> All Tables Summary
+            <Layers class="w-4 h-4 text-blue-500" /> All Tables Summary
           </span>
           <span class="px-1.5 py-0.5 rounded-md text-[10px] bg-slate-200/60 dark:bg-slate-800 text-slate-500 font-mono">
             {{ dictionaryData.tables.length }}
@@ -230,7 +230,7 @@
             class="w-full px-3 py-2 rounded-xl text-xs transition flex items-center justify-between text-left group"
             :class="[
               activeTableFilter === tbl.id
-                ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-800'
+                ? 'bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800'
                 : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
             ]"
           >
@@ -254,19 +254,19 @@
       <!-- Main View Area -->
       <main class="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50/50 dark:bg-slate-950 space-y-8 scroll-smooth">
         <!-- ERD Canvas View Tab -->
-        <div v-if="displayTab === 'canvas'" class="h-[80vh] w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-900 shadow-xl relative">
+        <div v-if="displayTab === 'canvas'" class="h-[80vh] w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-900  relative">
           <Canvas :read-only="true" />
         </div>
 
         <!-- Dictionary Text / Tables Documentation View Tab -->
         <template v-else>
           <!-- Project Banner Overview -->
-          <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg relative overflow-hidden">
+          <div class="app-dictionary-overview p-6 rounded-2xl     text-white  relative overflow-hidden bg-blue-700">
             <div class="relative z-10">
-              <div class="flex items-center gap-2 text-xs text-indigo-300 font-mono font-semibold uppercase tracking-wider mb-1">
+              <div class="flex items-center gap-2 text-xs text-blue-300 font-mono font-semibold uppercase tracking-wider mb-1">
                 <span>Published dbdictionary</span> &bull; <span>{{ dictionaryData.dialect || 'PostgreSQL' }}</span>
               </div>
-              <h1 class="text-2xl font-extrabold tracking-tight font-sans text-white mb-2">
+              <h1 class="text-2xl font-semibold tracking-tight font-sans text-white mb-2">
                 {{ dictionaryData.title }}
               </h1>
               <p v-if="dictionaryData.description" class="text-xs text-slate-300 max-w-2xl leading-relaxed">
@@ -277,7 +277,7 @@
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-white/10 text-xs">
                 <div>
                   <div class="text-[10px] text-slate-400 uppercase font-mono font-semibold">Total Tables</div>
-                  <div class="text-lg font-bold font-mono text-indigo-300">{{ dictionaryData.tables.length }}</div>
+                  <div class="text-lg font-bold font-mono text-blue-300">{{ dictionaryData.tables.length }}</div>
                 </div>
                 <div>
                   <div class="text-[10px] text-slate-400 uppercase font-mono font-semibold">Total Fields</div>
@@ -285,7 +285,7 @@
                 </div>
                 <div>
                   <div class="text-[10px] text-slate-400 uppercase font-mono font-semibold">Relationships</div>
-                  <div class="text-lg font-bold font-mono text-purple-300">{{ (dictionaryData.relationships || []).length }}</div>
+                  <div class="text-lg font-bold font-mono text-blue-300">{{ (dictionaryData.relationships || []).length }}</div>
                 </div>
                 <div>
                   <div class="text-[10px] text-slate-400 uppercase font-mono font-semibold">Documented Notes</div>
@@ -300,7 +300,7 @@
             v-for="tbl in displayedTables"
             :key="tbl.id"
             :id="`pub-table-${tbl.id}`"
-            class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-4"
+            class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900  space-y-4"
           >
             <!-- Table Header Bar -->
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -358,7 +358,7 @@
                       <div class="flex items-center gap-1 flex-wrap">
                         <span v-if="col.isPk || col.pk" class="px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300">PK</span>
                         <span v-if="col.isFk || col.fk" class="px-1.5 py-0.5 rounded font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300">FK</span>
-                        <span v-if="col.isUnique || col.unique" class="px-1.5 py-0.5 rounded font-bold bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300">UQ</span>
+                        <span v-if="col.isUnique || col.unique" class="px-1.5 py-0.5 rounded font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300">UQ</span>
                         <span v-if="(col.isNull === false || col.notNull === true) && !(col.isPk || col.pk)" class="px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300">NOT NULL</span>
                         <span v-if="!(col.isPk || col.pk) && !(col.isFk || col.fk) && !(col.isUnique || col.unique) && col.isNull !== false && col.notNull !== true" class="text-slate-400">-</span>
                       </div>
@@ -382,7 +382,7 @@
             <!-- Relationships Section -->
             <div v-if="getTableRelationships(tbl.name).length > 0" class="pt-1">
               <div class="text-[10px] font-mono uppercase font-bold text-slate-400 mb-2 flex items-center gap-1">
-                <GitFork class="w-3 h-3 text-indigo-500" /> Foreign Keys & Relationships
+                <GitFork class="w-3 h-3 text-blue-500" /> Foreign Keys & Relationships
               </div>
               <div class="space-y-1">
                 <div
@@ -390,7 +390,7 @@
                   :key="rel.id || rel.fromTable + rel.toTable"
                   class="px-3 py-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-800/60 font-mono text-xs flex items-center gap-2 text-slate-700 dark:text-slate-300"
                 >
-                  <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ rel.fromTable }}.{{ rel.fromColumn }}</span>
+                  <span class="font-bold text-blue-600 dark:text-blue-400">{{ rel.fromTable }}.{{ rel.fromColumn }}</span>
                   <span class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-bold text-[10px] text-slate-600 dark:text-slate-300">
                     {{ rel.cardinality }}
                   </span>

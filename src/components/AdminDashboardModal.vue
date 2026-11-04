@@ -1,15 +1,15 @@
 <template>
   <div
     v-if="state.modals.adminDashboard"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto"
+    class="app-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80  p-4 overflow-y-auto"
   >
     <div
-      class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in duration-150 my-6"
+      role="dialog" aria-modal="true" aria-label="Administration" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in duration-150 my-6"
     >
       <!-- Header -->
-      <div class="px-6 py-5 bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+      <div class="app-dialog-heading px-6 py-5     text-white flex items-center justify-between border-b border-slate-800 bg-blue-700">
         <div class="flex items-center gap-3">
-          <div class="p-2.5 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+          <div class="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
             <ShieldCheck class="w-6 h-6 text-amber-400" />
           </div>
           <div>
@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <button
+        <button aria-label="Close dialog"
           @click="state.modals.adminDashboard = false"
           class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
         >
@@ -40,7 +40,7 @@
           class="px-4 py-2.5 rounded-t-xl border-b-2 transition flex items-center gap-2"
           :class="[
             activeAdminTab === 'payments'
-              ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           ]"
         >
@@ -59,11 +59,11 @@
           class="px-4 py-2.5 rounded-t-xl border-b-2 transition flex items-center gap-2"
           :class="[
             activeAdminTab === 'users'
-              ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           ]"
         >
-          <Users class="w-4 h-4 text-indigo-500" />
+          <Users class="w-4 h-4 text-blue-500" />
           <span>User Accounts & Credits</span>
         </button>
 
@@ -72,11 +72,11 @@
           class="px-4 py-2.5 rounded-t-xl border-b-2 transition flex items-center gap-2"
           :class="[
             activeAdminTab === 'config'
-              ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           ]"
         >
-          <Sliders class="w-4 h-4 text-purple-500" />
+          <Sliders class="w-4 h-4 text-blue-500" />
           <span>AI Engine & Credit Quotas</span>
         </button>
 
@@ -104,14 +104,14 @@
           class="px-4 py-2.5 rounded-t-xl border-b-2 transition flex items-center gap-2 cursor-pointer"
           :class="[
             activeAdminTab === 'marketplace'
-              ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
           ]"
         >
-          <Layers class="w-4 h-4 text-indigo-500" />
+          <Layers class="w-4 h-4 text-blue-500" />
           <span>Marketplace Blueprints</span>
           <span
-            class="px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-500 text-white font-bold"
+            class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-500 text-white font-bold"
           >
             {{ allMarketplaceTemplates.length }}
           </span>
@@ -191,7 +191,7 @@
               <div v-if="req.status === 'PENDING'" class="flex items-center gap-2 shrink-0">
                 <button
                   @click="handleApprovePayment(req.id, 'APPROVED')"
-                  class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5"
+                  class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl  transition flex items-center gap-1.5"
                 >
                   <CheckCircle2 class="w-4 h-4" />
                   <span>Approve & Grant Pro</span>
@@ -222,7 +222,7 @@
               v-model="userSearchQuery"
               type="text"
               placeholder="Search user email or ID..."
-              class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white w-full sm:w-64"
+              class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white w-full sm:w-64"
             />
           </div>
 
@@ -273,7 +273,7 @@
                   <td class="p-3">
                     <span
                       class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                      :class="u.role === 'admin' ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'"
+                      :class="u.role === 'admin' ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'"
                     >
                       {{ u.role || 'user' }}
                     </span>
@@ -283,7 +283,7 @@
                     <div class="inline-flex items-center gap-1.5 flex-wrap justify-end">
                       <button
                         @click="handleToggleUserTier(u)"
-                        class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 rounded-lg text-[11px] font-semibold transition cursor-pointer"
+                        class="px-2.5 py-1 bg-blue-50 dark:bg-blue-950 hover:bg-blue-100 text-blue-600 dark:text-blue-300 rounded-lg text-[11px] font-semibold transition cursor-pointer"
                         :title="`Switch tier to ${u.tier === 'pro' ? 'Free' : 'Pro'}`"
                       >
                         Set {{ u.tier === 'pro' ? 'Free' : 'Pro' }}
@@ -341,16 +341,16 @@
 
           <form @submit.prevent="handleSaveSystemConfig" class="space-y-5">
             <!-- AI Engine Model Selector Card -->
-            <div class="p-5 bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/50 dark:from-indigo-950/30 dark:via-slate-800/90 dark:to-purple-950/20 rounded-xl border-2 border-indigo-200 dark:border-indigo-800/80 shadow-xs space-y-4">
+            <div class="p-5        rounded-xl border-2 border-blue-200 dark:border-blue-800/80  space-y-4 app-soft-surface">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div class="flex items-center gap-2.5">
-                  <div class="p-2 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="p-2 rounded-lg bg-blue-600 text-white">
                     <Cpu class="w-4 h-4" />
                   </div>
                   <div>
                     <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                       Gemini AI Engine Model
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">
                         Active: {{ configForm.aiModel || 'gemini-3.8-flash' }}
                       </span>
                     </h4>
@@ -368,7 +368,7 @@
                   @click="configForm.aiModel = 'gemini-3.8-flash'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-3.8-flash'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
@@ -380,7 +380,7 @@
                     <div class="mt-2.5 space-y-1">
                       <div class="flex items-center justify-between text-[10px]">
                         <span class="text-slate-500">Rate:</span>
-                        <span class="font-bold text-indigo-600 dark:text-indigo-400 font-mono">1.0x Credits</span>
+                        <span class="font-bold text-blue-600 dark:text-blue-400 font-mono">1.0x Credits</span>
                       </div>
                       <div class="flex items-center justify-between text-[10px]">
                         <span class="text-slate-500">API Cost:</span>
@@ -388,7 +388,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 mt-2 font-medium">gemini-3.8-flash</div>
+                  <div class="text-[10px] font-mono text-blue-600 dark:text-blue-400 mt-2 font-medium">gemini-3.8-flash</div>
                 </button>
 
                 <button
@@ -396,19 +396,19 @@
                   @click="configForm.aiModel = 'gemini-3.1-pro-preview'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-3.1-pro-preview'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
                     <div class="flex items-center justify-between">
                       <span class="font-bold text-xs text-slate-900 dark:text-white">Gemini 3.1 Pro</span>
-                      <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">Deep Reasoning</span>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">Deep Reasoning</span>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Highest intelligence for massive multi-table enterprise schemas.</p>
                     <div class="mt-2.5 space-y-1">
                       <div class="flex items-center justify-between text-[10px]">
                         <span class="text-slate-500">Rate:</span>
-                        <span class="font-bold text-purple-600 dark:text-purple-400 font-mono">5.0x Credits</span>
+                        <span class="font-bold text-blue-600 dark:text-blue-400 font-mono">5.0x Credits</span>
                       </div>
                       <div class="flex items-center justify-between text-[10px]">
                         <span class="text-slate-500">API Cost:</span>
@@ -416,7 +416,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 mt-2 font-medium">gemini-3.1-pro-preview</div>
+                  <div class="text-[10px] font-mono text-blue-600 dark:text-blue-400 mt-2 font-medium">gemini-3.1-pro-preview</div>
                 </button>
 
                 <button
@@ -424,7 +424,7 @@
                   @click="configForm.aiModel = 'gemini-3.1-flash-lite'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-3.1-flash-lite'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
@@ -444,7 +444,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 mt-2 font-medium">gemini-3.1-flash-lite</div>
+                  <div class="text-[10px] font-mono text-blue-600 dark:text-blue-400 mt-2 font-medium">gemini-3.1-flash-lite</div>
                 </button>
 
                 <button
@@ -452,7 +452,7 @@
                   @click="configForm.aiModel = 'gemini-2.5-flash'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-2.5-flash'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
@@ -472,31 +472,31 @@
                       </div>
                     </div>
                   </div>
-                  <div class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 mt-2 font-medium">gemini-2.5-flash</div>
+                  <div class="text-[10px] font-mono text-blue-600 dark:text-blue-400 mt-2 font-medium">gemini-2.5-flash</div>
                 </button>
               </div>
 
               <!-- Active Model Pricing & Credit Calculation Formula Banner -->
-              <div class="p-3.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div class="p-3.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <div class="flex items-center gap-2.5">
-                  <div class="p-1.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="p-1.5 rounded-lg bg-blue-600 text-white">
                     <Sparkles class="w-4 h-4" />
                   </div>
                   <div>
                     <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                       <span>Model Pricing Formula:</span>
-                      <span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                      <span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">
                         {{ activeModelCreditMultiplier }}x Credits per Token
                       </span>
                     </div>
                     <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
-                      Base Token Cost: {{ activeModelCostRateText }}. Users are billed <strong class="text-indigo-600 dark:text-indigo-400 font-mono">{{ activeModelCreditMultiplier }} credits</strong> per token consumed.
+                      Base Token Cost: {{ activeModelCostRateText }}. Users are billed <strong class="text-blue-600 dark:text-blue-400 font-mono">{{ activeModelCreditMultiplier }} credits</strong> per token consumed.
                     </p>
                   </div>
                 </div>
                 <div class="text-right shrink-0">
                   <div class="text-[10px] text-slate-500">Example 2,000 Tokens:</div>
-                  <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs">
+                  <div class="font-mono font-bold text-blue-600 dark:text-blue-400 text-xs">
                     {{ (2000 * activeModelCreditMultiplier).toLocaleString() }} credits (~${{ ((2000 * activeModelCreditMultiplier * 0.00000035)).toFixed(5) }})
                   </div>
                 </div>
@@ -513,7 +513,7 @@
                     type="text"
                     required
                     placeholder="e.g. gemini-3.8-flash, gemini-3.1-pro-preview, gemini-2.5-flash"
-                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-500"
+                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold text-blue-600 dark:text-blue-400 focus:ring-2 focus:ring-blue-500"
                   />
                   <button
                     type="button"
@@ -530,16 +530,16 @@
             </div>
 
             <!-- FEATURED: Base User Credit Allowance Control Card (Synced with Active AI Model) -->
-            <div class="p-5 bg-gradient-to-br from-indigo-50/70 via-white to-indigo-50/30 dark:from-slate-800 dark:via-slate-800/90 dark:to-indigo-950/20 rounded-xl border-2 border-indigo-200 dark:border-indigo-800/80 shadow-xs space-y-4">
+            <div class="p-5        rounded-xl border-2 border-blue-200 dark:border-blue-800/80  space-y-4 app-soft-surface">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div class="flex items-center gap-2.5">
-                  <div class="p-2 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="p-2 rounded-lg bg-blue-600 text-white">
                     <Zap class="w-4 h-4" />
                   </div>
                   <div>
                     <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
                       <span>Base User Credit Allowance</span>
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
                         Standard Base Quota
                       </span>
                       <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
@@ -554,22 +554,22 @@
                 </div>
 
                 <div class="text-right">
-                  <span class="font-mono text-sm font-extrabold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 px-3 py-1 rounded-lg border border-indigo-200 dark:border-indigo-800 shadow-xs">
+                  <span class="font-mono text-sm font-semibold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 px-3 py-1 rounded-lg border border-blue-200 dark:border-blue-800">
                     {{ (configForm.freeTierMonthlyCredits || 0).toLocaleString() }} Credits
                   </span>
                 </div>
               </div>
 
               <!-- Live Model Synchronization Banner -->
-              <div class="p-3 bg-white/90 dark:bg-slate-900/90 rounded-xl border border-indigo-200 dark:border-indigo-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs shadow-2xs">
+              <div class="p-3 bg-white/90 dark:bg-slate-900/90 rounded-xl border border-blue-200 dark:border-blue-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
                 <div class="flex items-center gap-2.5">
-                  <div class="px-2 py-1 rounded-lg bg-indigo-600 text-white font-mono font-bold text-xs shadow-2xs">
+                  <div class="px-2 py-1 rounded-lg bg-blue-600 text-white font-mono font-bold text-xs">
                     {{ activeModelRateInfo.multiplier }}x
                   </div>
                   <div>
                     <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                       <span>Active Model:</span>
-                      <span class="font-mono text-indigo-600 dark:text-indigo-400 font-semibold">{{ activeModelRateInfo.name }}</span>
+                      <span class="font-mono text-blue-600 dark:text-blue-400 font-semibold">{{ activeModelRateInfo.name }}</span>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400">
                       Under this model, each schema generation consumes <strong class="text-slate-700 dark:text-slate-200 font-mono">{{ baseCreditsPerSchema.toLocaleString() }} credits</strong> (~2,000 tokens &times; {{ activeModelRateInfo.multiplier }}x).
@@ -579,7 +579,7 @@
 
                 <div class="text-left sm:text-right shrink-0 border-t sm:border-t-0 pt-1 sm:pt-0 border-slate-100 dark:border-slate-800">
                   <span class="text-[10px] text-slate-400 block">Allowance Yield:</span>
-                  <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">
+                  <div class="font-mono font-bold text-blue-600 dark:text-blue-400 text-sm">
                     ~{{ baseCreditsSchemasCount.toLocaleString() }} Schemas / mo
                   </div>
                 </div>
@@ -598,7 +598,7 @@
                       min="0"
                       step="1000"
                       required
-                      class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-mono font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 shadow-xs"
+                      class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-mono font-bold dark:text-white focus:ring-2 focus:ring-blue-500"
                       placeholder="e.g. 50000"
                     />
                     <span class="absolute right-3 top-2.5 text-xs font-bold text-slate-400 pointer-events-none">
@@ -615,7 +615,7 @@
                       @click="configForm.freeTierMonthlyCredits = preset"
                       class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition border cursor-pointer"
                       :class="configForm.freeTierMonthlyCredits === preset
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                         : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'"
                     >
                       {{ preset.toLocaleString() }}
@@ -627,7 +627,7 @@
               </div>
 
               <!-- Financial Valuation & Model-Synced Output Capacity Card -->
-              <div class="p-3.5 bg-white/90 dark:bg-slate-900/80 rounded-xl border border-indigo-100 dark:border-indigo-900/60 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div class="p-3.5 bg-white/90 dark:bg-slate-900/80 rounded-xl border border-blue-100 dark:border-blue-900/60 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div>
                   <div class="text-[11px] text-slate-400 font-medium">Market Retail Worth</div>
                   <div class="font-mono font-bold text-slate-800 dark:text-slate-200 text-sm mt-0.5">
@@ -648,7 +648,7 @@
 
                 <div>
                   <div class="text-[11px] text-slate-400 font-medium">Estimated Output</div>
-                  <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm mt-0.5">
+                  <div class="font-mono font-bold text-blue-600 dark:text-blue-400 text-sm mt-0.5">
                     ~{{ baseCreditsSchemasCount.toLocaleString() }} Schemas
                   </div>
                   <div class="text-[10px] text-slate-400">@ ~{{ baseCreditsPerSchema.toLocaleString() }} credits ea.</div>
@@ -671,7 +671,7 @@
                 <input
                   v-model="configForm.applyToExistingFreeUsers"
                   type="checkbox"
-                  class="mt-0.5 rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500"
+                  class="mt-0.5 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
                 />
                 <div>
                   <span class="font-bold">Apply & synchronize this base credit allowance to all active user accounts now</span>
@@ -697,7 +697,7 @@
                     v-model.number="configForm.proTierMonthlyCredits"
                     type="number"
                     required
-                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
                   <span class="text-[10px] text-slate-400 mt-1 block">Default: 1,000,000 credits</span>
                 </div>
@@ -710,7 +710,7 @@
                     v-model.number="configForm.freeMaxPromptLength"
                     type="number"
                     required
-                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
                   <span class="text-[10px] text-slate-400 mt-1 block">Default: 3,000 characters</span>
                 </div>
@@ -723,7 +723,7 @@
                     v-model.number="configForm.proMaxPromptLength"
                     type="number"
                     required
-                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
                   <span class="text-[10px] text-slate-400 mt-1 block">Default: 20,000 characters</span>
                 </div>
@@ -736,7 +736,7 @@
                     v-model="configForm.tallySaleInvoiceUrl"
                     type="url"
                     required
-                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono dark:text-white focus:ring-2 focus:ring-indigo-500"
+                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
                   <span class="text-[10px] text-slate-400 mt-1 block">Default: https://api.tallysale.com</span>
                 </div>
@@ -748,7 +748,7 @@
                 </span>
                 <button
                   type="submit"
-                  class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5"
+                  class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl  transition cursor-pointer flex items-center gap-1.5"
                 >
                   <CheckCircle2 class="w-4 h-4" />
                   Save System Config
@@ -786,7 +786,7 @@
                 v-model="logsSearchQuery"
                 type="text"
                 placeholder="Filter by email, model, or dialect..."
-                class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs w-60 focus:ring-2 focus:ring-indigo-500"
+                class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs w-60 focus:ring-2 focus:ring-blue-500"
               />
               <button
                 @click="loadAdminData"
@@ -804,7 +804,7 @@
             <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-medium text-slate-500">Total Prompts</span>
-                <Cpu class="w-4 h-4 text-indigo-500" />
+                <Cpu class="w-4 h-4 text-blue-500" />
               </div>
               <div class="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">
                 {{ logsSummary.totalRequests.toLocaleString() }}
@@ -815,9 +815,9 @@
             <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-medium text-slate-500">Raw Gemini Tokens</span>
-                <Coins class="w-4 h-4 text-purple-500" />
+                <Coins class="w-4 h-4 text-blue-500" />
               </div>
-              <div class="text-xl font-bold font-mono text-purple-600 dark:text-purple-400 mt-1">
+              <div class="text-xl font-bold font-mono text-blue-600 dark:text-blue-400 mt-1">
                 {{ logsSummary.totalRawTokens.toLocaleString() }}
               </div>
               <span class="text-[10px] text-slate-400">Prompt & completion</span>
@@ -847,7 +847,7 @@
           </div>
 
           <!-- Logs Table -->
-          <div class="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
+          <div class="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
             <div class="overflow-x-auto max-h-[48vh]">
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold uppercase tracking-wider sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700">
@@ -889,7 +889,7 @@
                       </span>
                     </td>
                     <td class="p-3">
-                      <span class="px-2 py-0.5 rounded font-mono text-[11px] font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                      <span class="px-2 py-0.5 rounded font-mono text-[11px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                         {{ log.model || 'gemini-3.8-flash' }}
                       </span>
                     </td>
@@ -906,7 +906,7 @@
                         {{ log.creditMultiplier ? log.creditMultiplier + 'x' : '1.0x' }}
                       </span>
                     </td>
-                    <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                    <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400">
                       {{ (log.creditsDeducted || log.totalTokens || 0).toLocaleString() }}
                     </td>
                     <td class="p-3 font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -930,13 +930,13 @@
         <!-- TAB 5: Marketplace & System Blueprints Management -->
         <div v-if="activeAdminTab === 'marketplace'" class="space-y-5">
           <!-- Top Action & Overview Card -->
-          <div class="p-5 bg-gradient-to-br from-indigo-900/10 via-slate-50 to-purple-900/10 dark:from-indigo-950/40 dark:via-slate-900 dark:to-purple-950/30 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="p-5        rounded-2xl border border-blue-200/80 dark:border-blue-800/60  flex flex-col md:flex-row md:items-center justify-between gap-4 bg-blue-700">
             <div>
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-slate-900 dark:text-white text-base">
                   Marketplace Blueprints & dbmaps System Templates
                 </h3>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   Curator Hub
                 </span>
               </div>
@@ -948,7 +948,7 @@
             <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
               <button
                 @click="handleCreateSystemBlueprint"
-                class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                class="px-4 py-2      text-white text-xs font-bold rounded-xl  transition flex items-center gap-1.5 cursor-pointer bg-blue-700"
               >
                 <Plus class="w-4 h-4" />
                 <span>+ Create System Blueprint</span>
@@ -958,7 +958,7 @@
                 @click="openMarketplace"
                 class="px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5 cursor-pointer"
               >
-                <ExternalLink class="w-3.5 h-3.5 text-indigo-500" />
+                <ExternalLink class="w-3.5 h-3.5 text-blue-500" />
                 <span>Preview Marketplace</span>
               </button>
             </div>
@@ -977,7 +977,7 @@
               <button
                 @click="marketplaceFilter = 'system'"
                 class="px-3 py-1.5 rounded-lg transition flex items-center gap-1 cursor-pointer"
-                :class="marketplaceFilter === 'system' ? 'bg-indigo-600 text-white font-bold shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'"
+                :class="marketplaceFilter === 'system' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'"
               >
                 <ShieldCheck class="w-3.5 h-3.5" />
                 <span>dbmaps System ({{ systemTemplatesCount }})</span>
@@ -999,13 +999,13 @@
                   v-model="marketplaceSearchQuery"
                   type="text"
                   placeholder="Search by title, domain, author..."
-                  class="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <select
                 v-model="marketplaceDialectFilter"
-                class="px-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                class="px-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Dialects</option>
                 <option value="postgres">PostgreSQL</option>
@@ -1028,17 +1028,17 @@
             <div
               v-for="tpl in filteredMarketplaceTemplates"
               :key="tpl.id"
-              class="p-4 bg-white dark:bg-slate-900 border rounded-2xl transition-all hover:shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-4"
-              :class="tpl.isSystem ? 'border-indigo-200/80 dark:border-indigo-900/60 bg-gradient-to-r from-indigo-50/20 to-transparent dark:from-indigo-950/20' : 'border-slate-200 dark:border-slate-800'"
+              class="p-4 bg-white dark:bg-slate-900 border rounded-2xl transition-all  flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+              :class="tpl.isSystem ? 'border-blue-200/80 dark:border-blue-900/60     app-soft-surface' : 'border-slate-200 dark:border-slate-800'"
             >
               <!-- Left Blueprint Info -->
               <div class="space-y-2 min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span
                     v-if="tpl.isSystem"
-                    class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1"
+                    class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1"
                   >
-                    <ShieldCheck class="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                    <ShieldCheck class="w-3 h-3 text-blue-600 dark:text-blue-400" />
                     <span>dbmaps System</span>
                   </span>
                   <span
@@ -1053,7 +1053,7 @@
                     {{ tpl.category || 'saas' }}
                   </span>
 
-                  <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-200/60 dark:border-indigo-900">
+                  <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-200/60 dark:border-blue-900">
                     {{ tpl.dialect || 'postgres' }}
                   </span>
 
@@ -1086,11 +1086,11 @@
                 <!-- Stats & Author row -->
                 <div class="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 font-mono flex-wrap pt-0.5">
                   <span class="flex items-center gap-1">
-                    <Database class="w-3.5 h-3.5 text-indigo-500" />
+                    <Database class="w-3.5 h-3.5 text-blue-500" />
                     <strong>{{ (tpl.tables || []).length }}</strong> tables
                   </span>
                   <span class="flex items-center gap-1">
-                    <GitFork class="w-3.5 h-3.5 text-purple-500" />
+                    <GitFork class="w-3.5 h-3.5 text-blue-500" />
                     <strong>{{ (tpl.relationships || []).length }}</strong> relations
                   </span>
                   <span class="text-slate-400">|</span>
@@ -1109,7 +1109,7 @@
                 <!-- Edit Template -->
                 <button
                   @click="handleEditTemplate(tpl)"
-                  class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer"
+                  class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 hover:text-blue-600 dark:hover:text-blue-400 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer"
                   title="Edit blueprint metadata, name, category, or entities"
                 >
                   <Edit3 class="w-3.5 h-3.5" />
@@ -1122,7 +1122,7 @@
                   class="px-3 py-1.5 text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer"
                   :class="tpl.isSystem
                     ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 dark:hover:bg-amber-900/60'
-                    : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-900/60'"
+                    : 'bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-900/60'"
                   :title="tpl.isSystem ? 'Demote to Community Blueprint' : 'Promote to Official dbmaps System Blueprint'"
                 >
                   <ShieldCheck v-if="!tpl.isSystem" class="w-3.5 h-3.5" />
@@ -1133,7 +1133,7 @@
                 <!-- Clone into active workspace to inspect -->
                 <button
                   @click="handleCloneToStudio(tpl)"
-                  class="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  class="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                   title="Clone into Studio Workspace to inspect/edit tables"
                 >
                   <FolderInput class="w-4 h-4" />

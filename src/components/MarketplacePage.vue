@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+  <div class="app-page app-marketplace-page min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
     <!-- TOP NAVBAR -->
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90  border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <button
           @click="goToHome"
@@ -10,7 +10,7 @@
           <DbMapLogo class-name="w-8 h-8 transition-transform group-hover:scale-105" />
           <div class="flex flex-col">
             <span class="font-mono font-bold text-slate-900 dark:text-white text-base leading-none">
-              db<span class="text-indigo-600 dark:text-indigo-400">maps</span>
+              db<span class="text-blue-600 dark:text-blue-400">maps</span>
             </span>
             <span class="text-[10px] text-slate-400 font-medium tracking-wide uppercase mt-0.5">
               Marketplace
@@ -33,9 +33,9 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search blueprints..."
-            class="w-full pl-8 pr-7 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full pl-8 pr-7 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button
+          <button aria-label="Clear search"
             v-if="searchQuery"
             @click="searchQuery = ''"
             class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
@@ -48,7 +48,7 @@
         <button
           v-if="isCurrentUserAdmin"
           @click="openCreateSystemMarketplaceTemplate()"
-          class="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+          class="px-3 py-1.5      text-white rounded-xl text-xs font-bold  transition flex items-center gap-1.5 cursor-pointer bg-blue-700"
           title="Create official dbmaps System blueprint (Admin)"
         >
           <Zap class="w-3.5 h-3.5" />
@@ -57,7 +57,7 @@
 
         <button
           @click="openSubmitModal"
-          class="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+          class="px-3 py-1.5      text-white rounded-xl text-xs font-bold  transition flex items-center gap-1.5 cursor-pointer bg-blue-700"
         >
           <UploadCloud class="w-3.5 h-3.5" />
           <span class="hidden sm:inline">Submit Database</span>
@@ -74,7 +74,7 @@
 
         <button
           @click="goToStudio"
-          class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+          class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold  transition flex items-center gap-1.5 cursor-pointer"
         >
           <span>Studio</span>
           <ArrowRight class="w-3.5 h-3.5" />
@@ -83,26 +83,23 @@
     </header>
 
     <!-- HERO INTRO BANNER -->
-    <div class="bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 dark:from-indigo-950/20 dark:via-slate-900/40 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800 py-10 sm:py-14 px-4 sm:px-8">
+    <div class="border-b border-slate-200 dark:border-slate-800 py-10 sm:py-14 px-4 sm:px-8 app-soft-surface">
       <div class="max-w-6xl mx-auto text-center space-y-3.5">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100/80 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 text-xs font-semibold border border-indigo-200 dark:border-indigo-800">
-          <Store class="w-3.5 h-3.5" />
-          <span>dbmaps Community & System Marketplace</span>
-        </div>
 
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Curated Production Database Blueprints
+
+        <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900 dark:text-white tracking-tight">
+          Schema marketplace
         </h1>
 
         <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Skip days of architectural research. Explore battle-tested schemas generated by dbmaps System & shared by architects worldwide. 100% free and one-click cloneable.
+          Explore community schemas and system blueprints. Preview a design, then clone it into your workspace.
         </p>
 
         <!-- CTA Buttons -->
         <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
           <button
             @click="openSubmitModal"
-            class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-2 cursor-pointer"
+            class="px-4 py-2      text-white rounded-xl text-xs font-bold  transition flex items-center gap-2 cursor-pointer bg-blue-700"
           >
             <UploadCloud class="w-4 h-4" />
             <span>Publish Your Database</span>
@@ -124,7 +121,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="Search across all blueprints..."
-              class="w-full pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -158,13 +155,13 @@
               class="px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer flex items-center gap-1.5"
               :class="[
                 selectedSource === 'system'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400'
               ]"
             >
               <Sparkles class="w-3.5 h-3.5" />
               <span>dbmaps System</span>
-              <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-500/30 font-mono">
+              <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-500/30 font-mono">
                 {{ systemCount }}
               </span>
             </button>
@@ -191,7 +188,7 @@
             <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Dialect:</span>
             <select
               v-model="selectedDialect"
-              class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All SQL Dialects</option>
               <option value="postgres">PostgreSQL</option>
@@ -229,7 +226,7 @@
         <div
           v-for="tpl in filteredTemplates"
           :key="tpl.id"
-          class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 hover:shadow-xl transition-all flex flex-col justify-between overflow-hidden group"
+          class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600  transition-all flex flex-col justify-between overflow-hidden group"
         >
           <!-- Card Header & Body -->
           <div class="p-6 pb-4">
@@ -238,9 +235,9 @@
                 <!-- System vs Community Badge -->
                 <span
                   v-if="tpl.isSystem"
-                  class="text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1"
+                  class="text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1"
                 >
-                  <Sparkles class="w-2.5 h-2.5 text-indigo-500" />
+                  <Sparkles class="w-2.5 h-2.5 text-blue-500" />
                   <span>dbmaps System</span>
                 </span>
                 <span
@@ -261,7 +258,7 @@
                 <button
                   v-if="canEditTemplate(tpl)"
                   @click.stop="handleEditTemplate(tpl)"
-                  class="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  class="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                   title="Edit blueprint metadata or schema"
                 >
                   <Edit3 class="w-3.5 h-3.5" />
@@ -284,7 +281,7 @@
             </div>
 
             <!-- Title & Description -->
-            <h3 class="font-bold text-slate-900 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition leading-snug">
+            <h3 class="font-bold text-slate-900 dark:text-white text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition leading-snug">
               {{ tpl.name }}
             </h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">
@@ -301,7 +298,7 @@
               <div class="text-xs min-w-0">
                 <div class="font-semibold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1">
                   <span>{{ tpl.author.name }}</span>
-                  <CheckCircle2 v-if="tpl.isSystem || tpl.isVerified" class="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                  <CheckCircle2 v-if="tpl.isSystem || tpl.isVerified" class="w-3.5 h-3.5 text-blue-500 shrink-0" />
                   <span v-if="isMyTemplate(tpl)" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
                     You
                   </span>
@@ -329,11 +326,11 @@
             <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-3.5 font-mono">
               <div class="flex items-center gap-3">
                 <span class="flex items-center gap-1">
-                  <Database class="w-3.5 h-3.5 text-indigo-500" />
+                  <Database class="w-3.5 h-3.5 text-blue-500" />
                   <strong>{{ (tpl.tables || []).length }}</strong> tables
                 </span>
                 <span class="flex items-center gap-1">
-                  <GitFork class="w-3.5 h-3.5 text-purple-500" />
+                  <GitFork class="w-3.5 h-3.5 text-blue-500" />
                   <strong>{{ (tpl.relationships || []).length }}</strong> relations
                 </span>
               </div>
@@ -355,7 +352,7 @@
 
               <button
                 @click="cloneTemplate(tpl)"
-                class="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+                class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold  transition flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Copy class="w-4 h-4" />
                 <span>Clone Schema</span>
@@ -370,7 +367,7 @@
         v-else
         class="py-20 text-center max-w-md mx-auto"
       >
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
           <Search class="w-8 h-8 opacity-70" />
         </div>
         <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base mb-1">
@@ -389,7 +386,7 @@
           <button
             v-if="selectedSource === 'community'"
             @click="openSubmitModal"
-            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
           >
             <UploadCloud class="w-4 h-4" />
             <span>Submit Your Database</span>
@@ -416,7 +413,7 @@
           <button @click="openSubmitModal" class="hover:text-emerald-600 dark:hover:text-emerald-400 font-semibold cursor-pointer">
             Submit Schema
           </button>
-          <button @click="goToStudio" class="hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">
+          <button @click="goToStudio" class="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
             ERD Studio
           </button>
           <button @click="goToLegal('/privacy-policy')" class="hover:underline cursor-pointer">
@@ -432,19 +429,19 @@
     <!-- PREVIEW MODAL OVERLAY -->
     <div
       v-if="selectedPreviewTemplate"
-      class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
+      class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-950/70  flex items-center justify-center p-4 sm:p-6"
       @click.self="selectedPreviewTemplate = null"
     >
-      <div
-        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 animate-in fade-in zoom-in-95 duration-150"
+      <div role="dialog" aria-modal="true" aria-label="Blueprint preview"
+        class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 animate-in fade-in zoom-in-95 duration-150"
       >
         <!-- Preview Header -->
-        <div class="p-6 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between gap-4">
+        <div class="app-dialog-heading p-6 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between gap-4">
           <div>
             <div class="flex items-center gap-2 mb-2 flex-wrap">
               <span
                 v-if="selectedPreviewTemplate.isSystem"
-                class="text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
+                class="text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
               >
                 dbmaps System
               </span>
@@ -457,7 +454,7 @@
               <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                 {{ selectedPreviewTemplate.complexity }} Tier
               </span>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md uppercase bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md uppercase bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
                 {{ selectedPreviewTemplate.dialect }}
               </span>
             </div>
@@ -469,7 +466,7 @@
             </p>
           </div>
 
-          <button
+          <button aria-label="Close dialog"
             @click="selectedPreviewTemplate = null"
             class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
           >
@@ -483,7 +480,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Tables -->
             <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
-              <div class="p-2.5 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400">
+              <div class="p-2.5 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400">
                 <Database class="w-5 h-5" />
               </div>
               <div>
@@ -496,7 +493,7 @@
 
             <!-- Relationships -->
             <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
-              <div class="p-2.5 rounded-lg bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400">
+              <div class="p-2.5 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400">
                 <GitFork class="w-5 h-5" />
               </div>
               <div>
@@ -572,7 +569,7 @@
           <div v-if="selectedPreviewTemplate.dbml">
             <div class="flex items-center justify-between mb-2.5">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Code class="w-4 h-4 text-indigo-500" />
+                <Code class="w-4 h-4 text-blue-500" />
                 <span>DBML Blueprint Definition</span>
               </h4>
               <button
@@ -604,7 +601,7 @@
             <button
               v-if="canEditTemplate(selectedPreviewTemplate)"
               @click="handleEditTemplate(selectedPreviewTemplate)"
-              class="px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition cursor-pointer flex items-center gap-1.5"
+              class="px-3.5 py-2 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900 transition cursor-pointer flex items-center gap-1.5"
             >
               <Edit3 class="w-3.5 h-3.5" />
               <span>Edit Blueprint</span>
@@ -618,7 +615,7 @@
             </button>
             <button
               @click="cloneTemplate(selectedPreviewTemplate)"
-              class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              class="px-5 py-2      text-white font-bold text-xs rounded-xl  transition flex items-center gap-1.5 cursor-pointer bg-blue-700"
             >
               <Copy class="w-4 h-4" />
               <span>Clone & Open in Studio</span>

@@ -1,8 +1,8 @@
 <template>
-  <div v-if="state.modals.share" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+  <div v-if="state.modals.share" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-4">
+    <div role="dialog" aria-modal="true" aria-label="Share schema" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="px-5 py-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+      <div class="app-dialog-heading px-5 py-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <Users class="w-5 h-5 text-blue-600 dark:text-blue-400" />
           <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm">Real-time Team Collaboration</h3>
@@ -50,7 +50,7 @@
           <label class="block font-bold text-slate-700 dark:text-slate-200 mb-2">
             Collaboration Access Permissions
           </label>
-          
+
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <!-- Option 1: Public Open -->
             <button
@@ -94,7 +94,7 @@
               @click="handleAccessModeChange('password')"
               class="p-3 text-left rounded-xl border transition flex flex-col justify-between relative cursor-pointer"
               :class="currentAccessMode === 'password'
-                ? 'border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 ring-2 ring-indigo-500/20'
+                ? 'border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 ring-2 ring-blue-500/20'
                 : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:border-slate-300 dark:hover:border-slate-600'"
             >
               <div class="flex items-center justify-between mb-1.5">
@@ -102,7 +102,7 @@
                   <div
                     class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0"
                     :class="currentAccessMode === 'password'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'"
                   >
                     <Key class="w-3.5 h-3.5" />
@@ -115,10 +115,10 @@
                 </div>
                 <CheckCircle2
                   v-if="currentAccessMode === 'password'"
-                  class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0"
+                  class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0"
                 />
               </div>
-              <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium mb-1">Link + Password</span>
+              <span class="text-[10px] text-blue-600 dark:text-blue-400 font-medium mb-1">Link + Password</span>
               <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-snug">
                 Protected by passphrase. Anyone with link and password can collaborate.
               </p>
@@ -165,16 +165,16 @@
         <!-- Password Configuration Section (Active when mode is password) -->
         <div
           v-if="currentAccessMode === 'password'"
-          class="p-3.5 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/60 rounded-xl space-y-3"
+          class="p-3.5 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/60 rounded-xl space-y-3"
         >
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5">
-              <Key class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <Key class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span class="font-bold text-slate-800 dark:text-slate-100 text-xs">
                 Collaboration Room Password
               </span>
             </div>
-            <span class="text-[10px] text-indigo-700 dark:text-indigo-400 font-medium">
+            <span class="text-[10px] text-blue-700 dark:text-blue-400 font-medium">
               Required for Visitors
             </span>
           </div>
@@ -185,7 +185,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 v-model="roomPasswordInput"
                 placeholder="Set room password (e.g. team2026)"
-                class="w-full pl-3 pr-9 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 text-xs font-mono outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                class="w-full pl-3 pr-9 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 text-xs font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
               <button
                 type="button"
@@ -211,14 +211,14 @@
             <button
               type="button"
               @click="saveRoomPassword"
-              class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-xs transition shrink-0"
+              class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition shrink-0"
             >
               Save Password
             </button>
           </div>
 
-          <div class="text-[11px] text-indigo-900/80 dark:text-indigo-300/80 flex items-center gap-1.5">
-            <Shield class="w-3.5 h-3.5 shrink-0 text-indigo-500" />
+          <div class="text-[11px] text-blue-900/80 dark:text-blue-300/80 flex items-center gap-1.5">
+            <Shield class="w-3.5 h-3.5 shrink-0 text-blue-500" />
             <span>Teammates with the link will be prompted to enter this password to unlock this schema.</span>
           </div>
         </div>
@@ -337,7 +337,7 @@
               v-if="currentAccessMode === 'password'"
               type="button"
               @click="copyLinkWithPassword"
-              class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition flex items-center gap-1.5 shrink-0 text-xs shadow-sm"
+              class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-1.5 shrink-0 text-xs"
               title="Copy share link with password formatted for pasting to teammates"
             >
               <Key class="w-3.5 h-3.5" />
@@ -351,14 +351,14 @@
           :class="currentAccessMode === 'restricted'
             ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/80 text-amber-800 dark:text-amber-300'
             : currentAccessMode === 'password'
-              ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/80 text-indigo-800 dark:text-indigo-300'
+              ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/80 text-blue-800 dark:text-blue-300'
               : 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/80 text-blue-800 dark:text-blue-300'"
           class="p-3 border rounded-xl flex items-start gap-2"
         >
           <component
             :is="currentAccessMode === 'restricted' ? Lock : currentAccessMode === 'password' ? Key : Globe"
             class="w-4 h-4 shrink-0 mt-0.5"
-            :class="currentAccessMode === 'restricted' ? 'text-amber-600 dark:text-amber-400' : currentAccessMode === 'password' ? 'text-indigo-600 dark:text-indigo-400' : 'text-blue-600 dark:text-blue-400'"
+            :class="currentAccessMode === 'restricted' ? 'text-amber-600 dark:text-amber-400' : currentAccessMode === 'password' ? 'text-blue-600 dark:text-blue-400' : 'text-blue-600 dark:text-blue-400'"
           />
           <p class="leading-relaxed text-[11px]">
             <span v-if="currentAccessMode === 'restricted'">

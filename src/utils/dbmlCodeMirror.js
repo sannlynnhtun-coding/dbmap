@@ -327,7 +327,7 @@ export const dbmlHighlightStyleDark = HighlightStyle.define([
   { tag: t.attributeName, color: '#4ade80', fontWeight: '600' }, // Bright Green (pk, increment, not null)
   { tag: t.definitionKeyword, color: '#818cf8', fontWeight: '600' }, // Indigo / Blue (note:, ref:)
   { tag: t.string, color: '#f87171' }, // Red / Coral (''' Note content ''')
-  { tag: [t.lineComment, t.blockComment], color: '#64748b', fontStyle: 'italic' }, // Comment
+  { tag: [t.lineComment, t.blockComment], color: '#94a3b8', fontStyle: 'italic' }, // Comment
   { tag: t.brace, color: '#60a5fa', fontWeight: '700' }, // Braces { }
   { tag: t.operator, color: '#4ade80', fontWeight: '700' }, // Green relationship operators >
   { tag: t.variableName, color: '#f8fafc', fontWeight: '500' }, // Slate-50 field names
@@ -339,11 +339,12 @@ export function createEditorTheme(isDark = true) {
   return EditorView.theme({
     '&': {
       height: '100%',
-      fontSize: '12px',
+      fontSize: '13px',
       fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       backgroundColor: isDark ? '#090d16' : '#ffffff',
       color: isDark ? '#f8fafc' : '#0f172a',
     },
+    '.cm-scroller': { fontFamily: 'inherit' },
     '.cm-content': {
       caretColor: isDark ? '#38bdf8' : '#2563eb',
       paddingTop: '12px',

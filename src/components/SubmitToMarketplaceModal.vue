@@ -1,18 +1,18 @@
 <template>
   <div
     v-if="state.modals.submitToMarketplace"
-    class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+    class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-3 sm:p-5"
     @click.self="closeModal"
   >
     <div
-      class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 transition-all animate-in fade-in zoom-in-95 duration-150"
+      role="dialog" aria-modal="true" aria-label="Marketplace submission" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 transition-all animate-in fade-in zoom-in-95 duration-150"
     >
       <!-- MODAL HEADER -->
-      <div class="px-6 py-4 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+      <div class="app-dialog-heading px-6 py-4 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-3">
           <div
-            class="p-2.5 rounded-xl text-white shadow-sm shrink-0"
-            :class="isSystemBlueprint ? 'bg-gradient-to-br from-indigo-600 to-purple-600' : 'bg-gradient-to-br from-emerald-500 to-teal-600'"
+            class="p-2.5 rounded-xl text-white  shrink-0"
+            :class="isSystemBlueprint ? '   bg-blue-700' : '   bg-blue-700'"
           >
             <Zap v-if="isSystemBlueprint" class="w-5 h-5" />
             <UploadCloud v-else class="w-5 h-5" />
@@ -24,9 +24,9 @@
               </h2>
               <span
                 v-if="isSystemBlueprint"
-                class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800 flex items-center gap-1"
+                class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-300 dark:border-blue-800 flex items-center gap-1"
               >
-                <ShieldCheck class="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                <ShieldCheck class="w-3 h-3 text-blue-600 dark:text-blue-400" />
                 <span>dbmaps System</span>
               </span>
               <span
@@ -42,7 +42,7 @@
           </div>
         </div>
 
-        <button
+        <button aria-label="Close dialog"
           @click="closeModal"
           class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
         >
@@ -65,17 +65,17 @@
         <div
           v-if="isCurrentUserAdmin"
           class="p-4 rounded-xl border transition-all"
-          :class="isSystemBlueprint ? 'bg-indigo-50/60 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800/80' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800'"
+          :class="isSystemBlueprint ? 'bg-blue-50/60 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/80' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800'"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-2.5">
-              <div class="p-1.5 rounded-lg" :class="isSystemBlueprint ? 'bg-indigo-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'">
+              <div class="p-1.5 rounded-lg" :class="isSystemBlueprint ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'">
                 <ShieldCheck class="w-4 h-4" />
               </div>
               <div>
                 <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
                   <span>Official dbmaps System Blueprint</span>
-                  <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-mono">ADMIN ONLY</span>
+                  <span class="text-[9px] px-1.5 py-0.2 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-mono">ADMIN ONLY</span>
                 </div>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                   Tag as verified first-party architecture, display with verified shield and dbmaps System badge.
@@ -90,7 +90,7 @@
                 @change="handleSystemBlueprintToggle"
                 class="sr-only peer"
               />
-              <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+              <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
             </label>
           </div>
         </div>
@@ -99,17 +99,17 @@
         <div v-if="isEditMode" class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
           <div class="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
             <span>Schema Entity Source:</span>
-            <span class="font-mono text-[11px] text-indigo-500">
+            <span class="font-mono text-[11px] text-blue-500">
               {{ useExistingTables ? 'Retaining current blueprint tables' : 'Syncing from selected project' }}
             </span>
           </div>
           <div class="flex flex-col sm:flex-row sm:items-center gap-3 text-xs">
             <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300">
-              <input type="radio" :value="true" v-model="useExistingTables" class="text-indigo-600 focus:ring-indigo-500" />
+              <input type="radio" :value="true" v-model="useExistingTables" class="text-blue-600 focus:ring-blue-500" />
               <span>Keep existing blueprint tables ({{ editingTemplateTablesCount }} tables)</span>
             </label>
             <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300">
-              <input type="radio" :value="false" v-model="useExistingTables" class="text-indigo-600 focus:ring-indigo-500" />
+              <input type="radio" :value="false" v-model="useExistingTables" class="text-blue-600 focus:ring-blue-500" />
               <span>Replace with tables from Studio project</span>
             </label>
           </div>
@@ -149,11 +149,11 @@
 
               <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                 <span class="flex items-center gap-1">
-                  <Database class="w-3 h-3 text-indigo-500" />
+                  <Database class="w-3 h-3 text-blue-500" />
                   <strong>{{ (proj.tables || []).length }}</strong> tables
                 </span>
                 <span class="flex items-center gap-1">
-                  <GitFork class="w-3 h-3 text-purple-500" />
+                  <GitFork class="w-3 h-3 text-blue-500" />
                   <strong>{{ (proj.relationships || []).length }}</strong> relations
                 </span>
                 <span class="uppercase font-bold text-slate-600 dark:text-slate-300">
@@ -327,14 +327,14 @@
           <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
             Marketplace Card Live Preview
           </label>
-          <div class="max-w-md mx-auto bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
+          <div class="max-w-md mx-auto bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
             <div class="flex items-start justify-between gap-2 mb-2">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span
                   v-if="isSystemBlueprint"
-                  class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1"
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1"
                 >
-                  <ShieldCheck class="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                  <ShieldCheck class="w-3 h-3 text-blue-600 dark:text-blue-400" />
                   <span>dbmaps System</span>
                 </span>
                 <span
@@ -362,7 +362,7 @@
             <div class="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono">
               <span>{{ previewTablesCount }} tables</span>
               <span>{{ previewRelationsCount }} relations</span>
-              <span class="uppercase font-semibold text-indigo-500">{{ form.dialect }}</span>
+              <span class="uppercase font-semibold text-blue-500">{{ form.dialect }}</span>
             </div>
           </div>
         </div>
@@ -381,8 +381,8 @@
         <button
           @click="handleSubmit"
           :disabled="isSubmitting || (!useExistingTables && (!activeSelectedProject || activeSelectedProject.tables.length === 0))"
-          class="px-5 py-2 font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 text-white"
-          :class="isSystemBlueprint ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700' : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'"
+          class="px-5 py-2 font-bold text-xs rounded-xl  transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 text-white"
+          :class="isSystemBlueprint ? '     bg-blue-700' : '     bg-blue-700'"
         >
           <Loader2 v-if="isSubmitting" class="w-4 h-4 animate-spin" />
           <ShieldCheck v-else-if="isSystemBlueprint" class="w-4 h-4" />

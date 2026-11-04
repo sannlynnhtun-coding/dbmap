@@ -21,7 +21,7 @@
   <AdminPage v-else-if="isAdminRoute" />
 
   <!-- Full ERD Studio Workspace (/app, /studio, /workspace) -->
-  <div v-else-if="isStudioRoute" class="w-screen h-screen overflow-hidden flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans select-none" :class="{ 'cursor-col-resize select-none': isResizing }">
+  <div v-else-if="isStudioRoute" class="studio-shell w-screen h-dvh overflow-hidden flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans select-none" :class="{ 'cursor-col-resize select-none': isResizing }">
     <!-- Navbar -->
     <Navbar />
 

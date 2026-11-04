@@ -1,26 +1,26 @@
 <template>
   <div
     v-if="state.collaborationAccessRestricted.active && !isProtectedSchemaPublic"
-    class="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4"
+    class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/75  flex items-center justify-center p-4"
   >
-    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+    <div role="dialog" aria-modal="true" aria-label="Collaboration access" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
       <!-- Top banner -->
       <div
-        class="p-6 text-center border-b border-slate-100 dark:border-slate-700/60"
+        class="app-dialog-heading p-6 text-center border-b border-slate-100 dark:border-slate-700/60"
         :class="isPasswordRequired
-          ? 'bg-indigo-50/60 dark:bg-indigo-950/30'
+          ? 'bg-blue-50/60 dark:bg-blue-950/30'
           : 'bg-amber-50/50 dark:bg-amber-950/20'"
       >
         <div
-          class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner"
+          class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
           :class="isPasswordRequired
-            ? 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400'
+            ? 'bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400'
             : 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400'"
         >
           <Key v-if="isPasswordRequired" class="w-7 h-7" />
           <Lock v-else class="w-7 h-7" />
         </div>
-        
+
         <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
           {{ isPasswordRequired
             ? 'Password Protected Collaboration'
@@ -28,7 +28,7 @@
               ? 'Sign-In Required for Collaboration'
               : 'Collaboration Access Restricted' }}
         </h3>
-        
+
         <p class="text-xs text-slate-500 dark:text-slate-400">
           Target Schema: <span class="font-semibold text-slate-700 dark:text-slate-200">{{ state.collaborationAccessRestricted.schemaName }}</span>
         </p>
@@ -53,7 +53,7 @@
                   v-model="enteredPassword"
                   placeholder="Enter schema room password..."
                   autofocus
-                  class="w-full pl-3 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-800 dark:text-slate-100 text-sm font-mono outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
+                  class="w-full pl-3 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-800 dark:text-slate-100 text-sm font-mono outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                   :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/20': passwordError }"
                 />
                 <button
@@ -124,7 +124,7 @@
           v-if="isPasswordRequired"
           type="button"
           @click="handleUnlockPassword"
-          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition flex items-center gap-1.5"
         >
           <Key class="w-3.5 h-3.5" />
           <span>Unlock &amp; Join Room</span>
@@ -134,7 +134,7 @@
           v-else-if="isLoginRequired"
           type="button"
           @click="handleOpenAuth"
-          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition flex items-center gap-1.5"
         >
           <LogIn class="w-3.5 h-3.5" />
           <span>Sign In to Verify</span>
@@ -144,7 +144,7 @@
           v-else
           type="button"
           @click="handleSwitchAccount"
-          class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm"
+          class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-lg text-xs transition flex items-center gap-1.5"
         >
           <LogOut class="w-3.5 h-3.5" />
           <span>Switch Account</span>

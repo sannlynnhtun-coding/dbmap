@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+  <div class="app-page app-admin-page min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
     <!-- Top Global Header -->
-    <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+    <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95  border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3 sm:gap-4">
         <button
           @click="goToHome"
@@ -11,7 +11,7 @@
           <DbMapLogo class-name="w-8 h-8 transition-transform group-hover:scale-105" />
           <div class="flex flex-col">
             <span class="font-mono font-bold text-slate-900 dark:text-white text-base leading-none">
-              db<span class="text-indigo-600 dark:text-indigo-400">maps</span>
+              db<span class="text-blue-600 dark:text-blue-400">maps</span>
             </span>
             <span class="text-[10px] text-slate-400 font-medium tracking-wide uppercase mt-0.5">
               Admin Portal
@@ -37,7 +37,7 @@
         <button
           v-if="isCurrentUserAdmin"
           @click="openAddUserModal"
-          class="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+          class="px-3 py-1.5      text-white rounded-xl text-xs font-bold  transition flex items-center gap-1.5 cursor-pointer bg-blue-700"
           title="Provision a new user account"
         >
           <UserPlus class="w-3.5 h-3.5" />
@@ -68,7 +68,7 @@
         <!-- Back to Studio Link -->
         <button
           @click="goToStudio"
-          class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer border border-slate-200 dark:border-slate-700"
+          class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 hover:text-blue-600 dark:hover:text-blue-400 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer border border-slate-200 dark:border-slate-700"
         >
           <span>Studio</span>
           <ArrowRight class="w-3.5 h-3.5" />
@@ -81,7 +81,7 @@
       v-if="!isCurrentUserAdmin"
       class="flex-1 flex items-center justify-center p-6"
     >
-      <div class="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-xl text-center space-y-5">
+      <div class="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8  text-center space-y-5">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-500 border border-amber-500/30 flex items-center justify-center">
           <ShieldAlert class="w-7 h-7" />
         </div>
@@ -100,7 +100,7 @@
         <div class="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             @click="openAuthModal"
-            class="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            class="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <Lock class="w-4 h-4" />
             <span>Sign In with Admin Account</span>
@@ -120,14 +120,14 @@
       <!-- Admin Sidebar Navigation -->
       <aside class="w-full md:w-64 shrink-0 space-y-6">
         <!-- Admin Profile Identity Card -->
-        <div class="p-4 bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 text-white rounded-2xl shadow-md border border-slate-800 space-y-3">
+        <div class="p-4     text-white rounded-2xl  border border-slate-800 space-y-3 bg-blue-700">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-bold text-sm">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center justify-center font-bold text-sm">
               {{ (state.currentUser.email || 'A').slice(0, 2).toUpperCase() }}
             </div>
             <div class="overflow-hidden">
               <div class="font-bold text-sm truncate">{{ state.currentUser.displayName || 'Administrator' }}</div>
-              <div class="text-[11px] text-purple-300/80 truncate font-mono">{{ state.currentUser.email }}</div>
+              <div class="text-[11px] text-blue-300/80 truncate font-mono">{{ state.currentUser.email }}</div>
             </div>
           </div>
           <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800 text-slate-400">
@@ -139,16 +139,16 @@
         </div>
 
         <!-- Navigation Tabs -->
-        <nav class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-2 shadow-xs space-y-1">
+        <nav class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-2  space-y-1">
           <button
             @click="activeAdminTab = 'overview'"
             class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-between cursor-pointer"
             :class="activeAdminTab === 'overview'
-              ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+              ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <div class="flex items-center gap-2.5">
-              <BarChart3 class="w-4 h-4 text-indigo-500" />
+              <BarChart3 class="w-4 h-4 text-blue-500" />
               <span>Overview & Metrics</span>
             </div>
           </button>
@@ -157,7 +157,7 @@
             @click="activeAdminTab = 'users'"
             class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-between cursor-pointer"
             :class="activeAdminTab === 'users'
-              ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+              ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <div class="flex items-center gap-2.5">
@@ -173,7 +173,7 @@
             @click="activeAdminTab = 'payments'"
             class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-between cursor-pointer"
             :class="activeAdminTab === 'payments'
-              ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+              ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <div class="flex items-center gap-2.5">
@@ -192,11 +192,11 @@
             @click="activeAdminTab = 'config'"
             class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-between cursor-pointer"
             :class="activeAdminTab === 'config'
-              ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+              ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <div class="flex items-center gap-2.5">
-              <Sliders class="w-4 h-4 text-purple-500" />
+              <Sliders class="w-4 h-4 text-blue-500" />
               <span>AI Engine & Quotas</span>
             </div>
           </button>
@@ -205,7 +205,7 @@
             @click="activeAdminTab = 'logs'"
             class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-between cursor-pointer"
             :class="activeAdminTab === 'logs'
-              ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+              ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <div class="flex items-center gap-2.5">
@@ -221,11 +221,11 @@
             @click="activeAdminTab = 'marketplace'"
             class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-between cursor-pointer"
             :class="activeAdminTab === 'marketplace'
-              ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+              ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'"
           >
             <div class="flex items-center gap-2.5">
-              <Layers class="w-4 h-4 text-indigo-500" />
+              <Layers class="w-4 h-4 text-blue-500" />
               <span>Marketplace Blueprints</span>
             </div>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
@@ -235,7 +235,7 @@
         </nav>
 
         <!-- System Diagnostic Card -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-xs space-y-2 text-xs">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4  space-y-2 text-xs">
           <div class="font-bold text-slate-900 dark:text-white flex items-center justify-between">
             <span>System Status</span>
             <span class="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
@@ -272,7 +272,7 @@
             </div>
             <button
               @click="openAddUserModal"
-              class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-xs self-start"
+              class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer  self-start"
             >
               <UserPlus class="w-4 h-4" />
               <span>Add New User</span>
@@ -281,12 +281,12 @@
 
           <!-- KPI Metric Cards Grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
+            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-2">
               <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
                 <span>Total Users</span>
                 <Users class="w-4 h-4 text-blue-500" />
               </div>
-              <div class="text-2xl font-extrabold text-slate-900 dark:text-white font-mono">
+              <div class="text-2xl font-semibold text-slate-900 dark:text-white font-mono">
                 {{ usersList.length.toLocaleString() }}
               </div>
               <div class="text-[11px] text-slate-400 flex items-center justify-between">
@@ -295,12 +295,12 @@
               </div>
             </div>
 
-            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
+            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-2">
               <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
                 <span>Pending Invoices</span>
                 <Receipt class="w-4 h-4 text-amber-500" />
               </div>
-              <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">
+              <div class="text-2xl font-semibold text-amber-600 dark:text-amber-400 font-mono">
                 {{ pendingRequestsCount }}
               </div>
               <div class="text-[11px] text-slate-400">
@@ -308,12 +308,12 @@
               </div>
             </div>
 
-            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
+            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-2">
               <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
                 <span>Circulating Credits</span>
-                <Coins class="w-4 h-4 text-purple-500" />
+                <Coins class="w-4 h-4 text-blue-500" />
               </div>
-              <div class="text-2xl font-extrabold text-purple-600 dark:text-purple-400 font-mono">
+              <div class="text-2xl font-semibold text-blue-600 dark:text-blue-400 font-mono">
                 {{ Math.round(totalCirculatingCredits / 1000).toLocaleString() }}k
               </div>
               <div class="text-[11px] text-slate-400">
@@ -321,12 +321,12 @@
               </div>
             </div>
 
-            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
+            <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-2">
               <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
                 <span>AI Generations</span>
                 <Activity class="w-4 h-4 text-emerald-500" />
               </div>
-              <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+              <div class="text-2xl font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
                 {{ logsList.length.toLocaleString() }}
               </div>
               <div class="text-[11px] text-slate-400">
@@ -339,7 +339,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div
               @click="activeAdminTab = 'users'"
-              class="p-5 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-600 rounded-2xl border border-slate-200 dark:border-slate-800 transition cursor-pointer group shadow-xs"
+              class="p-5 bg-white dark:bg-slate-900 hover:border-blue-400 dark:hover:border-blue-600 rounded-2xl border border-slate-200 dark:border-slate-800 transition cursor-pointer group"
             >
               <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                 <Users class="w-5 h-5" />
@@ -352,7 +352,7 @@
 
             <div
               @click="activeAdminTab = 'payments'"
-              class="p-5 bg-white dark:bg-slate-900 hover:border-amber-400 dark:hover:border-amber-600 rounded-2xl border border-slate-200 dark:border-slate-800 transition cursor-pointer group shadow-xs"
+              class="p-5 bg-white dark:bg-slate-900 hover:border-amber-400 dark:hover:border-amber-600 rounded-2xl border border-slate-200 dark:border-slate-800 transition cursor-pointer group"
             >
               <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                 <Receipt class="w-5 h-5" />
@@ -365,9 +365,9 @@
 
             <div
               @click="activeAdminTab = 'config'"
-              class="p-5 bg-white dark:bg-slate-900 hover:border-purple-400 dark:hover:border-purple-600 rounded-2xl border border-slate-200 dark:border-slate-800 transition cursor-pointer group shadow-xs"
+              class="p-5 bg-white dark:bg-slate-900 hover:border-blue-400 dark:hover:border-blue-600 rounded-2xl border border-slate-200 dark:border-slate-800 transition cursor-pointer group"
             >
-              <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                 <Cpu class="w-5 h-5" />
               </div>
               <h3 class="font-bold text-sm text-slate-900 dark:text-white">AI Engine & Quotas</h3>
@@ -398,7 +398,7 @@
             <!-- Add User Button -->
             <button
               @click="openAddUserModal"
-              class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-xs self-start sm:self-auto"
+              class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer  self-start sm:self-auto"
             >
               <UserPlus class="w-4 h-4" />
               <span>Add New User</span>
@@ -406,7 +406,7 @@
           </div>
 
           <!-- Filter & Search Toolbar -->
-          <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             <!-- Search Bar -->
             <div class="relative flex-1">
               <Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -414,9 +414,9 @@
                 v-model="userSearchQuery"
                 type="text"
                 placeholder="Search by email, name, or UID..."
-                class="w-full pl-9 pr-8 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                class="w-full pl-9 pr-8 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100 placeholder-slate-400"
               />
-              <button
+              <button aria-label="Clear search"
                 v-if="userSearchQuery"
                 @click="userSearchQuery = ''"
                 class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
@@ -430,7 +430,7 @@
               <!-- Tier Filter -->
               <select
                 v-model="userTierFilter"
-                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100"
+                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
               >
                 <option value="all">All Tiers</option>
                 <option value="free">Free Tier</option>
@@ -440,7 +440,7 @@
               <!-- Role Filter -->
               <select
                 v-model="userRoleFilter"
-                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100"
+                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
               >
                 <option value="all">All Roles</option>
                 <option value="user">Standard User</option>
@@ -450,7 +450,7 @@
               <!-- Sort Filter -->
               <select
                 v-model="userSortBy"
-                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100"
+                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
               >
                 <option value="recent">Recently Updated</option>
                 <option value="email_asc">Email (A - Z)</option>
@@ -461,7 +461,7 @@
               <!-- Page Size Selector -->
               <select
                 v-model.number="userPageSize"
-                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100"
+                class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
                 title="Items per page"
               >
                 <option :value="10">10 / page</option>
@@ -473,7 +473,7 @@
           </div>
 
           <!-- Users Table Container -->
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
@@ -501,7 +501,7 @@
                     <!-- User Info -->
                     <td class="p-3.5 font-medium">
                       <div class="flex items-center gap-2.5">
-                        <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs shrink-0">
+                        <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center text-xs shrink-0">
                           {{ (u.email || u.displayName || 'U').slice(0, 1).toUpperCase() }}
                         </div>
                         <div class="overflow-hidden">
@@ -546,7 +546,7 @@
                       <span
                         class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
                         :class="u.role === 'admin'
-                          ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800'
+                          ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'"
                       >
                         {{ u.role || 'user' }}
@@ -558,7 +558,7 @@
                       <div class="inline-flex items-center gap-1.5 flex-wrap justify-end">
                         <button
                           @click="handleToggleUserTier(u)"
-                          class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-lg text-[11px] font-semibold transition cursor-pointer"
+                          class="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg text-[11px] font-semibold transition cursor-pointer"
                           :title="`Switch tier to ${u.tier === 'pro' ? 'Free' : 'Pro'}`"
                         >
                           Set {{ u.tier === 'pro' ? 'Free' : 'Pro' }}
@@ -647,7 +647,7 @@
                     @click="typeof page === 'number' ? (userCurrentPage = page) : null"
                     class="min-w-[28px] h-7 px-2 text-xs font-semibold rounded-lg border transition"
                     :class="page === userCurrentPage
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                       : typeof page === 'number'
                         ? 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 cursor-pointer'
                         : 'border-transparent text-slate-400 cursor-default'"
@@ -703,7 +703,7 @@
             <div
               v-for="req in requestsList"
               :key="req.id"
-              class="p-4 bg-white dark:bg-slate-900 border rounded-2xl transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs"
+              class="p-4 bg-white dark:bg-slate-900 border rounded-2xl transition flex flex-col md:flex-row md:items-center justify-between gap-4"
               :class="[
                 req.status === 'PENDING'
                   ? 'border-amber-300 dark:border-amber-800/80 bg-amber-50/20 dark:bg-amber-950/10'
@@ -738,7 +738,7 @@
               <div v-if="req.status === 'PENDING'" class="flex items-center gap-2">
                 <button
                   @click="handleApprovePayment(req.id, 'APPROVED')"
-                  class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5  cursor-pointer"
                 >
                   <CheckCircle2 class="w-4 h-4" />
                   <span>Approve & Grant Pro</span>
@@ -767,10 +767,10 @@
 
           <form @submit.prevent="handleSaveSystemConfig" class="space-y-5">
             <!-- Model Selection Cards -->
-            <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+            <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-4">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
-                  <div class="p-2 rounded-xl bg-indigo-600 text-white shadow-xs">
+                  <div class="p-2 rounded-xl bg-blue-600 text-white">
                     <Cpu class="w-4 h-4" />
                   </div>
                   <div>
@@ -778,7 +778,7 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400">Select model for schema and DBML generation</p>
                   </div>
                 </div>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
                   Active: {{ configForm.aiModel }}
                 </span>
               </div>
@@ -790,7 +790,7 @@
                   @click="configForm.aiModel = 'gemini-3.8-flash'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-3.8-flash'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
@@ -799,7 +799,7 @@
                       <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Default</span>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">High reasoning speed & precision.</p>
-                    <div class="mt-2 text-[10px] font-mono text-indigo-600 dark:text-indigo-400 font-semibold">1.0x Credits</div>
+                    <div class="mt-2 text-[10px] font-mono text-blue-600 dark:text-blue-400 font-semibold">1.0x Credits</div>
                   </div>
                 </button>
 
@@ -808,16 +808,16 @@
                   @click="configForm.aiModel = 'gemini-3.1-pro-preview'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-3.1-pro-preview'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
                     <div class="flex items-center justify-between">
                       <span class="font-bold text-xs text-slate-900 dark:text-white">Gemini 3.1 Pro</span>
-                      <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">Deep Reasoning</span>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">Deep Reasoning</span>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">High complexity multi-table schemas.</p>
-                    <div class="mt-2 text-[10px] font-mono text-purple-600 dark:text-purple-400 font-semibold">5.0x Credits</div>
+                    <div class="mt-2 text-[10px] font-mono text-blue-600 dark:text-blue-400 font-semibold">5.0x Credits</div>
                   </div>
                 </button>
 
@@ -826,7 +826,7 @@
                   @click="configForm.aiModel = 'gemini-3.1-flash-lite'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-3.1-flash-lite'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
@@ -844,7 +844,7 @@
                   @click="configForm.aiModel = 'gemini-2.5-flash'"
                   class="p-3 text-left rounded-xl border transition cursor-pointer flex flex-col justify-between"
                   :class="configForm.aiModel === 'gemini-2.5-flash'
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/20'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-500 ring-2 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'"
                 >
                   <div>
@@ -853,7 +853,7 @@
                       <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">Stable</span>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Reliable fallback generation.</p>
-                    <div class="mt-2 text-[10px] font-mono text-indigo-600 dark:text-indigo-400 font-semibold">1.0x Credits</div>
+                    <div class="mt-2 text-[10px] font-mono text-blue-600 dark:text-blue-400 font-semibold">1.0x Credits</div>
                   </div>
                 </button>
               </div>
@@ -862,7 +862,7 @@
             <!-- Tier Allowances & Limits -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Free Tier Settings -->
-              <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+              <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-4">
                 <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                   Free Tier Quota & Limits
@@ -874,7 +874,7 @@
                       v-model.number="configForm.freeTierMonthlyCredits"
                       type="number"
                       step="1000"
-                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                     />
                   </div>
                   <div>
@@ -882,14 +882,14 @@
                     <input
                       v-model.number="configForm.freeMaxPromptLength"
                       type="number"
-                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                     />
                   </div>
                 </div>
               </div>
 
               <!-- Pro Tier Settings -->
-              <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+              <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-4">
                 <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
                   Pro Tier Quota & Limits
@@ -901,7 +901,7 @@
                       v-model.number="configForm.proTierMonthlyCredits"
                       type="number"
                       step="50000"
-                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                     />
                   </div>
                   <div>
@@ -909,7 +909,7 @@
                     <input
                       v-model.number="configForm.proMaxPromptLength"
                       type="number"
-                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                     />
                   </div>
                 </div>
@@ -917,7 +917,7 @@
             </div>
 
             <!-- TallySale Webhook URL -->
-            <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3 text-xs">
+            <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-3 text-xs">
               <h3 class="font-bold text-sm text-slate-900 dark:text-white">TallySale Billing & Webhook Gateway</h3>
               <div>
                 <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Invoice Gateway Base URL</label>
@@ -925,7 +925,7 @@
                   v-model="configForm.tallySaleInvoiceUrl"
                   type="url"
                   placeholder="https://api.tallysale.com"
-                  class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-xs"
+                  class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs"
                 />
               </div>
             </div>
@@ -936,7 +936,7 @@
                 id="propagate-quota"
                 v-model="configForm.applyToExistingFreeUsers"
                 type="checkbox"
-                class="mt-1 rounded text-indigo-600 focus:ring-indigo-500"
+                class="mt-1 rounded text-blue-600 focus:ring-blue-500"
               />
               <label for="propagate-quota" class="text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
                 <span class="font-bold">Apply and reset this base credit allowance to all active user accounts now</span>
@@ -950,7 +950,7 @@
             <div class="flex justify-end">
               <button
                 type="submit"
-                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer"
+                class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition  flex items-center gap-2 cursor-pointer"
               >
                 <Check class="w-4 h-4" />
                 <span>Save System Configurations</span>
@@ -973,12 +973,12 @@
           </div>
 
           <!-- Logs Search & Table -->
-          <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+          <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800  space-y-4">
             <input
               v-model="logsSearchQuery"
               type="text"
               placeholder="Search logs by email, model, or dialect..."
-              class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <div class="overflow-x-auto">
@@ -1001,10 +1001,10 @@
                   </tr>
                   <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
                     <td class="p-3 font-medium text-slate-900 dark:text-white">{{ log.email || log.userId }}</td>
-                    <td class="p-3 font-mono text-[11px] text-indigo-600 dark:text-indigo-400">{{ log.model || 'gemini-3.8-flash' }}</td>
+                    <td class="p-3 font-mono text-[11px] text-blue-600 dark:text-blue-400">{{ log.model || 'gemini-3.8-flash' }}</td>
                     <td class="p-3 font-mono">{{ log.promptLength || 0 }} chars</td>
                     <td class="p-3 font-mono">{{ log.totalTokens || log.rawTokens || 0 }}</td>
-                    <td class="p-3 font-mono font-bold text-purple-600 dark:text-purple-400">{{ (log.creditsDeducted || log.totalTokens || 0).toLocaleString() }}</td>
+                    <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400">{{ (log.creditsDeducted || log.totalTokens || 0).toLocaleString() }}</td>
                     <td class="p-3 text-slate-400 text-[11px]">{{ log.timestamp ? new Date(log.timestamp).toLocaleString() : 'Recent' }}</td>
                   </tr>
                 </tbody>
@@ -1026,7 +1026,7 @@
             </div>
             <button
               @click="handleCreateSystemBlueprint"
-              class="px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+              class="px-3.5 py-2      text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5  cursor-pointer bg-blue-700"
             >
               <Plus class="w-4 h-4" />
               <span>New System Blueprint</span>
@@ -1038,7 +1038,7 @@
             v-if="allMarketplaceTemplates.length === 0"
             class="p-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 text-slate-500 text-xs space-y-3"
           >
-            <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
               <Layers class="w-6 h-6" />
             </div>
             <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">No Marketplace Templates Found</div>
@@ -1047,7 +1047,7 @@
             </p>
             <button
               @click="handleCreateSystemBlueprint"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5  cursor-pointer"
             >
               <Plus class="w-4 h-4" />
               <span>Create First System Blueprint</span>
@@ -1058,14 +1058,14 @@
             <div
               v-for="tpl in allMarketplaceTemplates"
               :key="tpl.id"
-              class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs space-y-3 flex flex-col justify-between"
+              class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  space-y-3 flex flex-col justify-between"
             >
               <div>
                 <div class="flex items-start justify-between gap-2">
                   <div class="font-bold text-sm text-slate-900 dark:text-white">{{ tpl.name }}</div>
                   <span
                     class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                    :class="tpl.isSystem ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
+                    :class="tpl.isSystem ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
                   >
                     {{ tpl.isSystem ? 'Official System' : 'Community' }}
                   </span>
@@ -1079,7 +1079,7 @@
                   <!-- Edit Blueprint -->
                   <button
                     @click="handleEditTemplate(tpl)"
-                    class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-semibold transition flex items-center gap-1 cursor-pointer"
+                    class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 hover:text-blue-600 dark:hover:text-blue-400 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-semibold transition flex items-center gap-1 cursor-pointer"
                     title="Edit blueprint metadata, name, category, or schema"
                   >
                     <Edit3 class="w-3.5 h-3.5" />
@@ -1089,7 +1089,7 @@
                   <!-- Promote / Demote System status -->
                   <button
                     @click="handleToggleSystem(tpl)"
-                    class="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-950 text-slate-700 dark:text-slate-300 hover:text-purple-600 rounded-lg text-[11px] transition cursor-pointer"
+                    class="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-300 hover:text-blue-600 rounded-lg text-[11px] transition cursor-pointer"
                   >
                     {{ tpl.isSystem ? 'Demote' : 'Promote to System' }}
                   </button>
@@ -1115,11 +1115,11 @@
     <!-- ============================================================ -->
     <div
       v-if="showAddUserModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 overflow-y-auto"
+      class="app-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70  p-4 overflow-y-auto"
     >
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-150">
+      <div role="dialog" aria-modal="true" aria-label="Admin details" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-150">
         <!-- Header -->
-        <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-between">
+        <div class="app-dialog-heading px-6 py-4    text-white flex items-center justify-between bg-blue-700">
           <div class="flex items-center gap-2.5">
             <div class="p-2 rounded-xl bg-white/10 text-white">
               <UserPlus class="w-5 h-5" />
@@ -1129,7 +1129,7 @@
               <p class="text-[11px] text-white/80">Add a developer account with custom tier and credits</p>
             </div>
           </div>
-          <button
+          <button aria-label="Close dialog"
             @click="showAddUserModal = false"
             class="p-1.5 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition cursor-pointer"
           >
@@ -1149,7 +1149,7 @@
               type="email"
               required
               placeholder="developer@example.com"
-              class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
+              class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
             />
           </div>
 
@@ -1162,7 +1162,7 @@
               v-model="newUserForm.displayName"
               type="text"
               placeholder="Alex Smith"
-              class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
+              class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
             />
           </div>
 
@@ -1175,7 +1175,7 @@
               <select
                 v-model="newUserForm.tier"
                 @change="onNewUserTierChanged"
-                class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
+                class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
               >
                 <option value="free">Free Tier</option>
                 <option value="pro">Pro Tier</option>
@@ -1188,7 +1188,7 @@
               </label>
               <select
                 v-model="newUserForm.role"
-                class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
+                class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
               >
                 <option value="user">Standard User</option>
                 <option value="admin">Administrator</option>
@@ -1210,7 +1210,7 @@
               v-model.number="newUserForm.initialCredits"
               type="number"
               step="5000"
-              class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-slate-900 dark:text-white"
+              class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-slate-900 dark:text-white"
             />
             <!-- Quick Preset Buttons -->
             <div class="flex items-center gap-1.5 mt-2">
@@ -1257,7 +1257,7 @@
             <button
               type="submit"
               :disabled="isSubmittingUser"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition flex items-center gap-1.5  cursor-pointer disabled:opacity-50"
             >
               <UserPlus class="w-4 h-4" />
               <span>{{ isSubmittingUser ? 'Provisioning...' : 'Create Account' }}</span>
@@ -1272,9 +1272,9 @@
     <!-- ============================================================ -->
     <div
       v-if="showExactCreditsModal && editingUser"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 overflow-y-auto"
+      class="app-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70  p-4 overflow-y-auto"
     >
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4 text-xs">
+      <div role="dialog" aria-modal="true" aria-label="Admin details" class="app-dialog bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl  w-full max-w-sm overflow-hidden p-6 space-y-4 text-xs">
         <div>
           <h3 class="font-bold text-sm text-slate-900 dark:text-white">Adjust Exact Credit Balance</h3>
           <p class="text-slate-500 dark:text-slate-400 mt-1">
@@ -1288,7 +1288,7 @@
             v-model.number="exactCreditsInput"
             type="number"
             min="0"
-            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -1301,7 +1301,7 @@
           </button>
           <button
             @click="handleSaveExactCredits"
-            class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer shadow-xs"
+            class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer"
           >
             Update Credits
           </button>

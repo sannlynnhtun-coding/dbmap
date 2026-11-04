@@ -19,7 +19,7 @@
       <!-- Project / Database Name Input -->
       <div class="flex items-center gap-1.5 min-w-0 group/projname relative">
         <Database class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0 hidden xs:block" />
-        <div class="inline-grid items-center min-w-0">
+        <h1 class="inline-grid items-center min-w-0">
           <!-- Invisible sizer to size the container to the full database name without premature truncation -->
           <span
             class="invisible col-start-1 row-start-1 px-1.5 sm:px-2 py-1 text-xs sm:text-sm font-semibold whitespace-pre pointer-events-none select-none max-w-[180px] xs:max-w-[260px] sm:max-w-[380px] md:max-w-[500px] lg:max-w-[650px] xl:max-w-[800px]"
@@ -34,7 +34,7 @@
             :title="`Database: ${activeProject.name} (Click to rename)`"
             placeholder="Database Name"
           />
-        </div>
+        </h1>
 
         <!-- Live Saving Process Indicator & Immediate Save Trigger -->
         <button
@@ -161,9 +161,9 @@
         id="tour-ai-assistant"
         @click="openPrestoAiWithAuthCheck"
         title="AI Prompt to ERD Schema Generator (Gemini AI - Requires Sign In)"
-        class="px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-xl transition font-semibold text-xs flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer"
+        class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-slate-700 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 text-white rounded-xl transition font-semibold text-xs flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer"
       >
-        <Sparkles class="w-3.5 h-3.5 text-amber-300 animate-pulse shrink-0" />
+        <Sparkles class="w-3.5 h-3.5 text-current shrink-0" />
         <span class="hidden xs:inline">Presto</span>
       </button>
 

@@ -1,7 +1,7 @@
 <template>
-  <div id="learn-dbml-page" class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+  <div id="learn-dbml-page" class="app-page app-reading-page min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
     <!-- TOP NAVIGATION BAR -->
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 h-16 flex items-center justify-between">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90  border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-4">
         <!-- Logo -->
         <button
@@ -11,7 +11,7 @@
         >
           <DbMapLogo class-name="w-7 h-7" />
           <span class="font-mono font-bold text-slate-900 dark:text-white text-lg">
-            db<span class="text-indigo-600 dark:text-indigo-400">maps</span>
+            db<span class="text-blue-600 dark:text-blue-400">maps</span>
           </span>
         </button>
 
@@ -19,7 +19,7 @@
 
         <!-- Breadcrumb / Badge -->
         <div class="hidden sm:flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
             Learn DBML
           </span>
           <span class="text-xs text-slate-500 dark:text-slate-400">
@@ -50,7 +50,7 @@
 
         <button
           @click="loadSampleAndLaunch(selectedSnippet.name, selectedSnippet.code)"
-          class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition  cursor-pointer flex items-center gap-1.5"
         >
           <Play class="w-3.5 h-3.5 fill-current" />
           <span>Try in Studio</span>
@@ -68,8 +68,8 @@
         </div>
 
         <div class="space-y-3">
-          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Learn DBML in 5 Minutes
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900 dark:text-white">
+            Learn DBML
           </h1>
           <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
             DBML (Database Markup Language) is an open-source, readable, and developer-friendly syntax designed to define and document database schemas. Learn how to write DBML and utilize dbmaps’s zero-dependency client-side engine.
@@ -77,15 +77,15 @@
         </div>
 
         <!-- FORMAL ATTRIBUTION & CREDIT CALLOUT CARD -->
-        <div id="holistics-attribution-card" class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-purple-50/90 dark:from-slate-900 dark:via-indigo-950/40 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div id="holistics-attribution-card" class="p-5 sm:p-6 rounded-2xl        border border-blue-200/80 dark:border-blue-800/60  flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 app-soft-surface">
           <div class="flex items-start gap-3.5 max-w-2xl">
-            <div class="p-2.5 rounded-xl bg-indigo-600 text-white shrink-0 shadow-xs">
+            <div class="p-2.5 rounded-xl bg-blue-600 text-white shrink-0">
               <Heart class="w-5 h-5 fill-current text-rose-300" />
             </div>
             <div class="space-y-1 text-xs sm:text-sm">
               <div class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>Credit & Attribution to Holistics</span>
-                <span class="px-2 py-0.2 rounded text-[10px] font-mono bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">Original DBML Creator</span>
+                <span class="px-2 py-0.2 rounded text-[10px] font-mono bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">Original DBML Creator</span>
               </div>
               <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-xs">
                 DBML was created and open-sourced by the team at <strong class="text-slate-800 dark:text-slate-100">Holistics</strong> (the makers of <em>dbdiagram.io</em> and <em>dbdocs.io</em>). We gratefully acknowledge and credit Holistics for their pioneering work creating this schema language standard.
@@ -98,7 +98,7 @@
               href="https://dbml.org"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-full sm:w-auto px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs"
+              class="w-full sm:w-auto px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition"
             >
               <span>dbml.org</span>
               <ExternalLink class="w-3.5 h-3.5 text-slate-400" />
@@ -107,10 +107,10 @@
               href="https://dbdiagram.io"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-full sm:w-auto px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs"
+              class="w-full sm:w-auto px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition"
             >
               <span>dbdiagram.io</span>
-              <ExternalLink class="w-3.5 h-3.5 text-indigo-200" />
+              <ExternalLink class="w-3.5 h-3.5 text-blue-200" />
             </a>
           </div>
         </div>
@@ -119,12 +119,12 @@
       <!-- WHY OUR LIGHTWEIGHT ENGINE (ARCHITECTURAL HIGHLIGHTS) -->
       <section id="engine-highlights" class="space-y-4">
         <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Terminal class="w-5 h-5 text-indigo-500" />
+          <Terminal class="w-5 h-5 text-blue-500" />
           <span>The dbmaps Lightweight DBML Engine</span>
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
-            <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-2">
+            <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm">
               <Zap class="w-4 h-4" />
               <span>Zero-Bundle Overhead</span>
             </div>
@@ -133,7 +133,7 @@
             </p>
           </div>
 
-          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
+          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-2">
             <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
               <ShieldCheck class="w-4 h-4" />
               <span>Fault-Tolerant Typing</span>
@@ -143,8 +143,8 @@
             </p>
           </div>
 
-          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
-            <div class="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-sm">
+          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-2">
+            <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm">
               <RefreshCw class="w-4 h-4" />
               <span>True Bidirectional Sync</span>
             </div>
@@ -174,7 +174,7 @@
               :key="cat.id"
               @click="activeSyntaxCategory = cat.id"
               class="px-3 py-1.5 rounded-lg font-medium transition shrink-0 cursor-pointer"
-              :class="activeSyntaxCategory === cat.id ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+              :class="activeSyntaxCategory === cat.id ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
             >
               {{ cat.label }}
             </button>
@@ -186,11 +186,11 @@
           <div
             v-for="item in currentCategoryItems"
             :key="item.title"
-            class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3"
+            class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-3"
           >
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
                   {{ item.tag }}
                 </span>
                 <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
@@ -242,14 +242,14 @@
               :key="snip.name"
               @click="selectedSnippetIndex = idx"
               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer"
-              :class="selectedSnippetIndex === idx ? 'bg-indigo-600 text-white shadow-2xs' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'"
+              :class="selectedSnippetIndex === idx ? 'bg-blue-600 text-white shadow-2xs' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'"
             >
               {{ snip.name }}
             </button>
           </div>
         </div>
 
-        <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+        <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-4">
           <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
               <h3 class="font-bold text-base text-slate-900 dark:text-white">
@@ -272,7 +272,7 @@
 
               <button
                 @click="loadSampleAndLaunch(selectedSnippet.name, selectedSnippet.code)"
-                class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1.5  cursor-pointer"
               >
                 <Play class="w-3.5 h-3.5 fill-current" />
                 <span>Open in dbmaps Studio</span>
@@ -336,12 +336,12 @@
       </section>
 
       <!-- CALL TO ACTION BANNER -->
-      <section id="cta-studio" class="p-8 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+      <section id="cta-studio" class="p-8 rounded-3xl     text-white  flex flex-col sm:flex-row items-center justify-between gap-6 bg-blue-700">
         <div class="space-y-2 text-center sm:text-left">
-          <h2 class="text-2xl font-black tracking-tight">
+          <h2 class="text-2xl font-semibold tracking-tight">
             Ready to Design Your Architecture?
           </h2>
-          <p class="text-indigo-200 text-xs sm:text-sm max-w-xl">
+          <p class="text-blue-200 text-xs sm:text-sm max-w-xl">
             Switch to the Studio workspace to start typing DBML code, drag tables on the visual canvas, or prompt Presto AI to generate whole schemas.
           </p>
         </div>
@@ -349,7 +349,7 @@
         <div class="flex items-center gap-3 shrink-0">
           <button
             @click="navigateTo('/app')"
-            class="px-5 py-3 rounded-xl bg-white text-indigo-900 font-bold text-sm hover:bg-indigo-50 transition shadow-lg flex items-center gap-2 cursor-pointer"
+            class="px-5 py-3 rounded-xl bg-white text-blue-900 font-bold text-sm hover:bg-blue-50 transition  flex items-center gap-2 cursor-pointer"
           >
             <span>Launch dbmaps Studio</span>
             <ArrowRight class="w-4 h-4" />
@@ -364,16 +364,16 @@
         <div class="flex items-center gap-2">
           <DbMapLogo class-name="w-5 h-5" />
           <span class="font-mono font-bold text-slate-800 dark:text-slate-200">
-            db<span class="text-indigo-600 dark:text-indigo-400">maps</span>
+            db<span class="text-blue-600 dark:text-blue-400">maps</span>
           </span>
           <span class="text-slate-300 dark:text-slate-700">|</span>
           <span>Powered by DBML • Created by Holistics</span>
         </div>
 
         <div class="flex items-center gap-4">
-          <button @click="navigateTo('/')" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer">Home</button>
-          <button @click="navigateTo('/app')" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer">Studio Workspace</button>
-          <a href="https://dbml.org" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center gap-1">
+          <button @click="navigateTo('/')" class="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Home</button>
+          <button @click="navigateTo('/app')" class="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Studio Workspace</button>
+          <a href="https://dbml.org" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1">
             <span>Official DBML Spec</span>
             <ExternalLink class="w-3 h-3" />
           </a>

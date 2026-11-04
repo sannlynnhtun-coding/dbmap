@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div
       v-if="state.tour.active"
-      class="fixed inset-0 z-[9999] select-none pointer-events-auto"
+      class="app-auxiliary fixed inset-0 z-[9999] select-none pointer-events-auto"
       role="dialog"
       aria-modal="true"
       aria-label="Product Walkthrough Tour"
@@ -45,7 +45,7 @@
       <!-- Pulsing Highlight Ring around the Target Element -->
       <div
         v-if="targetRect && isTargetVisible"
-        class="absolute pointer-events-none transition-all duration-300 ease-out z-10 border-2 border-indigo-400 dark:border-indigo-400 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.5)] ring-4 ring-indigo-500/20 animate-pulse"
+        class="absolute pointer-events-none transition-all duration-300 ease-out z-10 border-2 border-blue-400 dark:border-blue-400 rounded-xl ring-4 ring-blue-500/20 animate-pulse"
         :style="{
           left: `${targetRect.left - padding}px`,
           top: `${targetRect.top - padding}px`,
@@ -57,13 +57,13 @@
       <!-- Floating Tour Popover Card -->
       <div
         ref="popoverRef"
-        class="fixed z-20 w-[92vw] sm:w-[420px] max-w-md bg-white dark:bg-slate-900 border border-indigo-200 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 ease-out flex flex-col text-slate-800 dark:text-slate-100"
+        class="app-tour-card fixed z-20 w-[92vw] sm:w-[420px] max-w-md bg-white dark:bg-slate-900 border border-blue-200 dark:border-slate-700/80 rounded-2xl  overflow-hidden transition-all duration-300 ease-out flex flex-col text-slate-800 dark:text-slate-100"
         :style="popoverStyle"
       >
         <!-- Top Colored Progress Bar -->
         <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800">
           <div
-            class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 transition-all duration-300"
+            class="h-full     transition-all duration-300 bg-blue-700"
             :style="{ width: `${((currentStepIndex + 1) / totalSteps) * 100}%` }"
           ></div>
         </div>
@@ -73,8 +73,8 @@
           <div class="flex items-center justify-between gap-2 mb-2">
             <!-- Step Badge & Icon -->
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">
-                <Compass class="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1.5">
+                <Compass class="w-3 h-3 text-blue-600 dark:text-blue-400" />
                 <span>Step {{ currentStepIndex + 1 }} of {{ totalSteps }}</span>
               </span>
 
@@ -95,7 +95,7 @@
 
           <!-- Title -->
           <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <component :is="currentStep.icon" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <component :is="currentStep.icon" class="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
             <span>{{ currentStep.title }}</span>
           </h3>
 
@@ -107,11 +107,11 @@
           <!-- Pro Tip Box (if available) -->
           <div
             v-if="currentStep.tips"
-            class="mt-3.5 p-2.5 sm:p-3 bg-indigo-50/80 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900/60 flex items-start gap-2 text-xs text-indigo-900 dark:text-indigo-200 leading-normal"
+            class="mt-3.5 p-2.5 sm:p-3 bg-blue-50/80 dark:bg-blue-950/40 rounded-xl border border-blue-100 dark:border-blue-900/60 flex items-start gap-2 text-xs text-blue-900 dark:text-blue-200 leading-normal"
           >
             <Lightbulb class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
             <div>
-              <span class="font-bold text-[11px] uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block sm:inline mr-1">
+              <span class="font-bold text-[11px] uppercase tracking-wider text-blue-600 dark:text-blue-400 block sm:inline mr-1">
                 Pro Tip:
               </span>
               <span>{{ currentStep.tips }}</span>
@@ -129,9 +129,9 @@
             class="h-1.5 rounded-full transition-all duration-200"
             :class="[
               idx === currentStepIndex
-                ? 'w-6 bg-indigo-600 dark:bg-indigo-400'
+                ? 'w-6 bg-blue-600 dark:bg-blue-400'
                 : idx < currentStepIndex
-                  ? 'w-2 bg-indigo-300 dark:bg-indigo-800 hover:bg-indigo-400'
+                  ? 'w-2 bg-blue-300 dark:bg-blue-800 hover:bg-blue-400'
                   : 'w-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'
             ]"
           ></button>
@@ -160,7 +160,7 @@
 
             <button
               @click="nextTourStep"
-              class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold text-xs shadow-md hover:shadow-indigo-500/20 transition flex items-center gap-1.5 cursor-pointer"
+              class="px-4 py-1.5 rounded-xl      text-white font-bold text-xs  hover:shadow-blue-500/20 transition flex items-center gap-1.5 cursor-pointer bg-blue-700"
             >
               <span>{{ currentStepIndex === totalSteps - 1 ? 'Finish & Start Designing' : 'Next' }}</span>
               <Check v-if="currentStepIndex === totalSteps - 1" class="w-3.5 h-3.5" />

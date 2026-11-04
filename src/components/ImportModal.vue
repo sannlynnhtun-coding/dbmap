@@ -1,13 +1,13 @@
 <template>
   <div
     v-if="state.modals.importSchema"
-    class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 select-none"
+    class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-4 select-none"
   >
     <div
-      class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] text-slate-800 dark:text-slate-100"
+      role="dialog" aria-modal="true" aria-label="Import schema" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] text-slate-800 dark:text-slate-100"
     >
       <!-- Header -->
-      <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+      <div class="app-dialog-heading px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400">
             <UploadCloud class="w-4 h-4" />
@@ -21,7 +21,7 @@
             </p>
           </div>
         </div>
-        <button
+        <button aria-label="Close dialog"
           @click="closeModal"
           class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
         >
@@ -35,7 +35,7 @@
           <!-- Dialect Selector -->
           <div class="flex items-center gap-2">
             <span class="font-semibold text-slate-600 dark:text-slate-300">Dialect:</span>
-            <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0.5">
+            <div class="flex flex-wrap rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0.5">
               <button
                 v-for="d in dialects"
                 :key="d.id"
@@ -76,10 +76,10 @@
 
             <button
               @click="openMarketplaceFromImport"
-              class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold transition flex items-center gap-1"
+              class="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] font-bold transition flex items-center gap-1"
               title="Open full Marketplace blueprints"
             >
-              <Store class="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+              <Store class="w-3 h-3 text-blue-600 dark:text-blue-400" />
               <span>Browse Marketplace</span>
             </button>
           </div>
@@ -196,7 +196,7 @@
           <button
             @click="executeImport"
             :disabled="!scriptText.trim()"
-            class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition flex items-center gap-1.5 shadow-sm"
+            class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition flex items-center gap-1.5"
           >
             <Upload class="w-3.5 h-3.5" />
             <span>Import to Canvas</span>

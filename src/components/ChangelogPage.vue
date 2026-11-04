@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white transition-colors duration-200">
+  <div class="app-page app-changelog-page min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col selection:bg-blue-500 selection:text-white transition-colors duration-200">
     <!-- Top Sticky Navigation Bar -->
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 transition-colors">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90  border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 transition-colors">
       <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
         <!-- Left: Logo & Breadcrumbs -->
         <div class="flex items-center gap-3">
           <button
             @click="navigateTo('/')"
-            class="flex items-center gap-2.5 font-bold text-indigo-600 dark:text-indigo-400 text-lg hover:opacity-90 transition cursor-pointer"
+            class="flex items-center gap-2.5 font-bold text-blue-600 dark:text-blue-400 text-lg hover:opacity-90 transition cursor-pointer"
             title="dbmaps - Home"
           >
             <DbMapLogo class-name="w-8 h-8 drop-shadow-sm" />
-            <span class="font-mono tracking-tight text-slate-900 dark:text-slate-100 text-xl font-extrabold">
-              db<span class="text-indigo-600 dark:text-indigo-400">maps</span>
+            <span class="font-mono tracking-tight text-slate-900 dark:text-slate-100 text-xl font-semibold">
+              db<span class="text-blue-600 dark:text-blue-400">maps</span>
             </span>
           </button>
 
@@ -20,7 +20,7 @@
 
           <div class="hidden sm:flex items-center gap-2">
             <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Changelog & Issue Tracker</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
               v1.4.6
             </span>
           </div>
@@ -33,7 +33,7 @@
             class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 cursor-pointer"
             :class="[
               activeTab === 'changelog'
-                ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             ]"
           >
@@ -49,7 +49,7 @@
             class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 cursor-pointer"
             :class="[
               activeTab === 'issues'
-                ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             ]"
           >
@@ -87,7 +87,7 @@
           <button
             v-else
             @click="openAuthModal"
-            class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 border border-indigo-200/80 dark:border-indigo-800/80 transition cursor-pointer"
+            class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 border border-blue-200/80 dark:border-blue-800/80 transition cursor-pointer"
             title="Sign in with Google or account"
           >
             <LogIn class="w-3.5 h-3.5" />
@@ -113,7 +113,7 @@
 
           <button
             @click="navigateTo('/app')"
-            class="px-3.5 sm:px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-xs rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+            class="px-3.5 sm:px-4 py-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs rounded-xl transition  flex items-center gap-1.5 cursor-pointer"
           >
             <span>Launch Studio</span>
             <ArrowRight class="w-3.5 h-3.5" />
@@ -123,15 +123,12 @@
     </header>
 
     <!-- Hero Header Banner -->
-    <section class="bg-gradient-to-b from-indigo-50/60 via-slate-50 to-white dark:from-slate-900/60 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800 py-10 px-4 sm:px-8">
+    <section class="border-b border-slate-200 dark:border-slate-800 py-10 px-4 sm:px-8 app-soft-surface">
       <div class="max-w-5xl mx-auto space-y-4 text-center sm:text-left sm:flex sm:items-center sm:justify-between sm:space-y-0">
         <div class="space-y-2 max-w-2xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold">
-            <Sparkles class="w-3.5 h-3.5" />
-            <span>Transparency & Continuous Engineering</span>
-          </div>
-          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            System Changelog & Issue Tracker
+
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">
+            Changelog & issues
           </h1>
           <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
             Live technical audit trail of release milestones, defect resolutions, and performance optimizations. Have you encountered an anomaly or have an architectural suggestion? Submit it directly to our engineering log.
@@ -140,17 +137,17 @@
 
         <!-- Metric Badges Stack -->
         <div class="flex items-center gap-3 justify-center sm:justify-end shrink-0 pt-2 sm:pt-0">
-          <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-xs min-w-[90px]">
+          <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center  min-w-[90px]">
             <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Engine</div>
-            <div class="text-lg font-mono font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5">v1.4.3</div>
+            <div class="text-lg font-mono font-semibold text-blue-600 dark:text-blue-400 mt-0.5">v1.4.3</div>
           </div>
-          <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-xs min-w-[90px]">
+          <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center  min-w-[90px]">
             <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fixes</div>
-            <div class="text-lg font-mono font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5">24+ Done</div>
+            <div class="text-lg font-mono font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">24+ Done</div>
           </div>
-          <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-xs min-w-[90px]">
+          <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center  min-w-[90px]">
             <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status</div>
-            <div class="text-lg font-mono font-extrabold text-blue-600 dark:text-blue-400 mt-0.5 flex items-center justify-center gap-1.5">
+            <div class="text-lg font-mono font-semibold text-blue-600 dark:text-blue-400 mt-0.5 flex items-center justify-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>Active</span>
             </div>
@@ -166,7 +163,7 @@
       <!-- ======================================================== -->
       <div v-if="activeTab === 'changelog'" class="space-y-6 animate-fade-in">
         <!-- Search & Category Filters Bar -->
-        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-3">
           <div class="flex flex-col sm:flex-row items-center gap-3 justify-between">
             <!-- Search Input -->
             <div class="relative w-full sm:w-80">
@@ -175,7 +172,7 @@
                 v-model="changelogSearchQuery"
                 type="text"
                 placeholder="Search fixes, features, or keywords..."
-                class="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition"
+                class="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 transition"
               />
               <button
                 v-if="changelogSearchQuery"
@@ -216,10 +213,10 @@
           >
             <!-- Timeline Pin Indicator Icon -->
             <div
-              class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-transform group-hover:scale-110 shadow-xs"
+              class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-transform group-hover:scale-110"
               :class="[
                 rIdx === 0
-                  ? 'bg-indigo-600 border-indigo-400 text-white ring-4 ring-indigo-500/20'
+                  ? 'bg-blue-600 border-blue-400 text-white ring-4 ring-blue-500/20'
                   : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-500'
               ]"
             >
@@ -228,11 +225,11 @@
             </div>
 
             <!-- Release Card -->
-            <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800   transition-all space-y-4">
               <!-- Top Row: Version, Date, Badge -->
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div class="flex items-center gap-2.5 flex-wrap">
-                  <span class="text-base sm:text-lg font-mono font-extrabold text-slate-900 dark:text-white">
+                  <span class="text-base sm:text-lg font-mono font-semibold text-slate-900 dark:text-white">
                     {{ release.version }}
                   </span>
                   <span
@@ -271,9 +268,9 @@
                         class="px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-tight uppercase"
                         :class="[
                           item.type === 'bugfix' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-200 dark:border-rose-900' :
-                          item.type === 'feature' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900' :
+                          item.type === 'feature' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-200 dark:border-blue-900' :
                           item.type === 'ux' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-900' :
-                          item.type === 'performance' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300 border border-purple-200 dark:border-purple-900' :
+                          item.type === 'performance' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-200 dark:border-blue-900' :
                           'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-200 dark:border-blue-900'
                         ]"
                       >
@@ -314,7 +311,7 @@
             </p>
             <button
               @click="resetChangelogFilters"
-              class="px-3.5 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold cursor-pointer"
+              class="px-3.5 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-semibold cursor-pointer"
             >
               Reset Filters
             </button>
@@ -327,15 +324,15 @@
       <!-- ======================================================== -->
       <div v-else-if="activeTab === 'issues'" class="space-y-8 animate-fade-in">
         <!-- Top Information Banner -->
-        <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex items-start gap-3">
-          <div class="p-2 rounded-xl bg-indigo-600 text-white shrink-0 mt-0.5">
+        <div class="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 flex items-start gap-3">
+          <div class="p-2 rounded-xl bg-blue-600 text-white shrink-0 mt-0.5">
             <Bug class="w-4 h-4" />
           </div>
           <div class="space-y-1 text-xs">
-            <h3 class="font-bold text-indigo-950 dark:text-indigo-200">
+            <h3 class="font-bold text-blue-950 dark:text-blue-200">
               Technical Bug Reporting & Feature Request Portal
             </h3>
-            <p class="text-indigo-800/90 dark:text-indigo-300/90 leading-relaxed">
+            <p class="text-blue-800/90 dark:text-blue-300/90 leading-relaxed">
               Facing an unexpected error, drag-and-drop anomaly, SQL parsing edge case, or have an architectural suggestion? Submit your detailed report here. Our engineering queue is reviewed continuously and reflected in subsequent release updates.
             </p>
           </div>
@@ -343,11 +340,11 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <!-- Left: Issue Submission Form (7 Cols) -->
-          <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6  space-y-5">
             <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-start justify-between gap-3">
               <div>
                 <h2 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <FileCode class="w-4 h-4 text-indigo-500" />
+                  <FileCode class="w-4 h-4 text-blue-500" />
                   <span>Submit New Issue Ticket</span>
                 </h2>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -374,17 +371,17 @@
 
             <!-- STATE A: User is NOT logged in - Prominent Authentication Gate -->
             <div v-if="!isAuthenticated" class="space-y-5">
-              <div class="p-5 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-slate-50 to-purple-50/70 dark:from-slate-800/90 dark:via-slate-800/60 dark:to-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80 shadow-xs space-y-4">
+              <div class="p-5 rounded-2xl        border border-blue-200/80 dark:border-blue-800/80  space-y-4 app-soft-surface">
                 <div class="flex items-start gap-3.5">
-                  <div class="p-3 rounded-2xl bg-indigo-600 text-white shadow-sm shrink-0">
+                  <div class="p-3 rounded-2xl bg-blue-600 text-white  shrink-0">
                     <ShieldAlert class="w-5 h-5" />
                   </div>
                   <div class="space-y-1.5">
                     <div class="flex items-center gap-2 flex-wrap">
-                      <h3 class="font-extrabold text-slate-900 dark:text-white text-sm">
+                      <h3 class="font-semibold text-slate-900 dark:text-white text-sm">
                         Authentication Required to Submit Issues
                       </h3>
-                      <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
                         Protected Form
                       </span>
                     </div>
@@ -398,7 +395,7 @@
                   <button
                     @click="handleGoogleLogin"
                     :disabled="state.isLoggingIn"
-                    class="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed text-slate-800 dark:text-slate-100 font-bold text-xs border border-slate-300 dark:border-slate-700 rounded-xl transition flex items-center justify-center gap-2.5 shadow-xs cursor-pointer"
+                    class="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed text-slate-800 dark:text-slate-100 font-bold text-xs border border-slate-300 dark:border-slate-700 rounded-xl transition flex items-center justify-center gap-2.5  cursor-pointer"
                   >
                     <svg v-if="!state.isLoggingIn" class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -406,13 +403,13 @@
                       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
-                    <div v-else class="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                    <div v-else class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
                     <span>{{ state.isLoggingIn ? 'Connecting to Google...' : 'Sign In with Google SSO' }}</span>
                   </button>
 
                   <button
                     @click="openAuthModal"
-                    class="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                    class="w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5  cursor-pointer"
                   >
                     <LogIn class="w-3.5 h-3.5" />
                     <span>All Account Options</span>
@@ -465,7 +462,7 @@
                   <button
                     @click="openAuthModal"
                     type="button"
-                    class="w-full py-2.5 px-4 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer hover:bg-indigo-600 hover:text-white transition"
+                    class="w-full py-2.5 px-4 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer hover:bg-blue-600 hover:text-white transition"
                   >
                     <Lock class="w-3.5 h-3.5" />
                     <span>Sign In to Unlock and Submit Issue</span>
@@ -502,7 +499,7 @@
                 <button
                   type="button"
                   @click="openAuthModal"
-                  class="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline shrink-0 font-medium cursor-pointer"
+                  class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline shrink-0 font-medium cursor-pointer"
                 >
                   Switch Account
                 </button>
@@ -519,7 +516,7 @@
                     type="text"
                     required
                     placeholder="e.g., Schema card dimmed on click or SQL parser fails on ENUM type"
-                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition"
+                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 transition"
                   />
                 </div>
 
@@ -532,7 +529,7 @@
                     </label>
                     <select
                       v-model="issueForm.category"
-                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 cursor-pointer"
+                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 cursor-pointer"
                     >
                       <option value="bug">Functional Defect (Bug)</option>
                       <option value="ui_ux">UI / UX & Drag-and-Drop</option>
@@ -549,7 +546,7 @@
                     </label>
                     <select
                       v-model="issueForm.severity"
-                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 cursor-pointer"
+                      class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 cursor-pointer"
                     >
                       <option value="P0_blocker">P0 - Blocker (Data loss / Crash)</option>
                       <option value="P1_high">P1 - High (Core feature non-operational)</option>
@@ -566,7 +563,7 @@
                   </label>
                   <select
                     v-model="issueForm.component"
-                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 cursor-pointer"
+                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 cursor-pointer"
                   >
                     <option value="Sidebar & Filter Navigation">Sidebar & Filter Navigation</option>
                     <option value="ERD Canvas & Connectors">ERD Canvas & Relationship Connectors</option>
@@ -588,7 +585,7 @@
                     required
                     rows="3"
                     placeholder="Detail what happened, what inputs were supplied, or which dialect was being tested..."
-                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition leading-relaxed"
+                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 transition leading-relaxed"
                   ></textarea>
                 </div>
 
@@ -601,7 +598,7 @@
                     v-model="issueForm.reproductionSteps"
                     rows="2"
                     placeholder="1. Open Sidebar &#10;2. Click on Database Group &#10;3. Observe cursor does not switch to grab"
-                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition font-mono leading-relaxed"
+                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 transition font-mono leading-relaxed"
                   ></textarea>
                 </div>
 
@@ -615,7 +612,7 @@
                       v-model="issueForm.expectedBehavior"
                       type="text"
                       placeholder="e.g. Card should drag smoothly"
-                      class="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition"
+                      class="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 transition"
                     />
                   </div>
                   <div>
@@ -626,7 +623,7 @@
                       v-model="issueForm.actualBehavior"
                       type="text"
                       placeholder="e.g. Card dims and freezes"
-                      class="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition"
+                      class="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-blue-500 transition"
                     />
                   </div>
                 </div>
@@ -635,7 +632,7 @@
                 <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1.5 text-[11px]">
                   <div class="flex items-center justify-between">
                     <span class="font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                      <Cpu class="w-3.5 h-3.5 text-indigo-500" />
+                      <Cpu class="w-3.5 h-3.5 text-blue-500" />
                       System Diagnostics (Attached Automatically)
                     </span>
                     <span class="text-[10px] text-slate-400 font-mono">v1.4.3</span>
@@ -650,7 +647,7 @@
                   <button
                     type="submit"
                     :disabled="isSubmitting"
-                    class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition  flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Send class="w-3.5 h-3.5" />
                     <span>{{ isSubmitting ? 'Submitting to Engineering Log...' : `Submit Issue Ticket as ${(state.currentUser.name || auth?.currentUser?.displayName || 'Developer').split(' ')[0]}` }}</span>
@@ -662,10 +659,10 @@
 
           <!-- Right: Reported Issues & Resolution Queue (5 Cols) -->
           <div class="lg:col-span-5 space-y-4">
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                  <History class="w-3.5 h-3.5 text-indigo-500" />
+                  <History class="w-3.5 h-3.5 text-blue-500" />
                   <span>Live Issue Resolution Queue</span>
                 </h3>
                 <span class="text-[11px] font-mono text-slate-400">{{ allIssuesList.length }} tracked</span>
@@ -680,7 +677,7 @@
               <div
                 v-for="issue in allIssuesList"
                 :key="issue.id"
-                class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition"
+                class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition"
               >
                 <!-- Top Row: Status Badge, Reporter & Date -->
                 <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -690,7 +687,7 @@
                       :class="[
                         issue.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' :
                         issue.status === 'Investigating' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800' :
-                        issue.status === 'Scheduled' ? 'bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 border border-purple-300 dark:border-purple-800' :
+                        issue.status === 'Scheduled' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-800' :
                         'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
                       ]"
                     >
@@ -699,7 +696,7 @@
 
                     <span
                       v-if="isMyIssue(issue)"
-                      class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1"
+                      class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1"
                     >
                       <UserCheck class="w-3 h-3" />
                       <span>Your Ticket</span>
@@ -762,22 +759,22 @@
         <div class="flex items-center gap-2.5">
           <DbMapLogo class-name="w-5 h-5" />
           <span class="font-mono font-bold text-slate-800 dark:text-slate-100">
-            db<span class="text-indigo-600 dark:text-indigo-400">maps</span>
+            db<span class="text-blue-600 dark:text-blue-400">maps</span>
           </span>
           <span>&bull;</span>
           <span>Engineering Audit Log & Issue Tracker</span>
         </div>
 
         <div class="flex items-center gap-4">
-          <button @click="navigateTo('/')" class="hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">Home</button>
+          <button @click="navigateTo('/')" class="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">Home</button>
           <span>&bull;</span>
-          <button @click="navigateTo('/app')" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold cursor-pointer">Studio</button>
+          <button @click="navigateTo('/app')" class="hover:text-blue-600 dark:hover:text-blue-400 font-semibold cursor-pointer">Studio</button>
           <span>&bull;</span>
-          <button @click="navigateTo('/marketplace')" class="hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">Marketplace</button>
+          <button @click="navigateTo('/marketplace')" class="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">Marketplace</button>
           <span>&bull;</span>
-          <button @click="navigateTo('/privacy-policy')" class="hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">Privacy</button>
+          <button @click="navigateTo('/privacy-policy')" class="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">Privacy</button>
           <span>&bull;</span>
-          <button @click="navigateTo('/terms-of-service')" class="hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">Terms</button>
+          <button @click="navigateTo('/terms-of-service')" class="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">Terms</button>
         </div>
       </div>
     </footer>

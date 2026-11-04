@@ -1,13 +1,13 @@
 <template>
-  <div v-if="state.modals.auth" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+  <div v-if="state.modals.auth" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-4">
+    <div role="dialog" aria-modal="true" aria-label="Account and sign in" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden">
       <!-- Header -->
-      <div class="px-5 py-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+      <div class="app-dialog-heading px-5 py-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <ShieldCheck class="w-5 h-5 text-blue-600 dark:text-blue-400" />
           <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm">Account & Google SSO</h3>
         </div>
-        <button
+        <button aria-label="Close dialog"
           @click="state.modals.auth = false"
           class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded transition"
         >
@@ -19,13 +19,13 @@
         <!-- Presto AI Onboarding Highlight Banner -->
         <div
           v-if="state.authModalPromptReason === 'ai_presto' && !state.currentUser.isLoggedIn"
-          class="p-3.5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/70 dark:to-purple-950/70 border border-indigo-200 dark:border-indigo-800/80 rounded-xl space-y-1.5"
+          class="p-3.5      border border-blue-200 dark:border-blue-800/80 rounded-xl space-y-1.5 app-soft-surface"
         >
-          <div class="flex items-center gap-2 font-bold text-xs text-indigo-900 dark:text-indigo-200">
+          <div class="flex items-center gap-2 font-bold text-xs text-blue-900 dark:text-blue-200">
             <Sparkles class="w-4 h-4 text-amber-500 animate-pulse shrink-0" />
             <span>Sign In to Unlock Presto AI Schema Assistant</span>
           </div>
-          <p class="text-[11px] text-indigo-700 dark:text-indigo-300 leading-relaxed">
+          <p class="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
             AI Schema Generation is reserved for registered users. Sign in with Google to activate your account and immediately receive <strong>50,000 free monthly AI credits</strong>!
           </p>
         </div>
@@ -49,7 +49,7 @@
             :name="state.currentUser.name"
             :is-logged-in="state.currentUser.isLoggedIn"
             size="xl"
-            class="border-2 border-indigo-500 shadow-sm shrink-0"
+            class="border-2 border-blue-500  shrink-0"
           />
           <div class="flex-1 overflow-hidden">
             <div class="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{{ state.currentUser.name }}</div>
@@ -68,7 +68,7 @@
           <button
             @click="loginWithGoogle"
             :disabled="state.isLoggingIn"
-            class="w-full py-2.5 px-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed text-slate-800 dark:text-slate-100 font-semibold border border-slate-300 dark:border-slate-600 rounded-xl transition flex items-center justify-center gap-3 shadow-sm group cursor-pointer"
+            class="w-full py-2.5 px-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed text-slate-800 dark:text-slate-100 font-semibold border border-slate-300 dark:border-slate-600 rounded-xl transition flex items-center justify-center gap-3  group cursor-pointer"
           >
             <!-- Google SVG Icon or Spinner -->
             <svg v-if="!state.isLoggingIn" class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -77,15 +77,15 @@
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
             </svg>
-            <div v-else class="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+            <div v-else class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
             <span>{{ state.isLoggingIn ? 'Connecting to Google SSO...' : 'Sign in with Google' }}</span>
           </button>
 
           <p class="text-[11px] text-slate-400 dark:text-slate-500 text-center leading-relaxed px-1">
             By continuing, you agree to dbmaps'
-            <button @click="openLegal('/terms-of-service')" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer">Terms of Service</button>
+            <button @click="openLegal('/terms-of-service')" class="text-blue-600 dark:text-blue-400 hover:underline font-medium cursor-pointer">Terms of Service</button>
             and acknowledge our
-            <button @click="openLegal('/privacy-policy')" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer">Privacy Policy</button>.
+            <button @click="openLegal('/privacy-policy')" class="text-blue-600 dark:text-blue-400 hover:underline font-medium cursor-pointer">Privacy Policy</button>.
           </p>
         </div>
 
@@ -126,7 +126,7 @@
 
         <button
           @click="saveProfile"
-          class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition shadow-sm"
+          class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition"
         >
           Save Details
         </button>

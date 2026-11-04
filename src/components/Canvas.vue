@@ -1,6 +1,7 @@
 <template>
   <div
     id="canvas-container"
+    data-ui
     ref="canvasContainer"
     class="relative w-full h-full overflow-hidden bg-slate-50 dark:bg-slate-900 bg-grid-pattern select-none flex-1"
     :class="[

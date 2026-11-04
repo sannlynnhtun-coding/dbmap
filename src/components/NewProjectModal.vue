@@ -1,16 +1,16 @@
 <template>
   <div
     v-if="state.modals.newProject"
-    class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150"
+    class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150"
     @keydown.esc="closeModal"
   >
     <div
-      class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-slate-800 dark:text-slate-100 flex flex-col max-h-[90vh]"
+      role="dialog" aria-modal="true" aria-label="New database" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-md overflow-hidden text-slate-800 dark:text-slate-100 flex flex-col max-h-[90vh]"
     >
       <!-- Modal Header -->
-      <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
+      <div class="app-dialog-heading px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-xs">
+          <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
             <Database class="w-4 h-4" />
           </div>
           <div>
@@ -169,7 +169,7 @@
             id="btn-confirm-create-database"
             @click="confirm"
             :disabled="!projectName.trim()"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl  transition flex items-center gap-1.5 cursor-pointer"
           >
             <Plus class="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Create Database</span>

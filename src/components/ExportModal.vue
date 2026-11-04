@@ -1,9 +1,9 @@
 <template>
-  <div v-if="state.modals.export" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 select-none">
-    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
-      
+  <div v-if="state.modals.export" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-3 sm:p-4 select-none">
+    <div role="dialog" aria-modal="true" aria-label="Export schema" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
+
       <!-- Modal Header -->
-      <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
+      <div class="app-dialog-heading px-5 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Download class="w-4 h-4" />
@@ -11,7 +11,7 @@
           <div>
             <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-2">
               Export Center
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-200 dark:border-indigo-800">
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-800">
                 Academic &amp; Reports
               </span>
             </h3>
@@ -21,7 +21,7 @@
           </div>
         </div>
 
-        <button
+        <button aria-label="Close dialog"
           @click="closeModal"
           class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
         >
@@ -88,7 +88,7 @@
 
       <!-- TAB 1 CONTENT: VISUAL DIAGRAM EXPORT -->
       <div v-if="activeMainTab === 'diagram'" class="flex-1 overflow-y-auto p-5 space-y-5">
-        
+
         <!-- Format Selector Grid (JPG, PNG, PDF, SVG) -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
@@ -179,7 +179,7 @@
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            
+
             <!-- Resolution / Scale (For PNG & JPG) -->
             <div>
               <label class="block font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
@@ -291,7 +291,7 @@
             <div
               v-if="previewSvg"
               v-html="previewSvg"
-              class="w-full h-auto flex items-center justify-center max-w-full [&>svg]:max-w-full [&>svg]:h-auto shadow-sm rounded-lg"
+              class="w-full h-auto flex items-center justify-center max-w-full [&>svg]:max-w-full [&>svg]:h-auto  rounded-lg"
             ></div>
             <div v-else class="text-slate-400 text-xs py-10">
               No tables available to preview.
@@ -340,7 +340,7 @@
             </button>
             <button
               @click="downloadMarkdown"
-              class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-1.5 shadow cursor-pointer"
+              class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-1.5  cursor-pointer"
             >
               <FileDown class="w-3.5 h-3.5" />
               <span>Download .md</span>
@@ -356,7 +356,7 @@
 
       <!-- TAB 3 CONTENT: SQL & DBML SCRIPT EXPORT -->
       <div v-else-if="activeMainTab === 'script'" class="flex-1 flex flex-col overflow-hidden">
-        
+
         <!-- Controls & Target Dialect -->
         <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50/50 dark:bg-slate-800/50 shrink-0">
           <div class="flex items-center gap-2 font-medium">
@@ -383,7 +383,7 @@
             </button>
             <button
               @click="downloadScript"
-              class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-1.5 shadow cursor-pointer"
+              class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-1.5  cursor-pointer"
             >
               <FileDown class="w-3.5 h-3.5" />
               <span>Download File</span>
@@ -400,11 +400,11 @@
 
       <!-- Modal Footer -->
       <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
-        
+
         <!-- Quick format buttons when on diagram tab -->
         <div v-if="activeMainTab === 'diagram'" class="flex items-center gap-1.5 flex-wrap">
           <span class="text-[11px] text-slate-500 font-medium mr-1">Quick Downloads:</span>
-          
+
           <button
             type="button"
             @click="quickDownload('png')"
@@ -414,7 +414,7 @@
           >
             PNG
           </button>
-          
+
           <button
             type="button"
             @click="quickDownload('jpg')"
@@ -456,7 +456,7 @@
 
         <!-- Primary Action Buttons -->
         <div class="flex items-center gap-2">
-          
+
           <!-- Copy to Clipboard (PNG image) -->
           <button
             v-if="activeMainTab === 'diagram'"
@@ -476,7 +476,7 @@
             type="button"
             @click="handlePrimaryDownload"
             :disabled="isGenerating"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition flex items-center gap-2  cursor-pointer disabled:opacity-50"
           >
             <Loader2 v-if="isGenerating" class="w-4 h-4 animate-spin" />
             <Download v-else class="w-4 h-4" />
@@ -488,7 +488,7 @@
             v-if="activeMainTab === 'markdown'"
             type="button"
             @click="copyMarkdownToClipboard"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition flex items-center gap-2 shadow-sm cursor-pointer"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition flex items-center gap-2  cursor-pointer"
           >
             <Copy class="w-4 h-4" />
             <span>Copy Markdown Tables</span>
