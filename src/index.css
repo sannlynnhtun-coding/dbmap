@@ -53,45 +53,45 @@
 
 /* Shared workbench palette keeps existing utility-based components in one system. */
 @theme {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --color-slate-50: #f5f8f7;
-  --color-slate-100: #edf2f0;
-  --color-slate-200: #dfe7e3;
-  --color-slate-300: #c6d3cd;
-  --color-slate-400: #889b93;
-  --color-slate-500: #63766d;
-  --color-slate-600: #4b6056;
-  --color-slate-700: #34473e;
-  --color-slate-800: #25352e;
-  --color-slate-900: #192820;
-  --color-slate-950: #101c16;
-  --color-indigo-50: #effcf8;
-  --color-indigo-100: #d1faec;
-  --color-indigo-200: #a3edd8;
-  --color-indigo-300: #73dbc1;
-  --color-indigo-400: #2db7a3;
-  --color-indigo-500: #0d8274;
-  --color-indigo-600: #0f766e;
-  --color-indigo-700: #115e59;
-  --color-indigo-800: #134e4a;
-  --color-indigo-900: #123f3c;
-  --color-indigo-950: #082b29;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-slate-50: #fafafa;
+  --color-slate-100: #f7f7f7;
+  --color-slate-200: #ebebeb;
+  --color-slate-300: #d4d4d4;
+  --color-slate-400: #a3a3a3;
+  --color-slate-500: #737373;
+  --color-slate-600: #525252;
+  --color-slate-700: #404040;
+  --color-slate-800: #262626;
+  --color-slate-900: #171717;
+  --color-slate-950: #121212;
+  --color-indigo-50: #eff6ff;
+  --color-indigo-100: #dbeafe;
+  --color-indigo-200: #bfdbfe;
+  --color-indigo-300: #93c5fd;
+  --color-indigo-400: #3392ff;
+  --color-indigo-500: #2473fe;
+  --color-indigo-600: #155dfb;
+  --color-indigo-700: #1447e6;
+  --color-indigo-800: #193cb8;
+  --color-indigo-900: #1c398e;
+  --color-indigo-950: #162456;
 }
 :root {
-  --page-ground: #f5f8f7;
+  --page-ground: #ffffff;
   --page-surface: #ffffff;
-  --page-ink: #182e26;
-  --page-muted: #4c6358;
-  --page-accent: #0f766e;
-  --page-well: #eaf1ed;
+  --page-ink: #0a0a0a;
+  --page-muted: #626262;
+  --page-accent: #155dfb;
+  --page-well: #f7f7f7;
 }
 .dark {
-  --page-ground: #101c16;
-  --page-surface: #192820;
-  --page-ink: #eef5f1;
-  --page-muted: #afc1b7;
-  --page-accent: #73dbc1;
-  --page-well: #25352e;
+  --page-ground: #121212;
+  --page-surface: #171717;
+  --page-ink: #fafafa;
+  --page-muted: #b5b5b5;
+  --page-accent: #93c5fd;
+  --page-well: #262626;
 }
 body {
   font-family: var(--font-sans) !important;
@@ -1209,17 +1209,17 @@ select:focus-visible {
   }
 }
 @theme {
-  --color-blue-50: #effcf8;
-  --color-blue-100: #d1faec;
-  --color-blue-200: #a3edd8;
-  --color-blue-300: #73dbc1;
-  --color-blue-400: #2db7a3;
-  --color-blue-500: #0d8274;
-  --color-blue-600: #0f766e;
-  --color-blue-700: #115e59;
-  --color-blue-800: #134e4a;
-  --color-blue-900: #123f3c;
-  --color-blue-950: #082b29;
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #3392ff;
+  --color-blue-500: #2473fe;
+  --color-blue-600: #155dfb;
+  --color-blue-700: #1447e6;
+  --color-blue-800: #193cb8;
+  --color-blue-900: #1c398e;
+  --color-blue-950: #162456;
 }
 .app-loading {
   background: var(--page-ground);
@@ -1458,3 +1458,56 @@ select:focus-visible {
   --color-violet-900: var(--color-blue-900);
   --color-violet-950: var(--color-blue-950);
 }
+
+/* BoardUI foundations adapted to the existing Vue surfaces. */
+:root {
+  --board-action: linear-gradient(180deg, #2473fe, #1447e6);
+  --board-action-edge: inset 0 1px 0 rgb(255 255 255 / .25), 0 1px 2px rgb(0 0 0 / .12);
+  --board-border: #ebebeb;
+  --board-elevation: 0 1px 12px rgb(0 0 0 / .06), 0 0 1px rgb(0 0 0 / .32);
+}
+.dark { --board-border: #363636; }
+.home-page > header, .app-page > header, .studio-shell > header { background: var(--page-ground); }
+.home-page > header > div, .home-main, .home-footer { max-width: 1344px; }
+.home-hero { text-align: center; padding-block: 96px 54px; background: radial-gradient(ellipse 38% 52% at 64% 0%, rgb(51 146 255 / .13), transparent); }
+.home-hero h1 { font-size: clamp(38px, 5.2vw, 74px); letter-spacing: -.06em; line-height: 1.07; }
+.hero-intro { flex-direction: column; align-items: center; gap: 24px; margin-top: 28px; }
+.hero-intro p { max-width: 640px; color: var(--page-muted); }
+.home-demo, .feature-fragment { border-radius: 24px; }
+.home-demo { padding: 12px; }
+.home-primary, .dark .home-primary,
+:is(.home-page, .app-page, .studio-shell, .app-dialog) :is(button, a)[class~="bg-blue-600"]:not(:disabled),
+:is(.home-page, .app-page, .studio-shell, .app-dialog) :is(button, a)[class~="bg-indigo-600"]:not(:disabled) {
+  background: var(--board-action); color: white; box-shadow: var(--board-action-edge); border-radius: 10px;
+}
+.home-primary:hover,
+:is(.home-page, .app-page, .studio-shell, .app-dialog) :is(button, a):is([class~="bg-blue-600"], [class~="bg-indigo-600"]):not(:disabled):hover { filter: brightness(.94); }
+.studio-shell { background: var(--page-ground); }
+.studio-shell main { background: var(--page-surface); border-color: var(--board-border); border-radius: 24px; }
+.studio-shell #canvas-container { background: var(--page-well); }
+.studio-shell #tour-canvas-toolbar { border-radius: 12px; border-color: var(--board-border); box-shadow: 0 1px 1px rgb(0 0 0 / .05); }
+.studio-shell #tour-sidebar { background: var(--page-well); }
+.studio-shell #tour-sidebar button[aria-pressed="true"] { background: var(--board-action); color: white; box-shadow: var(--board-action-edge); }
+.board-sidebar-nav button { min-width: 0; font-size: 11px; }
+.app-dialog { border-radius: 24px; border-color: var(--board-border); box-shadow: var(--board-elevation), 0 16px 48px rgb(0 0 0 / .16); }
+.app-dialog-heading, .app-dialog > div:last-child[class*="border-t"] { border-color: var(--board-border); }
+:is(.app-dialog, .app-page) :is(input, select, textarea) { border-radius: 10px; }
+:is(.app-dialog, .app-page) :is(button, a)[class*="rounded"] { border-radius: 10px; }
+@media (min-width: 768px) {
+  .studio-workspace { padding: 0 12px 12px; gap: 12px; }
+  .studio-shell main { margin: 0; }
+  .studio-shell #tour-sidebar { border-radius: 24px; border: 1px solid var(--board-border); box-shadow: var(--board-elevation); }
+  .studio-shell #tour-sidebar:not(.w-14) { width: 260px; }
+  .board-sidebar-nav { flex-direction: column; align-items: stretch; gap: 4px; padding: 12px; }
+  .board-sidebar-nav button { flex-direction: row; justify-content: flex-start; gap: 10px; min-height: 36px; padding: 8px 10px; font-size: 13px; border-radius: 10px; }
+}
+@media (max-width: 767px) {
+  .home-hero { padding-block: 56px 32px; }
+  .home-hero h1 { font-size: clamp(30px, 8.2vw, 48px); }
+  .home-demo { border-radius: 16px; }
+  .studio-shell main { border-radius: 0; }
+  .app-dialog { border-radius: 16px; }
+}
+.board-hero-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+.board-hero-actions button { width: auto; min-height: 40px; padding: 10px 14px; font-size: 14px; }
+.board-secondary { color: var(--page-ink); background: var(--page-surface); border: 1px solid var(--board-border); border-radius: 10px; cursor: pointer; box-shadow: 0 1px 1px rgb(0 0 0 / .05); }

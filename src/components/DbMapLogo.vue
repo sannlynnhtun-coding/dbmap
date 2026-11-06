@@ -7,23 +7,23 @@
     class="shrink-0 select-none"
   >
     <defs>
-      <!-- Brand Gradient 1: Deep teal -->
+      <!-- Brand Gradient 1: Blue -->
       <linearGradient id="dbmap-grad-primary" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#0f766e" />
-        <stop offset="50%" stop-color="#0d8274" />
-        <stop offset="100%" stop-color="#115e59" />
+        <stop offset="0%" stop-color="#155dfb" />
+        <stop offset="50%" stop-color="#2473fe" />
+        <stop offset="100%" stop-color="#1447e6" />
       </linearGradient>
 
       <!-- Gradient 2: Map Pin Accent -->
       <linearGradient id="dbmap-grad-accent" x1="24" y1="4" x2="44" y2="28" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#f5cc7f" />
-        <stop offset="100%" stop-color="#b98031" />
+        <stop offset="0%" stop-color="#dbeafe" />
+        <stop offset="100%" stop-color="#155dfb" />
       </linearGradient>
 
       <!-- Cylinder Top Shimmer -->
       <linearGradient id="dbmap-grad-cap" x1="8" y1="8" x2="30" y2="18" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#73dbc1" />
-        <stop offset="100%" stop-color="#2db7a3" />
+        <stop offset="0%" stop-color="#93c5fd" />
+        <stop offset="100%" stop-color="#3392ff" />
       </linearGradient>
 
       <!-- Subtle Shadow Filter -->
@@ -102,7 +102,7 @@
       />
       <!-- Inner Pin Target Center Node -->
       <circle cx="36" cy="25.5" r="3" fill="#ffffff" />
-      <circle cx="36" cy="25.5" r="1.2" fill="#b98031" />
+      <circle cx="36" cy="25.5" r="1.2" fill="#155dfb" />
     </g>
   </svg>
 </template>

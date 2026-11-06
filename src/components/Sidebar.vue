@@ -69,8 +69,8 @@
 
     <!-- Expanded Sidebar -->
     <template v-else>
-      <!-- Sidebar Header Tabs -->
-      <div class="flex items-center border-b border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 p-1 gap-1">
+      <!-- Workspace navigation -->
+      <div class="board-sidebar-nav flex items-center p-2 gap-1">
         <button
           v-for="tab in tabs"
           :key="tab.id"
@@ -84,7 +84,7 @@
           :title="tab.label" :aria-label="tab.label" :aria-pressed="state.activeTab === tab.id"
         >
           <component :is="tab.icon" class="w-4 h-4" />
-          <span class="text-[10px] font-semibold tracking-tight">{{ tab.shortLabel }}</span>
+          <span>{{ tab.shortLabel }}</span>
         </button>
       </div>
 

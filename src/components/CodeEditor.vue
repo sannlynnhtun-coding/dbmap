@@ -1,11 +1,11 @@
 <template>
-  <div data-ui id="tour-code-editor" ref="editorRootRef" class="h-full flex flex-col bg-slate-900 text-slate-100 font-mono text-sm border-r border-slate-800 select-text relative">
+  <div data-ui id="tour-code-editor" ref="editorRootRef" class="h-full flex flex-col bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-mono text-sm border-r border-slate-200 dark:border-slate-800 select-text relative">
     <!-- Editor Top Header -->
-    <div class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs select-none gap-1.5 sm:gap-2 min-w-0">
+    <div class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs select-none gap-1.5 sm:gap-2 min-w-0">
       <!-- Left: File Badge & Title -->
       <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink">
         <FileCode class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400 shrink-0" />
-        <span class="font-semibold text-slate-200 truncate" :title="`schema.dbml - ${activeProject?.name || 'Project'}`">schema.dbml</span>
+        <span class="font-semibold text-slate-800 dark:text-slate-200 truncate" :title="`schema.dbml - ${activeProject?.name || 'Project'}`">schema.dbml</span>
         <span v-if="editorWidth >= 520" class="text-slate-500 text-[11px] shrink-0">(DBML Syntax)</span>
         
         <!-- Learn DBML link (shown when editor is wide enough) -->
@@ -292,7 +292,7 @@
     </div>
 
     <!-- Bottom Status Bar -->
-    <div class="px-2.5 sm:px-3.5 py-1.5 bg-slate-950 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between select-none shrink-0 min-w-0">
+    <div class="px-2.5 sm:px-3.5 py-1.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between select-none shrink-0 min-w-0">
       <div class="flex items-center gap-2 sm:gap-3 min-w-0 truncate">
         <span v-if="validationResult.isValid" class="flex items-center gap-1 text-emerald-400 font-medium shrink-0">
           <CheckCircle2 class="w-3.5 h-3.5" /> DBML Synced

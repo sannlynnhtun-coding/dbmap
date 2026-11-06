@@ -25,7 +25,7 @@ import {
 
 // Load stored theme safely
 const storedDark = typeof localStorage !== 'undefined' ? localStorage.getItem('db_schema_dark') : null;
-const isDarkInitial = storedDark !== null ? storedDark === 'true' : true;
+const isDarkInitial = storedDark !== null ? storedDark === 'true' : false;
 
 // Clean vector SVG avatar illustrating a guest developer (neutral circular backdrop with Lucide user silhouette)
 export const DEFAULT_GUEST_AVATAR = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'><rect width='32' height='32' rx='16' fill='%23f1f5f9'/><g transform='translate(4, 4)'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><circle cx='12' cy='7' r='4' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></g></svg>`;
@@ -468,7 +468,7 @@ const initialActiveId = getInitialActiveProjectId(initialProjects, initialFolder
 
 export const state = reactive({
   isDarkMode: isDarkInitial,
-  isSidebarCollapsed: true,
+  isSidebarCollapsed: typeof window === 'undefined' || window.innerWidth < 1280,
   activeTab: 'tables', // 'explorer' | 'tables' | 'relationships' | 'history' | 'settings'
   viewMode: 'split', // 'split' | 'canvas' | 'editor'
   editorWidth: 420, // width in pixels for split view editor pane

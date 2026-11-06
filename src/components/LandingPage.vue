@@ -388,9 +388,12 @@
             Design your schema in DBML. See every relationship on a canvas.
             Export the SQL when it’s ready.
           </p>
+          <div class="board-hero-actions">
           <button class="home-primary" @click="goToStudio">
             Open studio <ArrowRight :size="18" />
           </button>
+            <button class="board-secondary" @click="goToMarketplace">Browse templates</button>
+          </div>
         </div>
       </section>
 

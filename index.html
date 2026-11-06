@@ -42,7 +42,7 @@
     <script>
       try {
         var stored = localStorage.getItem('db_schema_dark');
-        var isDark = stored !== null ? stored === 'true' : true;
+        var isDark = stored !== null ? stored === 'true' : false;
         if (isDark) {
           document.documentElement.classList.add('dark');
         } else {
@@ -52,7 +52,7 @@
     </script>
       <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
   </head>
   <body style="margin: 0; font-family: ui-sans-serif, system-ui, sans-serif;" class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-150">
     <div id="app">
@@ -61,7 +61,7 @@
           <!-- Glowing pulse ring -->
           <div style="position: absolute; inset: -8px; border-radius: 20px; background: rgba(99, 102, 241, 0.25); animation: dbmPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);"></div>
           <!-- Logo Badge -->
-          <div style="position: relative; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #0f766e, #0d8274); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(15, 118, 110, 0.25);">
+          <div style="position: relative; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #155dfb, #2473fe); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(21, 93, 251, 0.25);">
             <svg style="width: 38px; height: 38px;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
               <path d="M3 5V19A9 3 0 0 0 21 19V5"></path>
@@ -76,7 +76,7 @@
           Collaborative Database Schema Designer
         </div>
         <div style="width: 160px; height: 3px; background: #1e293b; border-radius: 9999px; overflow: hidden; position: relative;">
-          <div style="position: absolute; top: 0; left: 0; height: 100%; width: 45%; background: linear-gradient(90deg, #0f766e, #73dbc1); border-radius: 9999px; animation: dbmProgress 1.2s infinite ease-in-out;"></div>
+          <div style="position: absolute; top: 0; left: 0; height: 100%; width: 45%; background: linear-gradient(90deg, #155dfb, #93c5fd); border-radius: 9999px; animation: dbmProgress 1.2s infinite ease-in-out;"></div>
         </div>
       </div>
       <style>
