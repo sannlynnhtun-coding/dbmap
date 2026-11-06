@@ -543,6 +543,7 @@
 </template>
 
 <script setup>
+import { useTemplateFilters } from '../utils/useTemplateFilters.js';
 import { ref, computed } from 'vue';
 import {
   state,
@@ -577,10 +578,6 @@ import {
   Edit3
 } from 'lucide-vue-next';
 
-const searchQuery = ref('');
-const selectedSource = ref('all'); // 'all' | 'system' | 'community'
-const selectedCategory = ref('all');
-const selectedDialect = ref('all');
 const selectedPreviewTemplate = ref(null);
 const hasCopiedDbml = ref(false);
 
@@ -592,48 +589,9 @@ const communityCount = computed(() => {
   return allMarketplaceTemplates.value.filter(t => !t.isSystem).length;
 });
 
-const filteredTemplates = computed(() => {
-  let list = allMarketplaceTemplates.value;
-
-  // Source filter
-  if (selectedSource.value === 'system') {
-    list = list.filter(t => t.isSystem);
-  } else if (selectedSource.value === 'community') {
-    list = list.filter(t => !t.isSystem);
-  }
-
-  // Category filter
-  if (selectedCategory.value !== 'all') {
-    list = list.filter((t) => t.category === selectedCategory.value);
-  }
-
-  // Dialect filter
-  if (selectedDialect.value !== 'all') {
-    list = list.filter((t) => t.dialect === selectedDialect.value);
-  }
-
-  // Search query filter
-  if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase().trim();
-    list = list.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q) ||
-        t.category.toLowerCase().includes(q) ||
-        (t.author?.name && t.author.name.toLowerCase().includes(q)) ||
-        (t.tables || []).some((tbl) => tbl.name.toLowerCase().includes(q))
-    );
-  }
-
-  return list;
-});
-
-function resetFilters() {
-  searchQuery.value = '';
-  selectedSource.value = 'all';
-  selectedCategory.value = 'all';
-  selectedDialect.value = 'all';
-}
+const {
+  searchQuery, selectedSource, selectedCategory, selectedDialect, filteredTemplates, resetFilters
+} = useTemplateFilters(allMarketplaceTemplates);
 
 function goToHome() {
   navigateTo('/');
