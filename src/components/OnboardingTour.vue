@@ -210,7 +210,7 @@ const tourSteps = [
     title: 'Project & Live Cloud Sync',
     badge: 'Workspace',
     description: 'Name your database schema project and monitor real-time sync status. Click directly on the title to rename your project at any time.',
-    tips: 'Changes automatically sync to Firestore with zero manual saving needed.',
+    tips: 'Changes are saved automatically in this browser.',
     preferredPosition: 'bottom'
   },
   {
@@ -261,26 +261,6 @@ const tourSteps = [
     badge: 'Workspace Views',
     description: 'Tailor your workspace to your preferred workflow. Switch between Split View (editor + canvas), Full Canvas (maximum visual diagram space), or Code View (focused DBML scripting).',
     tips: 'In Split View, drag the center vertical divider bar to resize the editor and canvas panes.',
-    preferredPosition: 'bottom'
-  },
-  {
-    id: 'ai-assistant',
-    target: '#tour-ai-assistant',
-    icon: Sparkles,
-    title: 'Presto AI Schema Assistant',
-    badge: 'Gemini AI',
-    description: 'Architect complex database models effortlessly with Gemini AI! Provide natural language requirements (e.g., "E-commerce store with product variants and Stripe billing"), and Presto generates normalized tables and relationships instantly.',
-    tips: 'You can also prompt Presto to extend an existing schema with new tables and foreign keys.',
-    preferredPosition: 'bottom'
-  },
-  {
-    id: 'collaboration',
-    target: '#tour-collaboration',
-    icon: Users,
-    title: 'Real-Time Team Collaboration',
-    badge: 'Multiplayer',
-    description: 'Invite team members to design schemas together in real time. See collaborator avatars, active cursor positions, and collaborate seamlessly with zero merge conflicts.',
-    tips: 'Set access modes to Public or Restricted by email to control schema editing permissions.',
     preferredPosition: 'bottom'
   },
   {

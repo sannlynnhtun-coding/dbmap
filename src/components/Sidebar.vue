@@ -1123,9 +1123,9 @@
       </div>
 
       <div class="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl space-y-2">
-        <div class="font-semibold text-blue-900 dark:text-blue-300">Live Account & Cloud Sync</div>
+        <div class="font-semibold text-blue-900 dark:text-blue-300">Browser Storage</div>
         <p class="text-[11px] text-blue-700 dark:text-blue-400">
-          Logged in as <span class="font-mono font-bold">{{ state.currentUser.email }}</span>. Changes to schemas, versions, and dialects automatically save to Firestore.
+          Schemas, versions, and settings are saved in this browser. Export a full backup to move a project to another device.
         </p>
       </div>
 
@@ -1277,11 +1277,10 @@ import {
   setProjectDialect,
   importSampleSchemas,
   importSampleSchemaByName,
-  openSubmitToMarketplace,
   navigateTo,
   saveFoldersToStorage,
   saveGuestProjectsToStorage,
-  syncActiveProjectToFirestore,
+  saveProjectsLocally,
   addToast
 } from '../stores/schemaStore.js';
 import {

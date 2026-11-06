@@ -50,7 +50,7 @@
                   ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-700/80 dark:hover:bg-rose-900/80'
                   : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800/80 dark:hover:bg-emerald-900/80'
           ]"
-          :title="state.saveStatus === 'unsaved' ? 'Unsaved changes (Click or Ctrl+S to save now)' : state.saveStatus === 'saving' ? 'Saving changes to cloud...' : state.saveStatus === 'error' ? 'Save failed: ' + (state.saveErrorMessage || 'Click to retry') : `All changes saved${formattedLastSaved ? ' at ' + formattedLastSaved : ''} (Click to save now)`"
+          :title="state.saveStatus === 'unsaved' ? 'Unsaved changes (Click or Ctrl+S to save now)' : state.saveStatus === 'saving' ? 'Saving changes in this browser...' : state.saveStatus === 'error' ? 'Save failed: ' + (state.saveErrorMessage || 'Click to retry') : `All changes saved${formattedLastSaved ? ' at ' + formattedLastSaved : ''} (Click to save now)`"
         >
           <Loader2 v-if="state.saveStatus === 'saving'" class="w-3.5 h-3.5 animate-spin text-amber-600 dark:text-amber-400" />
           <CloudUpload v-else-if="state.saveStatus === 'unsaved'" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
@@ -123,50 +123,6 @@
 
     <!-- Right Section: Compact, responsive, organized dropdowns -->
     <div class="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
-      <!-- Live Collaborators Avatars / Share Trigger in Header Bar (Shown on md+ screens) -->
-      <button
-        id="tour-collaboration"
-        @click="state.modals.share = true"
-        title="Live Collaborators (Click to invite or manage real-time team)"
-        class="hidden md:flex items-center gap-1.5 px-2 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/60 dark:hover:bg-slate-700 rounded-xl transition border border-slate-200/80 dark:border-slate-600/80 shrink-0 cursor-pointer group"
-      >
-        <div class="flex items-center -space-x-2 overflow-hidden">
-          <UserAvatar
-            v-for="(user, idx) in state.collaborators.slice(0, 3)"
-            :key="user.id || idx"
-            :avatar="user.avatar"
-            :name="user.name"
-            :is-logged-in="state.currentUser.isLoggedIn && (user.id === state.currentUser.id || user.isSelf)"
-            size="sm"
-            :show-status="true"
-            :status-color="user.color || '#3b82f6'"
-            class="ring-2 ring-white dark:ring-slate-800"
-            :title="`${user.name} (${user.role})`"
-          />
-        </div>
-
-        <div class="flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="text-[11px] font-bold font-mono text-slate-700 dark:text-slate-200">
-            {{ state.collaborators.length }}
-          </span>
-          <span class="hidden xl:inline text-[11px] font-medium text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-            live
-          </span>
-        </div>
-      </button>
-
-      <!-- AI Schema Assistant Button (Presto) - Always visible, prompts sign-in for guests -->
-      <button
-        id="tour-ai-assistant"
-        @click="openPrestoAiWithAuthCheck"
-        title="AI Prompt to ERD Schema Generator (Gemini AI - Requires Sign In)"
-        class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-slate-700 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 text-white rounded-xl transition font-semibold text-xs flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer"
-      >
-        <Sparkles class="w-3.5 h-3.5 text-current shrink-0" />
-        <span class="hidden xs:inline">Presto</span>
-      </button>
-
       <!-- Schema Marketplace & Blueprints Button (Direct access on lg+ screens) -->
       <button
         id="tour-marketplace"
@@ -364,30 +320,6 @@
               Team & Guides
             </div>
 
-            <!-- Item: Share & Live Team -->
-            <button
-              @click="triggerAction('share')"
-              class="w-full p-2 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-700/70 text-left transition flex items-start gap-2.5 group cursor-pointer"
-            >
-              <div class="p-2 rounded-xl bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform shrink-0">
-                <Users class="w-4 h-4" />
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <div class="font-semibold text-xs text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    Share & Collaborate
-                  </div>
-                  <span class="text-[9px] font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 px-1.5 py-0.5 rounded flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    {{ state.collaborators.length }} active
-                  </span>
-                </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug line-clamp-1">
-                  Multi-user real-time cursor sync & team permissions.
-                </div>
-              </div>
-            </button>
-
             <!-- Item: Interactive Guided Tour -->
             <button
               @click="triggerTour"
@@ -557,275 +489,14 @@
         <Moon v-else class="w-4 h-4 text-slate-600" />
       </button>
 
-      <!-- Profile Icon ONLY (No name in header) with User Profile Dropdown -->
-      <div id="tour-user-profile" class="relative" ref="profileDropdownRef">
-        <button
-          @click="toggleProfileMenu"
-          title="User Profile & Settings"
-          class="flex items-center justify-center p-0.5 rounded-full border-2 transition shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
-          :class="[
-            isProfileMenuOpen
-              ? 'border-indigo-600 dark:border-indigo-400 ring-2 ring-indigo-500/30'
-              : 'border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500'
-          ]"
-        >
-          <UserAvatar
-            :avatar="state.currentUser.avatar"
-            :name="state.currentUser.name"
-            :is-logged-in="state.currentUser.isLoggedIn"
-            size="md"
-            :show-status="true"
-            :status-color="state.currentUser.isLoggedIn ? '#10b981' : '#94a3b8'"
-            :status-title="state.currentUser.isLoggedIn ? 'Google SSO Authenticated' : 'Guest Mode'"
-          />
-        </button>
-
-        <!-- Profile & Settings Dropdown Panel -->
-        <transition
-          enter-active-class="transition duration-150 ease-out"
-          enter-from-class="transform scale-95 opacity-0 -translate-y-1"
-          enter-to-class="transform scale-100 opacity-100 translate-y-0"
-          leave-active-class="transition duration-100 ease-in"
-          leave-from-class="transform scale-100 opacity-100 translate-y-0"
-          leave-to-class="transform scale-95 opacity-0 -translate-y-1"
-        >
-          <div
-            v-if="isProfileMenuOpen"
-            class="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 text-slate-800 dark:text-slate-100"
-          >
-            <!-- Top Identity Card: Avatar, Name, Email, Status -->
-            <div class="p-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700/80">
-              <div class="flex items-center gap-3">
-                <UserAvatar
-                  :avatar="state.currentUser.avatar"
-                  :name="state.currentUser.name"
-                  :is-logged-in="state.currentUser.isLoggedIn"
-                  size="lg"
-                  :show-status="true"
-                  :status-color="state.currentUser.isLoggedIn ? '#10b981' : '#94a3b8'"
-                  class="border-2 border-indigo-500 shadow-sm"
-                />
-
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">
-                    {{ state.currentUser.name || 'Guest Developer' }}
-                  </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
-                    {{ state.currentUser.email || 'guest@dbmaps.io' }}
-                  </div>
-                  <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                    <span
-                      class="px-2 py-0.5 rounded text-[10px] font-mono font-bold"
-                      :class="state.currentUser.isLoggedIn ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'"
-                    >
-                      {{ state.currentUser.isLoggedIn ? 'Google SSO' : 'Guest Mode' }}
-                    </span>
-                    <span
-                      class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
-                      :class="state.userProfile.tier === 'pro' ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300' : 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300'"
-                    >
-                      <Crown v-if="state.userProfile.tier === 'pro'" class="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
-                      <Zap v-else class="w-2.5 h-2.5 text-indigo-500" />
-                      {{ state.userProfile.tier }} Plan
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Settings & Quick Actions List -->
-            <div class="p-2 space-y-0.5 text-xs">
-              <!-- Free AI Credits Left Display (When Upgrade is disabled) -->
-              <div
-                v-if="!isUpgradeCreditsEnabled"
-                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-slate-700 dark:text-slate-200 mb-1"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400">
-                    <Zap class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-semibold text-xs">Free Credits Left</div>
-                    <div class="text-[11px] text-slate-400">For AI schema generation</div>
-                  </div>
-                </div>
-                <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-full">
-                  {{ (state.userProfile.creditsRemaining || 0).toLocaleString() }}
-                </span>
-              </div>
-
-              <!-- AI Credits & Billing (When Upgrade is enabled) -->
-              <button
-                v-else
-                @click="openModal('billing')"
-                class="w-full px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/60 text-left transition flex items-center justify-between text-slate-700 dark:text-slate-200 group cursor-pointer"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
-                    <Zap class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-semibold">AI Credits & Subscription</div>
-                    <div class="text-[11px] text-slate-400">Upgrade tier & view limits</div>
-                  </div>
-                </div>
-                <span class="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
-                  {{ (state.userProfile.creditsRemaining || 0).toLocaleString() }}
-                </span>
-              </button>
-
-              <!-- Account & Google SSO Settings -->
-              <button
-                @click="openModal('auth')"
-                class="w-full px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/60 text-left transition flex items-center justify-between text-slate-700 dark:text-slate-200 group"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
-                    <ShieldCheck class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-semibold">Account & Identity Settings</div>
-                    <div class="text-[11px] text-slate-400">Manage profile & Google SSO sync</div>
-                  </div>
-                </div>
-                <ChevronRight class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-
-              <!-- Admin Dashboard (Conditional) -->
-              <button
-                v-if="state.userProfile.role === 'admin' || state.currentUser.email === 'aungkyawminn.aya@gmail.com'"
-                @click="navigateToAdmin"
-                class="w-full px-3 py-2 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/50 text-left transition flex items-center justify-between text-purple-700 dark:text-purple-300 group cursor-pointer"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-900/60 text-purple-600 dark:text-purple-400">
-                    <Shield class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-semibold">Admin Control Center</div>
-                    <div class="text-[11px] text-purple-500/80">User accounts, quotas & approvals</div>
-                  </div>
-                </div>
-                <span class="text-[10px] font-bold bg-purple-200/80 dark:bg-purple-900 px-1.5 py-0.5 rounded text-purple-800 dark:text-purple-200">
-                  Admin
-                </span>
-              </button>
-
-              <!-- Interactive Tour Option in Profile Menu -->
-              <button
-                @click="triggerTour"
-                class="w-full px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-left transition flex items-center justify-between text-indigo-700 dark:text-indigo-300 group cursor-pointer"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400">
-                    <Compass class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300">Interactive Tour</div>
-                    <div class="text-[11px] text-indigo-600/80 dark:text-indigo-400/80">Guided walkthrough of vital features</div>
-                  </div>
-                </div>
-                <span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/80 px-2 py-0.5 rounded text-indigo-700 dark:text-indigo-300">
-                  Tour
-                </span>
-              </button>
-
-              <!-- Theme Switcher in Dropdown -->
-              <button
-                @click="toggleDarkMode"
-                class="w-full px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/60 text-left transition flex items-center justify-between text-slate-700 dark:text-slate-200"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                    <Sun v-if="state.isDarkMode" class="w-3.5 h-3.5 text-amber-400" />
-                    <Moon v-else class="w-3.5 h-3.5 text-slate-600" />
-                  </div>
-                  <div>
-                    <div class="font-semibold">Theme Mode</div>
-                    <div class="text-[11px] text-slate-400">Switch dark or light canvas</div>
-                  </div>
-                </div>
-                <span class="font-mono text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                  {{ state.isDarkMode ? 'Dark' : 'Light' }}
-                </span>
-              </button>
-
-              <!-- Legal & Compliance Links in Profile Menu -->
-              <div class="pt-1.5 border-t border-slate-100 dark:border-slate-700/60 mt-1 space-y-0.5">
-                <button
-                  @click="openChangelogPage"
-                  class="w-full px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/60 text-left transition flex items-center justify-between text-slate-600 dark:text-slate-300 text-xs group cursor-pointer"
-                >
-                  <div class="flex items-center gap-2">
-                    <GitCommit class="w-3.5 h-3.5 text-indigo-500" />
-                    <span>Changelog & Issues</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">v1.4.5</span>
-                </button>
-
-                <button
-                  @click="openLegal('/privacy-policy')"
-                  class="w-full px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/60 text-left transition flex items-center justify-between text-slate-600 dark:text-slate-300 text-xs group cursor-pointer"
-                >
-                  <div class="flex items-center gap-2">
-                    <ShieldCheck class="w-3.5 h-3.5 text-indigo-500" />
-                    <span>Privacy Policy</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-slate-400 group-hover:text-indigo-500">/privacy-policy</span>
-                </button>
-
-                <button
-                  @click="openLegal('/terms-of-service')"
-                  class="w-full px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/60 text-left transition flex items-center justify-between text-slate-600 dark:text-slate-300 text-xs group cursor-pointer"
-                >
-                  <div class="flex items-center gap-2">
-                    <FileText class="w-3.5 h-3.5 text-blue-500" />
-                    <span>Terms of Service</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-slate-400 group-hover:text-blue-500">/terms-of-service</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Footer: Sign In or Sign Out -->
-            <div class="p-3 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700/80">
-              <button
-                v-if="state.currentUser.isLoggedIn"
-                @click="handleLogout"
-                class="w-full py-2 px-3 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/60 dark:hover:bg-red-900/80 text-red-600 dark:text-red-300 font-medium text-xs transition flex items-center justify-center gap-2"
-              >
-                <LogOut class="w-3.5 h-3.5" />
-                <span>Sign Out of Google SSO</span>
-              </button>
-
-              <button
-                v-else
-                @click="handleGoogleLogin"
-                :disabled="state.isLoggingIn"
-                class="w-full py-2 px-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-60 disabled:cursor-not-allowed border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 font-semibold text-xs transition flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-              >
-                <svg v-if="!state.isLoggingIn" class="w-3.5 h-3.5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                <div v-else class="w-3.5 h-3.5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
-                <span>{{ state.isLoggingIn ? 'Connecting...' : 'Sign In with Google' }}</span>
-              </button>
-            </div>
-          </div>
-        </transition>
-      </div>
     </div>
   </header>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { state, activeProject, toggleDarkMode, loginWithGoogle, logoutUser, isUpgradeCreditsEnabled, startTour, navigateTo, openPrestoAiWithAuthCheck, DEFAULT_GUEST_AVATAR, forceSaveProject } from '../stores/schemaStore.js';
+import { state, activeProject, toggleDarkMode, startTour, navigateTo, forceSaveProject } from '../stores/schemaStore.js';
 import DbMapLogo from './DbMapLogo.vue';
-import UserAvatar from './UserAvatar.vue';
 import {
   Columns,
   LayoutGrid,
@@ -873,22 +544,10 @@ const formattedLastSaved = computed(() => {
 });
 
 const isActionsMenuOpen = ref(false);
-const isProfileMenuOpen = ref(false);
 const actionsDropdownRef = ref(null);
-const profileDropdownRef = ref(null);
 
 function toggleActionsMenu() {
   isActionsMenuOpen.value = !isActionsMenuOpen.value;
-  if (isActionsMenuOpen.value) {
-    isProfileMenuOpen.value = false;
-  }
-}
-
-function toggleProfileMenu() {
-  isProfileMenuOpen.value = !isProfileMenuOpen.value;
-  if (isProfileMenuOpen.value) {
-    isActionsMenuOpen.value = false;
-  }
 }
 
 function triggerAction(actionType) {
@@ -908,64 +567,32 @@ function triggerAction(actionType) {
   if (actionType === 'marketplace') state.modals.marketplace = true;
 }
 
-function openModal(modalKey) {
-  isProfileMenuOpen.value = false;
-  if (modalKey === 'adminDashboard') {
-    navigateTo('/admin');
-    return;
-  }
-  if (state.modals[modalKey] !== undefined) {
-    state.modals[modalKey] = true;
-  }
-}
-
-function navigateToAdmin() {
-  isProfileMenuOpen.value = false;
-  navigateTo('/admin');
-}
-
-function handleGoogleLogin() {
-  isProfileMenuOpen.value = false;
-  loginWithGoogle();
-}
-
-function handleLogout() {
-  isProfileMenuOpen.value = false;
-  logoutUser();
-}
-
 function triggerTour() {
-  isProfileMenuOpen.value = false;
   isActionsMenuOpen.value = false;
   startTour(0);
 }
 
 function openLegal(path) {
-  isProfileMenuOpen.value = false;
   isActionsMenuOpen.value = false;
   navigateTo(path);
 }
 
 function openChangelogPage() {
-  isProfileMenuOpen.value = false;
   isActionsMenuOpen.value = false;
   navigateTo('/changelog');
 }
 
 function openLearnDbmlPage() {
-  isProfileMenuOpen.value = false;
   isActionsMenuOpen.value = false;
   navigateTo('/learn-dbml');
 }
 
 function openHomePage() {
-  isProfileMenuOpen.value = false;
   isActionsMenuOpen.value = false;
   navigateTo('/');
 }
 
 function openFeaturesPage() {
-  isProfileMenuOpen.value = false;
   isActionsMenuOpen.value = false;
   navigateTo('/');
 }
@@ -973,9 +600,6 @@ function openFeaturesPage() {
 function handleGlobalClick(e) {
   if (actionsDropdownRef.value && !actionsDropdownRef.value.contains(e.target)) {
     isActionsMenuOpen.value = false;
-  }
-  if (profileDropdownRef.value && !profileDropdownRef.value.contains(e.target)) {
-    isProfileMenuOpen.value = false;
   }
 }
 

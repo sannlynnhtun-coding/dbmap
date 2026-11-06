@@ -499,6 +499,14 @@
           >
             Close
           </button>
+          <button
+            v-if="activeProject"
+            type="button"
+            @click="downloadProjectBackup"
+            class="px-4 py-2 text-blue-700 dark:text-blue-300 font-medium rounded-xl hover:underline"
+          >
+            Export Full Project Backup
+          </button>
         </div>
 
       </div>
@@ -510,6 +518,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { state, activeProject, addToast } from '../stores/schemaStore.js';
+import { createProjectBackup } from '../utils/projectBackup.js';
 import { exportToSQL, generateDBML } from '../utils/dbmlParser.js';
 import {
   generateDiagramSvg,
@@ -711,6 +720,18 @@ const generatedScript = computed(() => {
 function copyScriptToClipboard() {
   navigator.clipboard.writeText(generatedScript.value);
   addToast('Copied to Clipboard', 'Schema export script copied', 'success');
+}
+
+function downloadProjectBackup() {
+  const project = activeProject.value;
+  const blob = new Blob([JSON.stringify(createProjectBackup(project), null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${project.name.trim().replace(/[^\p{L}\p{N}_-]+/gu, '_') || 'project'}.dbmap.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  addToast('Download Started', link.download, 'success');
 }
 
 function downloadScript() {

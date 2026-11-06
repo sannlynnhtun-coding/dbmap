@@ -1,6 +1,5 @@
 {
   "name": "dbmaps",
-  "description": "Real-time collaborative ERD and schema designer with DBML/SQL editor, interactive canvas, version control, and folder management.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "description": "Local ERD and schema designer with a DBML editor, template library, and project backups.",
+  "requestFramePermissions": []
 }

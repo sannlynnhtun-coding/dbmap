@@ -112,35 +112,6 @@
           </select>
         </div>
 
-        <!-- Privacy & Database Isolation Mode -->
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Sharing access</label>
-          <select
-            v-model="accessMode"
-            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 text-xs cursor-pointer"
-          >
-            <option value="restricted">🔒 Private to My Account (Strictly isolated)</option>
-            <option value="public">🌐 Public (Anyone with link can collaborate)</option>
-            <option value="password">🔑 Password Protected (Passkey required)</option>
-          </select>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-            <span v-if="accessMode === 'restricted'">Only your signed-in account and invited teammates can view or edit this database.</span>
-            <span v-else-if="accessMode === 'public'">Anyone with the share URL can view and collaborate in real-time.</span>
-            <span v-else>Anyone with the share link will be prompted for your secure passkey.</span>
-          </p>
-        </div>
-
-        <!-- Passkey for password protected mode -->
-        <div v-if="accessMode === 'password'">
-          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Passkey</label>
-          <input
-            v-model="sharePassword"
-            type="password"
-            placeholder="Enter secure access password"
-            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 text-xs font-medium"
-          />
-        </div>
-
         <!-- Description (Optional) -->
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Description <span class="font-normal text-slate-400">(Optional)</span></label>
@@ -193,8 +164,6 @@ const newGroupName = ref('');
 const dialect = ref('postgres');
 const description = ref('');
 const template = ref('');
-const accessMode = ref(state.currentUser.isLoggedIn ? 'restricted' : 'public');
-const sharePassword = ref('');
 
 const dialects = [
   { id: 'postgres', name: 'PostgreSQL', badge: 'PG' },
@@ -214,8 +183,6 @@ watch(
       isCreatingNewGroup.value = false;
       newGroupName.value = '';
       folderId.value = state.folders[0]?.id || 'folder-1';
-      accessMode.value = state.currentUser.isLoggedIn ? 'restricted' : 'public';
-      sharePassword.value = '';
       nextTick(() => {
         nameInputRef.value?.focus();
       });
@@ -242,8 +209,8 @@ function confirm() {
     targetFolderId,
     description.value,
     template.value || null,
-    accessMode.value,
-    sharePassword.value,
+    null,
+    null,
     dialect.value
   );
 

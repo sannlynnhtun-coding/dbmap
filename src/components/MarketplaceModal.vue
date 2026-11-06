@@ -17,7 +17,7 @@
           <div>
             <div class="flex items-center gap-2 flex-wrap">
               <h2 class="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
-                Schema Marketplace & Templates
+                Template Library & Templates
               </h2>
               <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                 Live Community & System
@@ -48,24 +48,9 @@
             </button>
           </div>
 
-          <button
-            v-if="isCurrentUserAdmin"
-            @click="handleCreateSystemBlueprint"
-            class="px-3 py-1.5      text-white font-bold text-xs rounded-xl  transition flex items-center gap-1.5 cursor-pointer shrink-0 bg-blue-700"
-            title="Create an official dbmaps System blueprint (Admin)"
-          >
-            <Zap class="w-3.5 h-3.5" />
-            <span class="hidden sm:inline">+ System Blueprint</span>
-          </button>
 
-          <button
-            @click="openSubmitModal"
-            class="px-3 py-1.5      text-white font-bold text-xs rounded-xl  transition flex items-center gap-1.5 cursor-pointer shrink-0 bg-blue-700"
-            title="Publish your active database to the marketplace"
-          >
-            <UploadCloud class="w-3.5 h-3.5" />
-            <span class="hidden sm:inline">Submit Database</span>
-          </button>
+
+
 
           <button
             @click="closeMarketplace"
@@ -112,21 +97,7 @@
             </span>
           </button>
 
-          <button
-            @click="selectedSource = 'community'"
-            class="px-3 py-1 rounded-lg font-semibold transition cursor-pointer flex items-center gap-1.5"
-            :class="[
-              selectedSource === 'community'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400'
-            ]"
-          >
-            <Globe class="w-3 h-3" />
-            <span>Community</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/30 font-mono">
-              {{ communityCount }}
-            </span>
-          </button>
+
         </div>
 
         <!-- Category Pills & Dialect Selector -->
@@ -191,24 +162,10 @@
 
                 <div class="flex items-center gap-1.5 shrink-0">
                   <!-- Edit Button for Admin or Author -->
-                  <button
-                    v-if="canEditTemplate(tpl)"
-                    @click.stop="handleEditTemplate(tpl)"
-                    class="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                    title="Edit blueprint metadata or schema"
-                  >
-                    <Edit3 class="w-3.5 h-3.5" />
-                  </button>
+
 
                   <!-- Unpublish Button if author or admin -->
-                  <button
-                    v-if="canDeleteTemplate(tpl)"
-                    @click.stop="handleDeleteTemplate(tpl)"
-                    class="p-1 text-slate-400 hover:text-red-500 rounded-md hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer"
-                    title="Unpublish this blueprint from Community Marketplace"
-                  >
-                    <Trash2 class="w-3.5 h-3.5" />
-                  </button>
+
 
                   <!-- Price Pill -->
                   <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/80">
@@ -236,9 +193,7 @@
                   <div class="font-medium text-slate-800 dark:text-slate-200 truncate flex items-center gap-1">
                     <span>{{ tpl.author.name }}</span>
                     <CheckCircle2 v-if="tpl.isSystem || tpl.isVerified" class="w-3 h-3 text-blue-500 shrink-0" />
-                    <span v-if="isMyTemplate(tpl)" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
-                      You
-                    </span>
+
                   </div>
                   <div class="text-[10px] text-slate-400 truncate">{{ tpl.author.title }}</div>
                 </div>
@@ -320,14 +275,7 @@
           </p>
 
           <div class="mt-4 flex items-center justify-center gap-2">
-            <button
-              v-if="selectedSource === 'community'"
-              @click="openSubmitModal"
-              class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
-            >
-              <UploadCloud class="w-4 h-4" />
-              <span>Submit Your Database</span>
-            </button>
+
             <button
               @click="resetFilters"
               class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer"
@@ -343,12 +291,7 @@
         <div class="flex items-center gap-2">
           <UploadCloud class="w-4 h-4 text-emerald-500" />
           <span>Have an engineered database schema?</span>
-          <button
-            @click="openSubmitModal"
-            class="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
-          >
-            Submit to Community Marketplace
-          </button>
+
         </div>
 
         <div class="flex items-center gap-4">
@@ -524,26 +467,11 @@
 
         <!-- Preview Footer Actions -->
         <div class="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
-          <button
-            v-if="canDeleteTemplate(selectedPreviewTemplate)"
-            @click="handleDeleteTemplate(selectedPreviewTemplate)"
-            class="px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer flex items-center gap-1"
-          >
-            <Trash2 class="w-3.5 h-3.5" />
-            <span>Unpublish from Marketplace</span>
-          </button>
-          <div v-else></div>
+
+          <div></div>
 
           <div class="flex items-center gap-2">
-            <button
-              v-if="canEditTemplate(selectedPreviewTemplate)"
-              @click="handleEditTemplate(selectedPreviewTemplate)"
-              class="px-3.5 py-2 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900 transition cursor-pointer flex items-center gap-1.5"
-              title="Edit blueprint metadata or schema"
-            >
-              <Edit3 class="w-3.5 h-3.5" />
-              <span>Edit Blueprint</span>
-            </button>
+
 
             <button
               @click="selectedPreviewTemplate = null"
@@ -571,12 +499,7 @@ import {
   state,
   cloneMarketplaceTemplate,
   allMarketplaceTemplates,
-  openSubmitToMarketplace,
-  deleteMarketplaceTemplate,
   addToast,
-  isCurrentUserAdmin,
-  openCreateSystemMarketplaceTemplate,
-  openEditMarketplaceTemplate
 } from '../stores/schemaStore.js';
 import { MARKETPLACE_CATEGORIES } from '../utils/marketplaceTemplates.js';
 import {
@@ -649,50 +572,6 @@ const filteredTemplates = computed(() => {
 
   return list;
 });
-
-function isMyTemplate(tpl) {
-  if (tpl.isSystem) return false;
-  const currentUid = state.currentUser?.id;
-  const currentEmail = state.currentUser?.email;
-  return (tpl.authorUid && tpl.authorUid === currentUid) ||
-         (tpl.authorEmail && tpl.authorEmail === currentEmail);
-}
-
-function canEditTemplate(tpl) {
-  if (!tpl) return false;
-  return isMyTemplate(tpl) || isCurrentUserAdmin.value;
-}
-
-function handleCreateSystemBlueprint() {
-  openCreateSystemMarketplaceTemplate();
-}
-
-function handleEditTemplate(tpl) {
-  openEditMarketplaceTemplate(tpl);
-  selectedPreviewTemplate.value = null;
-}
-
-function canDeleteTemplate(tpl) {
-  if (!tpl) return false;
-  if (isCurrentUserAdmin.value && (!tpl.isBuiltIn || state.marketplaceSubmissions.some(s => s.id === tpl.id))) {
-    return true;
-  }
-  if (tpl.isSystem) return false;
-  return isMyTemplate(tpl) || isCurrentUserAdmin.value;
-}
-
-function handleDeleteTemplate(tpl) {
-  if (confirm(`Are you sure you want to unpublish "${tpl.name}" from the Community Marketplace?`)) {
-    deleteMarketplaceTemplate(tpl.id);
-    if (selectedPreviewTemplate.value && selectedPreviewTemplate.value.id === tpl.id) {
-      selectedPreviewTemplate.value = null;
-    }
-  }
-}
-
-function openSubmitModal() {
-  openSubmitToMarketplace();
-}
 
 function resetFilters() {
   searchQuery.value = '';

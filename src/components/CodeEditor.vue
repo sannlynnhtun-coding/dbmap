@@ -89,7 +89,7 @@
                   ? 'bg-rose-950/80 text-rose-300 border-rose-800/80 hover:bg-rose-900/80'
                   : 'bg-slate-800/90 hover:bg-slate-700 text-slate-200 border-slate-700'
           ]"
-          :title="state.saveStatus === 'unsaved' ? 'Unsaved changes (Click or Ctrl+S to save now)' : state.saveStatus === 'saving' ? 'Saving changes to cloud...' : state.saveStatus === 'error' ? 'Save failed (Click to retry)' : 'All changes saved to cloud (Ctrl+S)'"
+          :title="state.saveStatus === 'unsaved' ? 'Unsaved changes (Click or Ctrl+S to save now)' : state.saveStatus === 'saving' ? 'Saving changes in this browser...' : state.saveStatus === 'error' ? 'Save failed (Click to retry)' : 'All changes saved in this browser (Ctrl+S)'"
         >
           <Loader2 v-if="state.saveStatus === 'saving'" class="w-3.5 h-3.5 animate-spin text-amber-400 shrink-0" />
           <CloudUpload v-else-if="state.saveStatus === 'unsaved'" class="w-3.5 h-3.5 text-blue-400 shrink-0" />
@@ -1078,7 +1078,7 @@ async function formatCode() {
 
     saveGuestProjectsToStorage();
     await flushActiveProjectSync();
-    addToast('Code Formatted & Saved', 'Cleaned up DBML syntax and saved to cloud', 'success');
+    addToast('Code Formatted & Saved', 'Cleaned up DBML syntax and saved in this browser', 'success');
   } catch (err) {
     console.error('Format error:', err);
     addToast('Format Notice', 'Formatting issue: ' + (err?.message || err), 'warning');
@@ -1096,7 +1096,7 @@ function handleWindowMouseMove(e) {
 }
 
 function handleWindowKeyDown(e) {
-  // Ctrl+S / Cmd+S: Save changes immediately to cloud/local
+  // Ctrl+S / Cmd+S: Save changes immediately in this browser
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
     e.preventDefault();
     forceSaveProject();

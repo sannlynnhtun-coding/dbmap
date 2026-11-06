@@ -181,10 +181,10 @@
 
       <!-- Footer Actions -->
       <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
-        <div class="text-slate-400 dark:text-slate-500 hidden sm:flex items-center gap-1.5">
-          <Database class="w-3.5 h-3.5" />
-          <span>Supports CREATE TABLE, PRIMARY KEY, FOREIGN KEY, REFERENCES, and comments</span>
-        </div>
+        <label v-if="!state.currentUser.isLoggedIn" class="cursor-pointer text-blue-700 dark:text-blue-300 font-medium focus-within:underline">
+          Import Project Backup
+          <input type="file" accept=".json" class="sr-only" @change="importBackup" />
+        </label>
 
         <div class="flex items-center gap-2.5 ml-auto">
           <button
@@ -209,14 +209,14 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { state, activeProject, importSchema, addToast } from '../stores/schemaStore.js';
+import { state, activeProject, importSchema, restoreLocalProject, addToast } from '../stores/schemaStore.js';
+import { readProjectBackup } from '../utils/projectBackup.js';
 import { parseSQLSchema, SAMPLE_IMPORT_TEMPLATES } from '../utils/sqlImporter.js';
 import {
   UploadCloud,
   Upload,
   X,
   FileUp,
-  Database,
   Check,
   AlertCircle,
   Store
@@ -295,6 +295,19 @@ function handleFileUpload(event) {
   reader.readAsText(file);
   // Reset input
   event.target.value = '';
+}
+
+async function importBackup(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  try {
+    const project = restoreLocalProject(readProjectBackup(await file.text()));
+    closeModal();
+    addToast('Project Restored', `Opened "${project.name}" as a local copy.`, 'success');
+  } catch (error) {
+    parseError.value = error.message;
+  }
 }
 
 function closeModal() {

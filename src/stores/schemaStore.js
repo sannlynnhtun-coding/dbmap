@@ -3,25 +3,6 @@ import { SAMPLE_PROJECTS, INITIAL_FOLDERS, createDefaultBlankProject } from '../
 import { generateDBML, parseDBML, exportToSQL, extractCleanNote, updateTableHeaderColorInDBML } from '../utils/dbmlParser.js';
 import { parseSQLSchema } from '../utils/sqlImporter.js';
 import { MARKETPLACE_TEMPLATES } from '../utils/marketplaceTemplates.js';
-import {
-  auth,
-  googleProvider,
-  db,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-  collection,
-  onSnapshot,
-  query,
-  where,
-  orderBy,
-  handleFirestoreError
-} from '../firebase.js';
 
 // Load stored theme safely
 const storedDark = typeof localStorage !== 'undefined' ? localStorage.getItem('db_schema_dark') : null;
@@ -64,7 +45,7 @@ let isStateInitialized = false;
 const FOLDERS_STORAGE_KEY_PREFIX = 'dbmaps_folders_';
 
 export function getFoldersStorageKey() {
-  const uid = (isStateInitialized && state.currentUser?.isLoggedIn && auth.currentUser) ? auth.currentUser.uid : 'guest';
+  const uid = 'guest';
   return FOLDERS_STORAGE_KEY_PREFIX + uid;
 }
 
@@ -83,9 +64,7 @@ export function loadInitialFolders() {
 }
 
 export function getProjectOrderStorageKey() {
-  const uid = (isStateInitialized && state.currentUser?.isLoggedIn && auth.currentUser)
-    ? auth.currentUser.uid
-    : 'guest';
+  const uid = 'guest';
   return `dbmaps_project_order_${uid}`;
 }
 
@@ -110,17 +89,6 @@ export function saveProjectsOrderToStorage() {
     localStorage.setItem('dbmaps_project_order_latest', data);
   } catch (e) {}
 
-  if (state.currentUser?.isLoggedIn && auth.currentUser) {
-    try {
-      const uid = auth.currentUser.uid;
-      setDoc(doc(db, 'user_settings', uid), {
-        projectOrder: JSON.parse(JSON.stringify(state.projectOrder || {})),
-        updatedAt: new Date().toISOString()
-      }, { merge: true }).catch(err => {
-        console.warn('Sync projectOrder to Firestore note:', err.message);
-      });
-    } catch (e) {}
-  }
 }
 
 export async function loadProjectsOrderFromStorage() {
@@ -135,22 +103,6 @@ export async function loadProjectsOrderFromStorage() {
     }
   } catch (e) {}
 
-  if (state.currentUser?.isLoggedIn && auth.currentUser) {
-    try {
-      const uid = auth.currentUser.uid;
-      const snap = await getDoc(doc(db, 'user_settings', uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        if (data?.projectOrder && typeof data.projectOrder === 'object') {
-          state.projectOrder = data.projectOrder;
-          try {
-            localStorage.setItem(key, JSON.stringify(data.projectOrder));
-            localStorage.setItem('dbmaps_project_order_latest', JSON.stringify(data.projectOrder));
-          } catch (e) {}
-        }
-      }
-    } catch (e) {}
-  }
 }
 
 export function getSortedProjectsInFolder(folderId, projectsList = null, orderMap = null) {
@@ -178,18 +130,6 @@ export function saveFoldersToStorage() {
     localStorage.setItem('dbmaps_folders_latest', data);
   } catch (e) {}
 
-  if (state.currentUser?.isLoggedIn && auth.currentUser) {
-    try {
-      const uid = auth.currentUser.uid;
-      setDoc(doc(db, 'user_settings', uid), {
-        folders: JSON.parse(JSON.stringify(state.folders)),
-        projectOrder: JSON.parse(JSON.stringify(state.projectOrder || {})),
-        updatedAt: new Date().toISOString()
-      }, { merge: true }).catch(err => {
-        console.warn('Sync folders to Firestore note:', err.message);
-      });
-    } catch (e) {}
-  }
 }
 
 export async function loadFoldersFromStorage() {
@@ -204,29 +144,6 @@ export async function loadFoldersFromStorage() {
     }
   } catch (e) {}
 
-  if (state.currentUser?.isLoggedIn && auth.currentUser) {
-    try {
-      const uid = auth.currentUser.uid;
-      const snap = await getDoc(doc(db, 'user_settings', uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        if (Array.isArray(data?.folders) && data.folders.length > 0) {
-          state.folders = data.folders;
-          try {
-            localStorage.setItem(key, JSON.stringify(data.folders));
-          } catch (e) {}
-        }
-        if (data?.projectOrder && typeof data.projectOrder === 'object') {
-          state.projectOrder = data.projectOrder;
-          try {
-            const pKey = getProjectOrderStorageKey();
-            localStorage.setItem(pKey, JSON.stringify(data.projectOrder));
-            localStorage.setItem('dbmaps_project_order_latest', JSON.stringify(data.projectOrder));
-          } catch (e) {}
-        }
-      }
-    } catch (e) {}
-  }
 
   // Ensure default active schema matches top-most database on direct load
   if (typeof window !== 'undefined') {
@@ -252,9 +169,6 @@ export function saveGuestProjectsToStorage() {
   try {
     const data = JSON.stringify(state.projects);
     localStorage.setItem('dbmaps_guest_projects', data);
-    if (state.currentUser?.isLoggedIn && auth.currentUser) {
-      localStorage.setItem(`dbmaps_user_projects_${auth.currentUser.uid}`, data);
-    }
   } catch (e) {}
 }
 
@@ -290,7 +204,8 @@ export function loadInitialProjects() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
         const deletedIds = getDeletedProjectIds();
-        const valid = parsed.filter(p => !deletedIds.includes(p.id));
+        const valid = parsed.filter(p => !deletedIds.includes(p.id)
+          && (p.localOnly || ((!p.ownerUid || p.ownerUid === 'guest') && !p.isSharedWithMe && !['restricted', 'password'].includes(p.accessMode))));
         if (valid.length > 0) {
           return valid.map(p => {
             const proj = {
@@ -648,12 +563,8 @@ export const state = reactive({
 
 isStateInitialized = true;
 
-export const isAuthResolved = ref(false);
-export const isFirestoreProjectsLoaded = ref(false);
 
 export function isStudioDataReady() {
-  if (!isAuthResolved.value) return false;
-  if (state.currentUser.isLoggedIn && !isFirestoreProjectsLoaded.value) return false;
   const currentProj = state.projects.find(p => p.id === state.activeProjectId) || state.projects[0];
   if (!currentProj) return false;
   return true;
@@ -737,7 +648,7 @@ export async function navigateTo(path) {
     state.initialLoadingProgress = 65;
     state.initialLoadingStage = 'Loading tables & schema models...';
 
-    // Wait until all tables and Firestore data are fully loaded into memory
+    // Wait until the workspace data are fully loaded into memory
     await waitForStudioDataReady(5000);
 
     state.initialLoadingProgress = 90;
@@ -748,23 +659,6 @@ export async function navigateTo(path) {
 
     finishStudioLoading(250);
   }
-}
-
-// Helper to detect when Cloud Firestore API is pending enablement in GCP, offline, or cancelled
-export function isFirestoreApiDisabledOrOffline(err) {
-  if (!err) return false;
-  const msg = (err.message || String(err)).toLowerCase();
-  return (
-    msg.includes('cloud firestore api has not been used') ||
-    msg.includes('is disabled') ||
-    msg.includes('client is offline') ||
-    msg.includes('failed to get document because the client is offline') ||
-    msg.includes('offline') ||
-    msg.includes('cancelled') ||
-    msg.includes('call cancelled') ||
-    err.code === 'cancelled' ||
-    err.code === 'unavailable'
-  );
 }
 
 // Clean any leftover or bogus CONSTRAINT columns from table schemas
@@ -850,84 +744,6 @@ export const activeProject = computed(() => {
   return proj;
 });
 
-// Option to enable or disable "Upgrade & AI Credits" feature
-export const isUpgradeCreditsEnabled = computed(() => {
-  // Check client-side Vite environment variables (supports UPGRADE, UPDATE, AI_CREDITS variations)
-  const rawEnv = (import.meta.env.VITE_ENABLE_UPGRADE_CREDITS ??
-                  import.meta.env.ENABLE_UPGRADE_CREDITS ??
-                  import.meta.env.VITE_ENABLE_UPDATE_CREDITS ??
-                  import.meta.env.ENABLE_UPDATE_CREDITS ??
-                  import.meta.env.VITE_ENABLE_AI_CREDITS ??
-                  import.meta.env.ENABLE_AI_CREDITS);
-
-  if (rawEnv !== undefined && rawEnv !== '') {
-    const valStr = String(rawEnv).toLowerCase().trim();
-    return valStr === 'true' || valStr === '1' || valStr === 'yes' || valStr === 'on';
-  }
-
-  // Check server-synced system configuration
-  if (state.systemConfig && state.systemConfig.enableUpgradeCredits !== undefined) {
-    return Boolean(state.systemConfig.enableUpgradeCredits);
-  }
-
-  return true;
-});
-
-// Helper to retrieve Firebase ID token authorization header for authenticated requests
-export async function getAuthHeaders(extraHeaders = {}) {
-  const headers = { 'Content-Type': 'application/json', ...extraHeaders };
-  if (auth && auth.currentUser) {
-    try {
-      let token = null;
-      try {
-        token = await auth.currentUser.getIdToken();
-      } catch (tokenErr) {
-        if (tokenErr?.message?.includes('Database is closing') || tokenErr?.message?.includes('closing/hidden')) {
-          await new Promise(r => setTimeout(r, 400));
-          token = await auth.currentUser.getIdToken(true);
-        } else {
-          throw tokenErr;
-        }
-      }
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-    } catch (e) {
-      console.warn('Failed to retrieve Firebase ID token:', e.message);
-    }
-  }
-  return headers;
-}
-
-// Fetch User Profile with Tier & Credits from Server
-export async function fetchUserProfile() {
-  try {
-    const userId = state.currentUser.id || 'guest';
-    const email = state.currentUser.email || '';
-    const name = state.currentUser.name || '';
-
-    const headers = await getAuthHeaders();
-    const res = await fetch(`/api/user-profile?userId=${encodeURIComponent(userId)}&email=${encodeURIComponent(email)}&displayName=${encodeURIComponent(name)}`, {
-      headers
-    });
-    const data = await res.json();
-    if (data.success) {
-      if (data.profile) {
-        state.userProfile = { ...state.userProfile, ...data.profile };
-        if (state.currentUser.isLoggedIn) {
-          checkFirstTimeUserTour(state.currentUser);
-        }
-      }
-      if (data.sysConfig) {
-        state.systemConfig = { ...state.systemConfig, ...data.sysConfig };
-      }
-    }
-  } catch (err) {
-    console.warn('Failed to fetch user profile:', err.message);
-  }
-}
-
-// Guided Product Tour Management
 export function startTour(stepIndex = 0) {
   // Ensure workspace elements are visible for tour spotlights
   state.isSidebarCollapsed = false;
@@ -968,774 +784,44 @@ export async function finishTour(isComplete = true) {
     localStorage.setItem(`dbmaps_tour_completed_${uid}`, 'true');
   } catch (e) {}
 
-  if (uid && uid !== 'guest') {
-    try {
-      const headers = await getAuthHeaders();
-      await fetch('/api/user-profile/complete-tour', {
-        method: 'POST',
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId: uid })
-      });
-    } catch (e) {
-      console.warn('Failed to save tour completion status to server:', e.message);
-    }
-  }
-
   if (isComplete) {
-    addToast('Tour Completed! 🎉', 'You are ready to architect databases. Launch the walkthrough anytime from your profile.', 'success');
+    addToast('Tour Completed! 🎉', 'You are ready to architect databases. Launch the walkthrough anytime from the More menu.', 'success');
   } else {
-    addToast('Tour Dismissed', 'You can restart the interactive walkthrough anytime from your user menu.', 'info');
+    addToast('Tour Dismissed', 'You can restart the interactive walkthrough anytime from the More menu.', 'info');
   }
 }
 
-// Automatically initiate guided tour for first-time logged-in user
-export function checkFirstTimeUserTour(user) {
-  if (!user || !user.isLoggedIn || user.id === 'guest') return;
-
-  const storageKey = `dbmaps_tour_completed_${user.id}`;
-  let isLocallyCompleted = false;
+export function saveProjectsLocally() {
   try {
-    isLocallyCompleted = localStorage.getItem(storageKey) === 'true';
-  } catch (e) {}
-
-  const isProfileCompleted = state.userProfile?.hasCompletedTour === true;
-
-  if (!isLocallyCompleted && !isProfileCompleted && !state.tour.active) {
-    setTimeout(() => {
-      // Re-verify that tour has not been started yet
-      if (!state.tour.active && !state.userProfile.hasCompletedTour) {
-        startTour(0);
-      }
-    }, 800);
-  }
-}
-
-// Session-based unlock cache for password-protected collaboration rooms
-export function isProjectPasswordUnlocked(projectId) {
-  if (!projectId) return false;
-  if (state.unlockedPasswordProjects && state.unlockedPasswordProjects.includes(projectId)) {
-    return true;
-  }
-  try {
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      return window.sessionStorage.getItem(`collab_pwd_unlocked_${projectId}`) === 'true';
-    }
-  } catch (e) {}
-  return false;
-}
-
-export function unlockProjectPassword(projectId, password) {
-  const targetProject = state.projects.find(p => p.id === projectId) || state.collaborationAccessRestricted.pendingProjectData;
-  const expected = state.collaborationAccessRestricted.expectedPassword || targetProject?.sharePassword;
-  
-  if (!expected || String(password).trim() === String(expected).trim()) {
-    if (!state.unlockedPasswordProjects) {
-      state.unlockedPasswordProjects = [];
-    }
-    if (!state.unlockedPasswordProjects.includes(projectId)) {
-      state.unlockedPasswordProjects.push(projectId);
-    }
-    try {
-      if (typeof window !== 'undefined' && window.sessionStorage) {
-        window.sessionStorage.setItem(`collab_pwd_unlocked_${projectId}`, 'true');
-      }
-    } catch (e) {}
-    
-    // If pending project data was stored when accessed via URL, merge into projects
-    if (state.collaborationAccessRestricted.pendingProjectData) {
-      const p = state.collaborationAccessRestricted.pendingProjectData;
-      const existingIdx = state.projects.findIndex(item => item.id === p.id);
-      if (existingIdx >= 0) {
-        state.projects[existingIdx] = p;
-      } else {
-        state.projects.push(p);
-      }
-    }
-
-    state.collaborationAccessRestricted.active = false;
-    state.collaborationAccessRestricted.reason = null;
-    state.collaborationAccessRestricted.pendingProjectData = null;
-    
-    selectProject(projectId);
-    addToast('Password Verified', 'Unlocked password-protected collaboration room', 'success');
-    return { success: true };
-  }
-
-  return { success: false, error: 'Incorrect password. Please verify with the project owner.' };
-}
-
-// Access Control Checker for Realtime Collaboration
-export function checkProjectAccess(projectData, user = state.currentUser) {
-  if (!projectData) return { allowed: true, mode: 'public' };
-
-  // Default, starter, sample, or public schemas are 100% open to everyone without sign-in
-  if (isDefaultOrPublicProject(projectData)) {
-    return { allowed: true, mode: 'public' };
-  }
-
-  const mode = projectData.accessMode || 'public';
-  if (mode === 'public') {
-    return { allowed: true, mode: 'public' };
-  }
-
-  const userEmail = (user?.email || auth.currentUser?.email || '').trim().toLowerCase();
-  const userUid = (auth.currentUser?.uid || (user?.id !== 'guest' ? user?.id : '') || '').trim();
-  const ownerUid = (projectData.ownerUid || '').trim();
-  const ownerEmail = (projectData.ownerEmail || '').trim().toLowerCase();
-
-  // If user is the project owner
-  if (userUid && ownerUid && ownerUid !== 'guest' && userUid === ownerUid) {
-    return { allowed: true, isOwner: true, mode };
-  }
-  if (userEmail && ownerEmail && userEmail === ownerEmail) {
-    return { allowed: true, isOwner: true, mode };
-  }
-
-  // Password protected mode: anyone with the password can access
-  if (mode === 'password') {
-    // If no password set yet, allow access
-    if (!projectData.sharePassword) {
-      return { allowed: true, mode: 'password' };
-    }
-    // Check if session has unlocked it
-    if (isProjectPasswordUnlocked(projectData.id)) {
-      return { allowed: true, mode: 'password', isUnlocked: true };
-    }
-    return {
-      allowed: false,
-      reason: 'password_required',
-      mode: 'password',
-      schemaId: projectData.id,
-      schemaName: projectData.name || 'Password Protected Schema',
-      ownerEmail: projectData.ownerEmail || 'the schema owner',
-      expectedPassword: projectData.sharePassword
-    };
-  }
-
-  // Account-restricted mode: check authentication first
-  // A guest or unauthenticated visitor can NEVER access a restricted project
-  const isLoggedIn = Boolean(
-    (user && user.isLoggedIn && user.id && user.id !== 'guest') ||
-    (auth.currentUser && !auth.currentUser.isAnonymous)
-  );
-
-  if (!isLoggedIn) {
-    return {
-      allowed: false,
-      reason: 'login_required',
-      mode: 'restricted',
-      ownerEmail: projectData.ownerEmail || 'the schema owner'
-    };
-  }
-
-  // Check if current user email is in the allowed whitelist
-  const allowedList = (projectData.allowedEmails || []).map(e => String(e).trim().toLowerCase());
-  if (userEmail && allowedList.includes(userEmail)) {
-    return { allowed: true, isCollaborator: true, mode: 'restricted' };
-  }
-
-  return {
-    allowed: false,
-    reason: 'unauthorized',
-    mode: 'restricted',
-    userEmail: userEmail || 'your account',
-    ownerEmail: projectData.ownerEmail || 'the schema owner'
-  };
-}
-
-// Ensure active project is switched to a safe accessible schema if current one is restricted
-export function ensureSafeActiveProject(restrictedId) {
-  if (state.activeProjectId !== restrictedId) return;
-
-  // Find another project that the user has permission to access
-  const safeProj = state.projects.find(p => p.id !== restrictedId && checkProjectAccess(p).allowed);
-  if (safeProj) {
-    state.activeProjectId = safeProj.id;
-    state.roomCode = safeProj.id;
-    state.selectedTableId = null;
-    state.selectedRelId = null;
-  } else {
-    // If all existing local schemas are restricted, provide a clean public sandbox project
-    const defaultPublic = {
-      id: 'proj-public-demo',
-      folderId: 'folder-1',
-      name: 'Public Demo Schema',
-      description: 'Public sandbox database schema',
-      dialect: 'postgres',
-      accessMode: 'public',
-      sharePassword: '',
-      allowedEmails: [],
-      tables: [],
-      relationships: [],
-      history: [],
-      ownerUid: 'guest',
-      ownerEmail: '',
-      updatedAt: new Date().toISOString()
-    };
-    state.projects.push(defaultPublic);
-    state.activeProjectId = defaultPublic.id;
-    state.roomCode = defaultPublic.id;
-    state.selectedTableId = null;
-    state.selectedRelId = null;
-  }
-}
-
-// Toggle between 'public', 'password', and 'restricted'
-export function setProjectAccessMode(mode, password = '') {
-  const proj = activeProject.value;
-  if (!proj) return;
-  proj.accessMode = (mode === 'restricted' || mode === 'password') ? mode : 'public';
-  if (password) {
-    proj.sharePassword = password;
-  }
-  if (!proj.allowedEmails) proj.allowedEmails = [];
-  proj.updatedAt = new Date().toISOString();
-  syncActiveProjectToFirestore();
-  addToast(
-    'Collaboration Access Updated',
-    proj.accessMode === 'restricted'
-      ? 'Set to Account Restricted (only authorized emails can join)'
-      : proj.accessMode === 'password'
-        ? 'Set to Password Protected (anyone with link and password can join)'
-        : 'Set to Public Open (anyone with link can collaborate)',
-    'success'
-  );
-}
-
-// Update the share password directly
-export function setProjectSharePassword(password) {
-  const proj = activeProject.value;
-  if (!proj) return;
-  proj.sharePassword = password;
-  proj.updatedAt = new Date().toISOString();
-  syncActiveProjectToFirestore();
-  addToast('Password Updated', 'Collaboration room password saved', 'success');
-}
-
-// Add an allowed email to the current project
-export function addAllowedCollaboratorEmail(email) {
-  const proj = activeProject.value;
-  if (!proj) return false;
-  if (!proj.allowedEmails) proj.allowedEmails = [];
-  
-  const cleanEmail = (email || '').trim().toLowerCase();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!cleanEmail || !emailRegex.test(cleanEmail)) {
-    addToast('Invalid Email', 'Please enter a valid email address (e.g. colleague@company.com)', 'warning');
-    return false;
-  }
-
-  if (cleanEmail === (proj.ownerEmail || '').toLowerCase()) {
-    addToast('Owner Account', 'The schema owner account is already authorized by default', 'info');
-    return false;
-  }
-
-  if (proj.allowedEmails.some(e => e.toLowerCase() === cleanEmail)) {
-    addToast('Already Added', `${cleanEmail} is already in the authorized list`, 'info');
-    return false;
-  }
-
-  proj.allowedEmails.push(cleanEmail);
-  proj.updatedAt = new Date().toISOString();
-  syncActiveProjectToFirestore();
-  addToast('Collaborator Added', `Added ${cleanEmail} to authorized collaboration accounts`, 'success');
-  return true;
-}
-
-// Remove an allowed email from the current project
-export function removeAllowedCollaboratorEmail(email) {
-  const proj = activeProject.value;
-  if (!proj || !proj.allowedEmails) return;
-  const cleanEmail = (email || '').trim().toLowerCase();
-  proj.allowedEmails = proj.allowedEmails.filter(e => e.toLowerCase() !== cleanEmail);
-  proj.updatedAt = new Date().toISOString();
-  syncActiveProjectToFirestore();
-  addToast('Collaborator Removed', `Removed ${cleanEmail} from authorized list`, 'info');
-}
-
-// Dismiss the access restricted prompt
-export function dismissAccessRestrictedModal() {
-  const restrictedId = state.collaborationAccessRestricted.schemaId;
-  state.collaborationAccessRestricted.active = false;
-  if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
-    const cleanUrl = window.location.pathname;
-    window.history.replaceState(null, '', cleanUrl);
-  }
-  if (restrictedId) {
-    ensureSafeActiveProject(restrictedId);
-  }
-}
-
-// Scoped syncing flags to prevent project cross-talk across multiple windows/tabs
-const activeSyncingProjectIds = new Set();
-export function isProjectSyncingFromRemote(projectId) {
-  return activeSyncingProjectIds.has(projectId);
-}
-export function markProjectSyncingFromRemote(projectId, duration = 400) {
-  if (!projectId) return;
-  activeSyncingProjectIds.add(projectId);
-  setTimeout(() => {
-    activeSyncingProjectIds.delete(projectId);
-  }, duration);
-}
-
-// Backward compatibility export
-export const isSyncingFromRemote = false;
-let isFirestoreQuotaExceeded = false;
-const lastSyncedHashes = {};
-
-export async function syncActiveProjectToFirestore(targetProjectId = null) {
-  const projectIdToSync = targetProjectId || state.activeProjectId;
-  if (!projectIdToSync || isFirestoreQuotaExceeded) return;
-
-  const proj = state.projects.find(p => p.id === projectIdToSync);
-  if (!proj || isProjectSyncingFromRemote(proj.id)) return;
-  
-  // Never sync a deleted project or an untouched blank starter
-  if (isProjectDeleted(proj.id) || isUntouchedBlankStarter(proj)) {
-    return;
-  }
-
-  // Guard static sample templates: proj-1 and proj-2 must never overwrite Firestore under static IDs
-  if (isSampleProjectId(proj.id)) {
-    if (state.currentUser.isLoggedIn && auth.currentUser) {
-      const matchingSample = SAMPLE_PROJECTS.find(s => s.id === proj.id);
-      const isUntouchedSample = matchingSample && computeProjectHash(matchingSample) === computeProjectHash(proj);
-      if (isUntouchedSample) {
-        state.saveStatus = 'saved';
-        return;
-      }
-      // User modified a sample project while logged in: fork to a unique user project ID so they own it cleanly in cloud!
-      const oldId = proj.id;
-      const newId = `proj-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
-      proj.id = newId;
-      proj.ownerUid = auth.currentUser.uid;
-      proj.ownerEmail = state.currentUser.email || auth.currentUser.email || '';
-      if (state.activeProjectId === oldId) {
-        state.activeProjectId = newId;
-        state.roomCode = newId;
-      }
-    } else {
-      // Guest developer: save locally to localStorage only, do not attempt Firestore write
-      saveGuestProjectsToStorage();
-      state.saveStatus = 'saved';
-      return;
-    }
-  }
-  
-  state.saveStatus = 'saving';
-  state.saveErrorMessage = null;
-
-  // Only claim ownership if this project has no owner yet or was a guest project
-  const hasExistingOwner = proj.ownerUid && proj.ownerUid !== 'guest';
-  if (state.currentUser.isLoggedIn && auth.currentUser && !hasExistingOwner) {
-    proj.ownerUid = auth.currentUser.uid;
-    proj.ownerEmail = state.currentUser.email || auth.currentUser.email || '';
-  }
-
-  const effectiveOwnerUid = proj.ownerUid || (auth.currentUser ? auth.currentUser.uid : 'guest');
-  const effectiveOwnerEmail = proj.ownerEmail || (state.currentUser.email || '');
-
-  const payload = {
-    id: proj.id,
-    folderId: proj.folderId || 'folder-1',
-    name: proj.name,
-    description: proj.description || '',
-    dialect: proj.dialect || 'postgres',
-    accessMode: proj.accessMode || (effectiveOwnerUid !== 'guest' ? 'restricted' : 'public'),
-    sharePassword: proj.sharePassword || '',
-    allowedEmails: Array.isArray(proj.allowedEmails) ? JSON.parse(JSON.stringify(proj.allowedEmails)) : [],
-    tables: JSON.parse(JSON.stringify(proj.tables || [])),
-    relationships: JSON.parse(JSON.stringify(proj.relationships || [])),
-    enums: JSON.parse(JSON.stringify(proj.enums || [])),
-    tableGroups: JSON.parse(JSON.stringify(proj.tableGroups || [])),
-    projectConfig: proj.projectConfig ? JSON.parse(JSON.stringify(proj.projectConfig)) : null,
-    customDbml: proj.customDbml || null,
-    history: JSON.parse(JSON.stringify(proj.history || [])),
-    ownerUid: effectiveOwnerUid,
-    ownerEmail: effectiveOwnerEmail
-  };
-
-  const currentHash = computeProjectHash(payload);
-  if (lastSyncedHashes[proj.id] === currentHash) {
-    state.saveStatus = 'saved';
-    return; // Skip identical sync write
-  }
-
-  // Preserve to local browser storage immediately
-  saveGuestProjectsToStorage();
-
-  // If user is guest/not logged in, preserve to local browser storage rather than failing Firestore rules
-  if (!state.currentUser.isLoggedIn || !auth.currentUser) {
-    try {
-      localStorage.setItem('dbmaps_local_schema_' + proj.id, currentHash);
-    } catch (e) {}
+    localStorage.setItem('dbmaps_guest_projects', JSON.stringify(state.projects));
     state.saveStatus = 'saved';
     state.lastSavedAt = new Date().toISOString();
-    return;
-  }
-
-  // If user is authenticated but not the owner and not an invited collaborator, preserve locally
-  const currentEmail = (auth.currentUser.email || state.currentUser.email || '').toLowerCase().trim();
-  const isOwner = !proj.ownerUid || proj.ownerUid === 'guest' || proj.ownerUid === auth.currentUser.uid;
-  const isCollaborator = Array.isArray(proj.allowedEmails) && proj.allowedEmails.some(e => (e || '').toLowerCase().trim() === currentEmail);
-  const isAdmin = currentEmail === 'aungkyawminn.aya@gmail.com';
-
-  if (!isOwner && !isCollaborator && !isAdmin) {
-    try {
-      localStorage.setItem('dbmaps_local_schema_' + proj.id, currentHash);
-    } catch (e) {}
-    state.saveStatus = 'saved';
-    state.lastSavedAt = new Date().toISOString();
-    return;
-  }
-
-  try {
-    const docRef = doc(db, 'projects', proj.id);
-    await setDoc(docRef, {
-      ...payload,
-      updatedAt: new Date().toISOString()
-    }, { merge: true });
-    lastSyncedHashes[proj.id] = currentHash;
-    state.saveStatus = 'saved';
-    state.lastSavedAt = new Date().toISOString();
-  } catch (e) {
-    console.warn('Firestore sync note:', e.message);
+  } catch {
     state.saveStatus = 'error';
-    state.saveErrorMessage = e.message || 'Error saving to Firestore';
-    if (isFirestoreApiDisabledOrOffline(e)) {
-      state.firestoreErrorNotice = {
-        message: 'Cloud Firestore API is not yet enabled in project dbmaps-13772. Changes are saved locally in browser.',
-        url: 'https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=dbmaps-13772',
-        consoleUrl: 'https://console.firebase.google.com/project/dbmaps-13772/firestore'
-      };
-      state.saveStatus = 'saved';
-      return;
-    }
-    if (e.code === 'permission-denied') {
-      try {
-        handleFirestoreError(e, 'write', `projects/${proj.id}`);
-      } catch (errSuppressed) {
-        // Logged via handleFirestoreError; prevent crashing UI runtime
-      }
-    } else if (e.code === 'resource-exhausted' || (e.message && e.message.toLowerCase().includes('quota'))) {
-      isFirestoreQuotaExceeded = true;
-      console.warn('Firestore write quota exceeded. Auto-sync disabled; edits will be kept in browser session.');
-    }
+    state.saveErrorMessage = 'Browser storage is unavailable or full.';
   }
 }
 
-export async function flushActiveProjectSync(targetProjectId = null) {
-  if (syncTimeout) {
-    clearTimeout(syncTimeout);
-    syncTimeout = null;
-  }
-  if (!state.currentUser.isLoggedIn || !auth.currentUser) {
-    saveGuestProjectsToStorage();
-    state.saveStatus = 'saved';
-    return;
-  }
-  const idToSync = targetProjectId || state.activeProjectId;
-  if (!idToSync || isSampleProjectId(idToSync) || isProjectDeleted(idToSync)) {
-    return;
-  }
-  const proj = state.projects.find(p => p.id === idToSync);
-  if (!proj || isUntouchedBlankStarter(proj)) {
-    return;
-  }
-  return await syncActiveProjectToFirestore(idToSync);
+export function flushActiveProjectSync() {
+  clearTimeout(syncTimeout);
+  saveProjectsLocally();
 }
 
-export async function forceSaveProject() {
-  state.saveStatus = 'saving';
-  await flushActiveProjectSync();
+export function forceSaveProject() {
+  flushActiveProjectSync();
   if (state.saveStatus === 'saved') {
-    if (state.currentUser.isLoggedIn) {
-      addToast('All Changes Saved', 'Schema, tables, enums & relationships saved to cloud', 'success');
-    } else {
-      addToast('Saved Locally', 'Schema saved in browser storage (sign in to sync to cloud)', 'success');
-    }
-  } else if (state.saveStatus === 'error') {
-    addToast('Save Warning', state.saveErrorMessage || 'Could not sync to cloud; saved locally', 'warning');
+    addToast('Saved Locally', 'Project saved in this browser.', 'success');
+  } else {
+    addToast('Save Warning', state.saveErrorMessage, 'warning');
   }
 }
 
-// Unique session ID for presence
-const sessionId = 'session_' + Math.random().toString(36).substring(2, 9);
-const userColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
-const myColor = userColors[Math.floor(Math.random() * userColors.length)];
-
-let unsubscribePresence = null;
-let presenceHeartbeatTimer = null;
-let unsubscribeActiveProject = null;
-
-// Subscribe in real-time to active shared schema document in Firestore
-export function subscribeToActiveSharedProject(projectId) {
-  if (unsubscribeActiveProject) {
-    unsubscribeActiveProject();
-    unsubscribeActiveProject = null;
-  }
-
-  if (!projectId) return;
-
-  // Skip remote subscription for untouched blank starter schemas to stay lightweight and local
-  const currentLocal = state.projects.find(p => p.id === projectId);
-  if (currentLocal && isDefaultOrPublicProject(currentLocal) && (!currentLocal.tables || currentLocal.tables.length === 0) && currentLocal.name === 'New Database') {
-    return;
-  }
-
-  try {
-    const docRef = doc(db, 'projects', projectId);
-    unsubscribeActiveProject = onSnapshot(docRef, (docSnap) => {
-      if (!docSnap.exists()) return;
-      const data = docSnap.data();
-      if (!data || !data.id || data.id !== state.activeProjectId) return;
-
-      // Access restriction validation - default or public schemas are never restricted
-      if (!isDefaultOrPublicProject(data)) {
-        const accessCheck = checkProjectAccess(data);
-        if (!accessCheck.allowed) {
-          state.collaborationAccessRestricted = {
-            active: true,
-            schemaId: data.id,
-            schemaName: data.name || 'Restricted Schema',
-            ownerEmail: data.ownerEmail || '',
-            userEmail: state.currentUser.email || '',
-            reason: accessCheck.reason
-          };
-          // Revert to safe accessible schema so restricted data is not shown
-          const safeProj = state.projects.find(p => p.id !== data.id && isDefaultOrPublicProject(p)) || state.projects[0];
-          if (safeProj) {
-            state.activeProjectId = safeProj.id;
-            state.roomCode = safeProj.id;
-          }
-          return;
-        }
-      }
-
-      // If restriction modal was previously active for this project, clear it since access is confirmed
-      if (state.collaborationAccessRestricted.active && state.collaborationAccessRestricted.schemaId === data.id) {
-        state.collaborationAccessRestricted.active = false;
-      }
-
-      const remoteHash = computeProjectHash(data);
-
-      // Look up target project specifically by ID; NEVER fall back to projects[0]
-      let currentProj = state.projects.find(p => p.id === data.id);
-      if (!currentProj) {
-        const fresh = {
-          id: data.id,
-          folderId: data.folderId || 'folder-1',
-          name: data.name || 'Shared Database Schema',
-          description: data.description || '',
-          dialect: data.dialect || 'postgres',
-          accessMode: data.accessMode || 'public',
-          sharePassword: data.sharePassword || '',
-          allowedEmails: Array.isArray(data.allowedEmails) ? data.allowedEmails : [],
-          tables: data.tables || [],
-          relationships: data.relationships || [],
-          enums: data.enums || [],
-          tableGroups: data.tableGroups || [],
-          projectConfig: data.projectConfig || null,
-          customDbml: data.customDbml || null,
-          history: data.history || [],
-          ownerUid: data.ownerUid || '',
-          ownerEmail: data.ownerEmail || '',
-          updatedAt: data.updatedAt || new Date().toISOString()
-        };
-        normalizeProjectKeys(fresh);
-        state.projects.push(fresh);
-        lastSyncedHashes[data.id] = remoteHash;
-        return;
-      }
-
-      const localHash = computeProjectHash(currentProj);
-
-      if (remoteHash !== localHash && remoteHash !== lastSyncedHashes[data.id]) {
-        markProjectSyncingFromRemote(data.id, 500);
-        currentProj.name = data.name || currentProj.name;
-        currentProj.description = data.description || '';
-        currentProj.dialect = data.dialect || 'postgres';
-        currentProj.accessMode = data.accessMode || 'public';
-        currentProj.sharePassword = data.sharePassword || '';
-        currentProj.allowedEmails = Array.isArray(data.allowedEmails) ? data.allowedEmails : [];
-        if (data.tables) currentProj.tables = data.tables;
-        if (data.relationships) currentProj.relationships = data.relationships;
-        normalizeProjectKeys(currentProj);
-        if (data.enums) currentProj.enums = data.enums;
-        if (data.tableGroups) currentProj.tableGroups = data.tableGroups;
-        if (data.projectConfig) currentProj.projectConfig = data.projectConfig;
-        if (data.customDbml) currentProj.customDbml = data.customDbml;
-        if (data.history) currentProj.history = data.history;
-        currentProj.updatedAt = data.updatedAt || new Date().toISOString();
-        lastSyncedHashes[currentProj.id] = remoteHash;
-      }
-    }, (err) => {
-      if (isFirestoreApiDisabledOrOffline(err)) {
-        return;
-      }
-      console.warn('Active project snapshot note:', err.message);
-      if (err.code === 'permission-denied') {
-        const localP = state.projects.find(p => p.id === projectId);
-        // CRITICAL FIX: Default and public open schemas must NEVER be restricted or show the collaboration alert!
-        if (!localP || isDefaultOrPublicProject(localP)) {
-          console.info('Default public schema operating locally without remote restriction.');
-          return;
-        }
-
-        // Only restrict if the project is actually an explicitly restricted remote schema
-        if (localP.accessMode === 'restricted' || localP.accessMode === 'password') {
-          state.collaborationAccessRestricted = {
-            active: true,
-            schemaId: projectId,
-            schemaName: localP?.name || 'Restricted Team Schema',
-            ownerEmail: localP?.ownerEmail || '',
-            userEmail: (state.currentUser.isLoggedIn && auth.currentUser) ? (state.currentUser.email || auth.currentUser?.email || '') : '',
-            reason: (state.currentUser.isLoggedIn && auth.currentUser) ? 'unauthorized' : 'login_required'
-          };
-          ensureSafeActiveProject(projectId);
-        }
-      }
-    });
-  } catch (err) {
-    console.warn('Error subscribing to active project:', err);
-  }
-}
-
-// Realtime Presence Sync for Live Collaborators per active schema
-export function startPresenceTracking() {
-  if (presenceHeartbeatTimer) clearInterval(presenceHeartbeatTimer);
-  if (unsubscribePresence) {
-    unsubscribePresence();
-    unsubscribePresence = null;
-  }
-
-  const activeSchemaId = state.activeProjectId || state.roomCode || 'proj-1';
-  state.roomCode = activeSchemaId;
-  const roomDocId = `presence_${activeSchemaId}`;
-
-  const broadcastPresence = async () => {
-    try {
-      const u = state.currentUser;
-      const myPresence = {
-        sessionId,
-        uid: u.id || 'guest',
-        name: u.isLoggedIn ? u.name : `Guest (${sessionId.slice(-4)})`,
-        email: u.email || 'guest@dbmaps.io',
-        avatar: u.avatar,
-        color: myColor,
-        role: u.isLoggedIn ? 'Editor' : 'Collaborator',
-        activeProjectId: state.activeProjectId,
-        selectedTableId: state.selectedTableId,
-        lastSeen: Date.now()
-      };
-
-      const presenceDocRef = doc(db, 'rooms', roomDocId, 'presence', sessionId);
-      await setDoc(presenceDocRef, myPresence, { merge: true }).catch(() => {});
-    } catch (e) {
-      // Offline fallback
-    }
-  };
-
-  // Heartbeat every 6s
-  broadcastPresence();
-  presenceHeartbeatTimer = setInterval(broadcastPresence, 6000);
-
-  // Listen to other collaborators in this specific schema room
-  try {
-    const presenceCol = collection(db, 'rooms', roomDocId, 'presence');
-    unsubscribePresence = onSnapshot(presenceCol, (snapshot) => {
-      const now = Date.now();
-      const activePeers = [];
-
-      snapshot.forEach(docSnap => {
-        const peer = docSnap.data();
-        // Consider active if seen within the last 20 seconds
-        if (peer && peer.lastSeen && (now - peer.lastSeen) < 20000) {
-          activePeers.push({
-            id: peer.sessionId || peer.uid,
-            name: peer.sessionId === sessionId ? `${peer.name} (You)` : peer.name,
-            email: peer.email || '',
-            avatar: peer.avatar || DEFAULT_GUEST_AVATAR,
-            color: peer.color || '#3b82f6',
-            role: peer.role || 'Collaborator',
-            isSelf: peer.sessionId === sessionId,
-            selectedTableId: peer.selectedTableId || null
-          });
-        }
-      });
-
-      if (activePeers.length > 0) {
-        state.collaborators = activePeers;
-      }
-    }, (err) => {
-      console.warn('Presence listener note:', err.message);
-    });
-  } catch (err) {
-    console.warn('Presence tracking setup note:', err.message);
-  }
-}
-
-// Stop realtime presence tracking and remove presence record cleanly
-export function stopPresenceTracking() {
-  if (presenceHeartbeatTimer) {
-    clearInterval(presenceHeartbeatTimer);
-    presenceHeartbeatTimer = null;
-  }
-  if (unsubscribePresence) {
-    try {
-      unsubscribePresence();
-    } catch (e) {
-      // Ignore unsubscribe error
-    }
-    unsubscribePresence = null;
-  }
-
-  // Remove presence record cleanly from active schema room in Firestore
-  try {
-    const activeSchemaId = state.activeProjectId || state.roomCode || 'proj-1';
-    const roomDocId = `presence_${activeSchemaId}`;
-    const presenceDocRef = doc(db, 'rooms', roomDocId, 'presence', sessionId);
-    deleteDoc(presenceDocRef).catch(() => {});
-  } catch (e) {
-    // Offline or cleanup error ignored
-  }
-}
-
-// Select active project and switch live room context
 export function selectProject(projectId) {
   if (!projectId || projectId === state.activeProjectId) return;
 
   // Flush any pending auto-sync for the current active project before switching away
   if (state.activeProjectId && state.saveStatus === 'unsaved' && !isSampleProjectId(state.activeProjectId) && !isProjectDeleted(state.activeProjectId)) {
     flushActiveProjectSync(state.activeProjectId);
-  }
-
-  const targetProj = state.projects.find(p => p.id === projectId);
-  if (targetProj && !isDefaultOrPublicProject(targetProj) && (targetProj.accessMode === 'restricted' || targetProj.accessMode === 'password')) {
-    const accessCheck = checkProjectAccess(targetProj);
-    if (!accessCheck.allowed) {
-      state.collaborationAccessRestricted = {
-        active: true,
-        schemaId: targetProj.id,
-        schemaName: targetProj.name || 'Protected Schema',
-        ownerEmail: targetProj.ownerEmail || '',
-        userEmail: (state.currentUser.isLoggedIn && auth.currentUser) ? (state.currentUser.email || auth.currentUser?.email || '') : '',
-        reason: accessCheck.reason,
-        expectedPassword: targetProj.sharePassword || '',
-        pendingProjectData: null
-      };
-      ensureSafeActiveProject(targetProj.id);
-      return;
-    }
-  }
-
-  // Clear any existing restriction modal when selecting an accessible project
-  if (state.collaborationAccessRestricted.active) {
-    state.collaborationAccessRestricted.active = false;
   }
 
   state.activeProjectId = projectId;
@@ -1754,214 +840,11 @@ export function selectProject(projectId) {
     window.history.replaceState(null, '', newUrl);
   }
 
-  // Realtime subscription and presence for newly active schema
-  subscribeToActiveSharedProject(projectId);
-  startPresenceTracking();
 }
 
-// Load shared schema from URL parameters or hash
-export async function loadSharedSchemaFromUrl() {
-  if (typeof window === 'undefined') return;
-
-  try {
-    const urlParams = new URLSearchParams(window.location.search);
-    let targetSchemaId = urlParams.get('schema') || urlParams.get('project') || urlParams.get('room') || urlParams.get('id') || urlParams.get('share');
-
-    if (!targetSchemaId && window.location.hash) {
-      const hashStr = window.location.hash.replace(/^#/, '');
-      const hashParams = new URLSearchParams(hashStr.includes('=') ? hashStr : `schema=${hashStr}`);
-      targetSchemaId = hashParams.get('schema') || hashParams.get('project') || hashParams.get('room') || hashParams.get('id') || hashParams.get('share') || hashStr;
-    }
-
-    if (!targetSchemaId) return;
-
-    targetSchemaId = targetSchemaId.replace(/^ERD-/, '').trim();
-    if (!targetSchemaId) return;
-
-    // Direct access to collaborative schema must route directly to studio workspace (/app)
-    state.currentRoute = '/app';
-
-    // If targetSchemaId is already present locally as a default or public open schema, select it directly
-    const localExisting = state.projects.find(p => p.id === targetSchemaId);
-    if (localExisting && isDefaultOrPublicProject(localExisting)) {
-      state.collaborationAccessRestricted.active = false;
-      selectProject(localExisting.id);
-      return;
-    }
-
-    // Check Firestore first as authoritative source for collaborative schema permissions
-    try {
-      const docSnap = await getDoc(doc(db, 'projects', targetSchemaId));
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-
-        // Check collaboration access restrictions only if not a public/default schema
-        if (!isDefaultOrPublicProject(data)) {
-          const accessCheck = checkProjectAccess(data);
-          if (!accessCheck.allowed) {
-            const localP = state.projects.find(p => p.id === targetSchemaId);
-            if (localP) {
-              localP.accessMode = data.accessMode || 'restricted';
-              localP.sharePassword = data.sharePassword || '';
-              localP.allowedEmails = data.allowedEmails || [];
-              localP.ownerEmail = data.ownerEmail || '';
-              localP.ownerUid = data.ownerUid || '';
-            }
-
-            state.collaborationAccessRestricted = {
-              active: true,
-              schemaId: targetSchemaId,
-              schemaName: data.name || 'Shared Database Schema',
-              ownerEmail: data.ownerEmail || '',
-              userEmail: (state.currentUser.isLoggedIn && auth.currentUser) ? (state.currentUser.email || auth.currentUser?.email || '') : '',
-              reason: accessCheck.reason,
-              expectedPassword: data.sharePassword || '',
-              pendingProjectData: {
-                id: data.id || targetSchemaId,
-                folderId: data.folderId || 'folder-1',
-                name: data.name || 'Shared Database Schema',
-                description: data.description || 'Collaborative schema',
-                dialect: data.dialect || 'postgres',
-                accessMode: data.accessMode || 'public',
-                sharePassword: data.sharePassword || '',
-                allowedEmails: Array.isArray(data.allowedEmails) ? data.allowedEmails : [],
-                tables: data.tables || [],
-                relationships: data.relationships || [],
-                enums: data.enums || [],
-                tableGroups: data.tableGroups || [],
-                projectConfig: data.projectConfig || null,
-                customDbml: data.customDbml || null,
-                history: data.history || [],
-                ownerUid: data.ownerUid || 'guest',
-                ownerEmail: data.ownerEmail || '',
-                updatedAt: data.updatedAt || new Date().toISOString()
-              }
-            };
-            ensureSafeActiveProject(targetSchemaId);
-            addToast(
-              accessCheck.reason === 'password_required' ? 'Password Protected' : 'Access Restricted',
-              accessCheck.reason === 'password_required'
-                ? 'Password required to enter this collaboration room'
-                : accessCheck.reason === 'login_required'
-                  ? 'Sign in required to access this restricted collaboration room'
-                  : `Your account is not authorized for "${data.name || 'this schema'}"`,
-              accessCheck.reason === 'password_required' ? 'info' : 'warning'
-            );
-            return;
-          }
-        }
-
-        state.collaborationAccessRestricted.active = false;
-
-        const loadedProj = {
-          id: data.id || targetSchemaId,
-          folderId: data.folderId || 'folder-1',
-          name: data.name || 'Shared Database Schema',
-          description: data.description || 'Collaborative schema',
-          dialect: data.dialect || 'postgres',
-          accessMode: data.accessMode || 'public',
-          sharePassword: data.sharePassword || '',
-          allowedEmails: Array.isArray(data.allowedEmails) ? data.allowedEmails : [],
-          tables: data.tables || [],
-          relationships: data.relationships || [],
-          enums: data.enums || [],
-          tableGroups: data.tableGroups || [],
-          projectConfig: data.projectConfig || null,
-          customDbml: data.customDbml || null,
-          history: data.history || [],
-          ownerUid: data.ownerUid || 'guest',
-          ownerEmail: data.ownerEmail || '',
-          updatedAt: data.updatedAt || new Date().toISOString()
-        };
-        normalizeProjectKeys(loadedProj);
-
-        const existingIdx = state.projects.findIndex(p => p.id === loadedProj.id);
-        if (existingIdx >= 0) {
-          state.projects[existingIdx] = loadedProj;
-        } else {
-          state.projects.push(loadedProj);
-        }
-        selectProject(loadedProj.id);
-        addToast('Collaborative Schema Loaded', `Loaded "${loadedProj.name}" from live team room`, 'success');
-        return;
-      }
-    } catch (err) {
-      console.warn('Error fetching shared project schema from Firestore:', err);
-      // If local schema is default or public, do not show restriction
-      if (localExisting && isDefaultOrPublicProject(localExisting)) {
-        state.collaborationAccessRestricted.active = false;
-        selectProject(localExisting.id);
-        return;
-      }
-
-      if (err.code === 'permission-denied') {
-        if (localExisting && (localExisting.accessMode === 'restricted' || localExisting.accessMode === 'password')) {
-          state.collaborationAccessRestricted = {
-            active: true,
-            schemaId: targetSchemaId,
-            schemaName: localExisting?.name || 'Restricted Team Schema',
-            ownerEmail: localExisting?.ownerEmail || '',
-            userEmail: (state.currentUser.isLoggedIn && auth.currentUser) ? (state.currentUser.email || auth.currentUser?.email || '') : '',
-            reason: (state.currentUser.isLoggedIn && auth.currentUser) ? 'unauthorized' : 'login_required'
-          };
-          ensureSafeActiveProject(targetSchemaId);
-          addToast(
-            'Access Restricted',
-            state.currentUser.isLoggedIn
-              ? 'Your account is not on the authorized collaborator whitelist'
-              : 'Sign in required to access this restricted schema',
-            'warning'
-          );
-        }
-        return;
-      }
-    }
-
-    // Fallback if not found in Firestore (e.g. offline local schema)
-    const existing = state.projects.find(p => p.id === targetSchemaId);
-    if (existing) {
-      if (!isDefaultOrPublicProject(existing)) {
-        const accessCheck = checkProjectAccess(existing);
-        if (!accessCheck.allowed) {
-          state.collaborationAccessRestricted = {
-            active: true,
-            schemaId: existing.id,
-            schemaName: existing.name || 'Protected Schema',
-            ownerEmail: existing.ownerEmail || '',
-            userEmail: (state.currentUser.isLoggedIn && auth.currentUser) ? (state.currentUser.email || auth.currentUser?.email || '') : '',
-            reason: accessCheck.reason,
-            expectedPassword: existing.sharePassword || '',
-            pendingProjectData: null
-          };
-          ensureSafeActiveProject(existing.id);
-          return;
-        }
-      }
-      state.collaborationAccessRestricted.active = false;
-      selectProject(existing.id);
-      addToast('Collaborative Room', `Joined live collaboration for "${existing.name}"`, 'success');
-      return;
-    }
-  } catch (err) {
-    console.warn('URL schema parser note:', err);
-  }
-}
-
-// Clean up presence on unload
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
-    try {
-      const roomDocId = `presence_${state.roomCode || state.activeProjectId || 'proj-1'}`;
-      deleteDoc(doc(db, 'rooms', roomDocId, 'presence', sessionId)).catch(() => {});
-    } catch (e) {}
-  });
-
-  // Start presence tracking immediately
-  setTimeout(() => {
-    loadSharedSchemaFromUrl();
-    subscribeToActiveSharedProject(state.activeProjectId);
-    startPresenceTracking();
-  }, 500);
+export function loadLocalProjectFromUrl() {
+  const id = new URLSearchParams(window.location.search).get('schema');
+  if (id && state.projects.some(project => project.id === id)) selectProject(id);
 }
 
 // Toast helper
@@ -1972,363 +855,6 @@ export function addToast(title, message, type = 'info') {
     state.toasts = state.toasts.filter(t => t.id !== id);
   }, 3500);
 }
-
-// Subscribe to Firestore projects to sync account schemas
-let unsubscribeProjects = null;
-let unsubscribeSharedProjects = null;
-
-function subscribeToFirestoreProjects() {
-  if (unsubscribeProjects) {
-    unsubscribeProjects();
-    unsubscribeProjects = null;
-  }
-  if (unsubscribeSharedProjects) {
-    unsubscribeSharedProjects();
-    unsubscribeSharedProjects = null;
-  }
-
-  if (!state.currentUser.isLoggedIn || !auth.currentUser) return;
-
-  try {
-    const ownerId = auth.currentUser.uid;
-    const userEmail = (auth.currentUser.email || state.currentUser.email || '').toLowerCase().trim();
-    
-    // 1. Listen to projects strictly owned by current user
-    const q = query(collection(db, 'projects'), where('ownerUid', '==', ownerId));
-    
-    unsubscribeProjects = onSnapshot(q, (snapshot) => {
-      const remoteProjects = [];
-      const deletedIds = getDeletedProjectIds();
-
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        if (data && data.id) {
-          if (deletedIds.includes(data.id)) {
-            // Document was deleted by user: purge from Firestore permanently if lingering
-            deleteDoc(doc(db, 'projects', data.id)).catch(() => {});
-          } else {
-            const rp = {
-              id: data.id,
-              folderId: data.folderId || 'folder-1',
-              name: data.name || 'Untitled Schema',
-              description: data.description || '',
-              dialect: data.dialect || 'postgres',
-              accessMode: data.accessMode || 'restricted',
-              sharePassword: data.sharePassword || '',
-              allowedEmails: Array.isArray(data.allowedEmails) ? data.allowedEmails : [],
-              tables: data.tables || [],
-              relationships: data.relationships || [],
-              enums: data.enums || [],
-              tableGroups: data.tableGroups || [],
-              projectConfig: data.projectConfig || null,
-              customDbml: data.customDbml || null,
-              history: data.history || [],
-              ownerUid: data.ownerUid || ownerId,
-              ownerEmail: data.ownerEmail || '',
-              updatedAt: data.updatedAt || new Date().toISOString(),
-              isSharedWithMe: false
-            };
-            normalizeProjectKeys(rp);
-            remoteProjects.push(rp);
-          }
-        }
-      });
-
-      if (remoteProjects.length > 0) {
-        // 1. PRUNE: Remove any owned projects from local state that are no longer in Firestore or were deleted
-        const remoteIds = new Set(remoteProjects.map(p => p.id));
-        for (let i = state.projects.length - 1; i >= 0; i--) {
-          const p = state.projects[i];
-          if (deletedIds.includes(p.id)) {
-            state.projects.splice(i, 1);
-          } else if (!p.isSharedWithMe && (p.ownerUid === ownerId || p.ownerUid === 'guest' || isUntouchedBlankStarter(p) || isSampleProjectId(p.id))) {
-            if (!remoteIds.has(p.id)) {
-              // Project was deleted on another tab, session, or previously
-              state.projects.splice(i, 1);
-            }
-          }
-        }
-
-        // 2. UPSERT: Add or update surviving remote projects in-place
-        remoteProjects.forEach(rp => {
-          const idx = state.projects.findIndex(p => p.id === rp.id);
-          const rHash = computeProjectHash(rp);
-
-          // If this window just wrote this hash to Firestore, skip overwriting
-          if (lastSyncedHashes[rp.id] === rHash) {
-            return;
-          }
-
-          if (idx !== -1) {
-            const localProj = state.projects[idx];
-            const lHash = computeProjectHash(localProj);
-
-            if (rHash !== lHash) {
-              markProjectSyncingFromRemote(rp.id, 500);
-              localProj.name = rp.name;
-              localProj.description = rp.description;
-              localProj.dialect = rp.dialect;
-              localProj.accessMode = rp.accessMode;
-              localProj.sharePassword = rp.sharePassword || '';
-              localProj.allowedEmails = rp.allowedEmails || [];
-              localProj.tables = rp.tables;
-              localProj.relationships = rp.relationships;
-              localProj.enums = rp.enums || [];
-              localProj.tableGroups = rp.tableGroups || [];
-              localProj.projectConfig = rp.projectConfig || null;
-              localProj.customDbml = rp.customDbml || null;
-              localProj.history = rp.history;
-              localProj.updatedAt = rp.updatedAt;
-              localProj.folderId = rp.folderId;
-              lastSyncedHashes[rp.id] = rHash;
-            }
-          } else {
-            state.projects.push(rp);
-            lastSyncedHashes[rp.id] = rHash;
-          }
-        });
-
-        if (state.projects.length > 0) {
-          const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-          const explicitUrlSchema = urlParams?.get('schema') || urlParams?.get('project') || urlParams?.get('room') || urlParams?.get('id') || urlParams?.get('share');
-
-          // If the currently active project is already valid and present in state.projects, KEEP IT!
-          // Prevent snapshots from switching the active project back to an older/default project after creation or manual selection.
-          if (state.activeProjectId && state.projects.some(p => p.id === state.activeProjectId)) {
-            // Preserve user's current active selection
-          } else if (explicitUrlSchema && state.projects.some(p => p.id === explicitUrlSchema)) {
-            state.activeProjectId = explicitUrlSchema;
-            state.roomCode = explicitUrlSchema;
-          } else {
-            const initialId = getInitialActiveProjectId(state.projects, state.folders);
-            const matched = state.projects.find(p => p.id === initialId);
-            if (matched) {
-              state.activeProjectId = matched.id;
-              state.roomCode = matched.id;
-            } else {
-              state.activeProjectId = state.projects[0].id;
-              state.roomCode = state.projects[0].id;
-            }
-          }
-        }
-      } else {
-        // User has 0 projects in Firestore (e.g. deleted their schemas or first time)
-        // Clean out any deleted, sample, or starter projects from local state
-        for (let i = state.projects.length - 1; i >= 0; i--) {
-          const p = state.projects[i];
-          if (deletedIds.includes(p.id) || isSampleProjectId(p.id) || isUntouchedBlankStarter(p)) {
-            state.projects.splice(i, 1);
-          }
-        }
-
-        if (state.projects.length === 0) {
-          const fresh = {
-            id: 'proj-' + Date.now().toString(36),
-            folderId: state.folders[0]?.id || 'folder-1',
-            name: 'New Database',
-            description: 'New database schema model',
-            updatedAt: new Date().toISOString(),
-            dialect: 'postgres',
-            accessMode: 'restricted',
-            sharePassword: '',
-            allowedEmails: [],
-            tables: [],
-            relationships: [],
-            history: [],
-            ownerUid: ownerId,
-            ownerEmail: auth.currentUser.email || '',
-            isStarterProject: true
-          };
-          state.projects.push(fresh);
-          state.activeProjectId = fresh.id;
-          state.roomCode = fresh.id;
-        }
-      }
-
-      isFirestoreProjectsLoaded.value = true;
-      finishInitialLoading(450);
-    }, (err) => {
-      console.warn('Firestore snapshot note:', err.message);
-      isFirestoreProjectsLoaded.value = true;
-      finishInitialLoading(200);
-      if (isFirestoreApiDisabledOrOffline(err)) {
-        state.firestoreErrorNotice = {
-          message: 'Cloud Firestore API is not yet enabled in project dbmaps-13772. Changes are saved locally in browser.',
-          url: 'https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=dbmaps-13772',
-          consoleUrl: 'https://console.firebase.google.com/project/dbmaps-13772/firestore'
-        };
-        return;
-      }
-      if (err.code === 'permission-denied') {
-        handleFirestoreError(err, 'list', 'projects');
-      } else if (err.code === 'resource-exhausted' || (err.message && err.message.toLowerCase().includes('quota'))) {
-        isFirestoreQuotaExceeded = true;
-      }
-    });
-
-    // 2. Listen to projects shared with this user via allowedEmails whitelist
-    if (userEmail) {
-      const qShared = query(
-        collection(db, 'projects'),
-        where('allowedEmails', 'array-contains', userEmail)
-      );
-
-      unsubscribeSharedProjects = onSnapshot(qShared, (snapshot) => {
-        snapshot.forEach(docSnap => {
-          const data = docSnap.data();
-          if (data && data.id && data.ownerUid !== ownerId) {
-            const sharedProj = {
-              id: data.id,
-              folderId: data.folderId || 'folder-1',
-              name: data.name || 'Shared Database Schema',
-              description: data.description || '',
-              dialect: data.dialect || 'postgres',
-              accessMode: data.accessMode || 'restricted',
-              sharePassword: data.sharePassword || '',
-              allowedEmails: Array.isArray(data.allowedEmails) ? data.allowedEmails : [],
-              tables: data.tables || [],
-              relationships: data.relationships || [],
-              enums: data.enums || [],
-              tableGroups: data.tableGroups || [],
-              projectConfig: data.projectConfig || null,
-              customDbml: data.customDbml || null,
-              history: data.history || [],
-              ownerUid: data.ownerUid,
-              ownerEmail: data.ownerEmail || '',
-              updatedAt: data.updatedAt || new Date().toISOString(),
-              isSharedWithMe: true
-            };
-            normalizeProjectKeys(sharedProj);
-
-            const sHash = computeProjectHash(sharedProj);
-            if (lastSyncedHashes[sharedProj.id] === sHash) {
-              return;
-            }
-
-            const idx = state.projects.findIndex(p => p.id === sharedProj.id);
-            if (idx !== -1) {
-              const localProj = state.projects[idx];
-              const lHash = computeProjectHash(localProj);
-              if (sHash !== lHash) {
-                markProjectSyncingFromRemote(sharedProj.id, 500);
-                localProj.name = sharedProj.name;
-                localProj.description = sharedProj.description;
-                localProj.dialect = sharedProj.dialect;
-                localProj.accessMode = sharedProj.accessMode;
-                localProj.sharePassword = sharedProj.sharePassword;
-                localProj.allowedEmails = sharedProj.allowedEmails;
-                localProj.tables = sharedProj.tables;
-                localProj.relationships = sharedProj.relationships;
-                localProj.enums = sharedProj.enums || [];
-                localProj.tableGroups = sharedProj.tableGroups || [];
-                localProj.projectConfig = sharedProj.projectConfig || null;
-                localProj.customDbml = sharedProj.customDbml || null;
-                localProj.history = sharedProj.history;
-                localProj.updatedAt = sharedProj.updatedAt;
-                localProj.folderId = sharedProj.folderId;
-                lastSyncedHashes[sharedProj.id] = sHash;
-              }
-            } else {
-              state.projects.push(sharedProj);
-              lastSyncedHashes[sharedProj.id] = sHash;
-            }
-          }
-        });
-      }, (err) => {
-        if (!isFirestoreApiDisabledOrOffline(err)) {
-          console.log('Shared projects listener status:', err.message);
-        }
-      });
-    }
-  } catch (err) {
-    console.warn('Firestore listener setup error:', err.message);
-  }
-}
-
-// Firebase Auth Observer
-onAuthStateChanged(auth, (user) => {
-  isAuthResolved.value = true;
-  if (user) {
-    state.initialLoadingProgress = Math.max(state.initialLoadingProgress, 60);
-    state.initialLoadingStage = 'Connecting to account & cloud schemas...';
-    state.currentUser = {
-      id: user.uid,
-      name: user.displayName || 'Developer',
-      email: user.email || '',
-      avatar: user.photoURL || DEFAULT_GUEST_AVATAR,
-      photoURL: user.photoURL || '',
-      isLoggedIn: true,
-      provider: 'google'
-    };
-    state.collaborators = [
-      {
-        id: user.uid,
-        name: user.displayName ? `${user.displayName} (You)` : 'You (Host)',
-        email: user.email || '',
-        color: '#3b82f6',
-        avatar: state.currentUser.avatar,
-        role: 'Owner'
-      }
-    ];
-
-    fetchUserProfile();
-    loadFoldersFromStorage();
-    subscribeToFirestoreProjects();
-    startPresenceTracking();
-
-    // If an access restricted modal was active, re-check permissions with logged-in user
-    if (state.collaborationAccessRestricted.active) {
-      setTimeout(() => {
-        loadSharedSchemaFromUrl();
-      }, 400);
-    }
-  } else {
-    isFirestoreProjectsLoaded.value = true;
-    state.initialLoadingProgress = Math.max(state.initialLoadingProgress, 65);
-    state.initialLoadingStage = 'Preparing database canvas...';
-    if (syncTimeout) {
-      clearTimeout(syncTimeout);
-      syncTimeout = null;
-    }
-    if (unsubscribeActiveProject) {
-      try { unsubscribeActiveProject(); } catch (e) {}
-      unsubscribeActiveProject = null;
-    }
-    if (unsubscribeProjects) {
-      try { unsubscribeProjects(); } catch (e) {}
-      unsubscribeProjects = null;
-    }
-    if (unsubscribeSharedProjects) {
-      try { unsubscribeSharedProjects(); } catch (e) {}
-      unsubscribeSharedProjects = null;
-    }
-    stopPresenceTracking();
-    state.currentUser = {
-      id: 'guest',
-      name: 'Guest Developer',
-      email: '',
-      avatar: DEFAULT_GUEST_AVATAR,
-      isLoggedIn: false,
-      provider: null
-    };
-    state.collaborators = [
-      {
-        id: 'guest',
-        name: 'You (Guest)',
-        email: '',
-        color: '#3b82f6',
-        avatar: state.currentUser.avatar,
-        role: 'Guest'
-      }
-    ];
-    // Reset projects to clean sample starter projects to ensure user data isolation upon logout
-    state.projects = JSON.parse(JSON.stringify(SAMPLE_PROJECTS));
-    state.activeProjectId = SAMPLE_PROJECTS[0]?.id || 'sample-ecommerce';
-    fetchUserProfile().finally(() => {
-      finishInitialLoading(350);
-    });
-  }
-});
 
 // Maximum safety timeout for initial landing page display
 setTimeout(() => {
@@ -2347,21 +873,9 @@ setTimeout(() => {
   }
 }, 2200);
 
-// Deeply watch active project changes and auto-sync to Firestore
+// Deeply watch active project changes and save to browser storage
 let syncTimeout = null;
 let currentWatchedProjectId = state.activeProjectId;
-
-watch(
-  () => state.activeProjectId,
-  (newId, oldId) => {
-    if (oldId && oldId !== newId && state.currentUser.isLoggedIn && auth.currentUser) {
-      if (state.saveStatus === 'unsaved' && !isSampleProjectId(oldId) && !isProjectDeleted(oldId)) {
-        flushActiveProjectSync(oldId);
-      }
-    }
-    currentWatchedProjectId = newId;
-  }
-);
 
 watch(
   () => activeProject.value,
@@ -2371,14 +885,13 @@ watch(
       currentWatchedProjectId = proj.id;
       return; // Switched active project reference; wait for actual user mutations
     }
-    if (isProjectSyncingFromRemote(proj.id) || isFirestoreQuotaExceeded) return;
-    
+
     // Mark as unsaved immediately when user makes schema mutations
     state.saveStatus = 'unsaved';
 
     if (syncTimeout) clearTimeout(syncTimeout);
     syncTimeout = setTimeout(() => {
-      syncActiveProjectToFirestore(proj.id);
+      saveProjectsLocally();
     }, 1500);
   },
   { deep: true }
@@ -2390,123 +903,7 @@ if (typeof window !== 'undefined') {
     if (state.saveStatus === 'unsaved') {
       flushActiveProjectSync();
     }
-    stopPresenceTracking();
   });
-}
-
-// Concurrency lock for Google SSO popup operations
-let isAuthOperationInProgress = false;
-
-// Login with Google SSO with resilience against transient popup/visibility IndexedDB closes & concurrency locks
-export async function loginWithGoogle() {
-  if (isAuthOperationInProgress) {
-    console.info('Google sign-in popup is already opening or in progress.');
-    return;
-  }
-  isAuthOperationInProgress = true;
-  state.isLoggingIn = true;
-
-  try {
-    let result;
-    try {
-      result = await signInWithPopup(auth, googleProvider);
-    } catch (popupErr) {
-      if (popupErr?.message?.includes('Database is closing') || popupErr?.message?.includes('closing/hidden')) {
-        console.warn('Recovering from popup visibility closing state, retrying sign-in...');
-        await new Promise(r => setTimeout(r, 500));
-        result = await signInWithPopup(auth, googleProvider);
-      } else {
-        throw popupErr;
-      }
-    }
-    addToast('Google SSO Success', `Welcome back, ${result.user.displayName || 'User'}!`, 'success');
-    state.modals.auth = false;
-    await fetchUserProfile();
-    checkFirstTimeUserTour(state.currentUser);
-
-    // If user was prompted to sign in to access Presto AI, automatically launch generator
-    if (state.authModalPromptReason === 'ai_presto') {
-      state.modals.aiGen = true;
-      state.authModalPromptReason = null;
-    }
-  } catch (err) {
-    const isCancelledOrClosed =
-      err?.code === 'auth/cancelled-popup-request' ||
-      err?.code === 'auth/popup-closed-by-user' ||
-      err?.code === 'auth/user-cancelled' ||
-      err?.message?.includes('cancelled-popup-request') ||
-      err?.message?.includes('popup-closed-by-user');
-
-    if (isCancelledOrClosed) {
-      // Normal user action or superseded popup; do not log error or show error toast
-      console.info('Google sign-in popup closed or superseded by user.');
-      return;
-    }
-
-    console.error('Google Auth Error:', err);
-    let friendlyMessage = err.message || 'Google sign-in popup error';
-    if (err.code === 'auth/unauthorized-domain') {
-      friendlyMessage = `Authorized Domain Required: Please add "${typeof window !== 'undefined' ? window.location.hostname : 'this domain'}" to Firebase Console -> Authentication -> Settings -> Authorized domains.`;
-    } else if (err.code === 'auth/operation-not-allowed') {
-      friendlyMessage = 'Google Sign-In is disabled in project dbmaps-13772. Enable it in Firebase Console -> Authentication -> Sign-in method.';
-    } else if (err.code === 'auth/popup-blocked') {
-      friendlyMessage = 'Popup was blocked by your browser. Please allow popups for this site.';
-    }
-    addToast('Authentication Note', friendlyMessage, 'error');
-  } finally {
-    isAuthOperationInProgress = false;
-    state.isLoggingIn = false;
-  }
-}
-
-// Sign out
-export async function logoutUser() {
-  try {
-    if (syncTimeout) {
-      clearTimeout(syncTimeout);
-      syncTimeout = null;
-    }
-    if (unsubscribeActiveProject) {
-      try { unsubscribeActiveProject(); } catch (e) {}
-      unsubscribeActiveProject = null;
-    }
-    if (unsubscribeProjects) {
-      try { unsubscribeProjects(); } catch (e) {}
-      unsubscribeProjects = null;
-    }
-    if (unsubscribeSharedProjects) {
-      try { unsubscribeSharedProjects(); } catch (e) {}
-      unsubscribeSharedProjects = null;
-    }
-    stopPresenceTracking();
-    await signOut(auth);
-    state.currentUser = {
-      id: 'guest',
-      name: 'Guest Developer',
-      email: '',
-      avatar: DEFAULT_GUEST_AVATAR,
-      isLoggedIn: false,
-      provider: null
-    };
-    state.collaborators = [
-      {
-        id: 'guest',
-        name: 'You (Guest)',
-        email: '',
-        color: '#3b82f6',
-        avatar: DEFAULT_GUEST_AVATAR,
-        role: 'Guest'
-      }
-    ];
-    state.projects = JSON.parse(JSON.stringify(SAMPLE_PROJECTS));
-    state.activeProjectId = SAMPLE_PROJECTS[0]?.id || 'sample-ecommerce';
-    addToast('Logged Out', 'Signed out from session and cleared local cloud workspace', 'info');
-    state.modals.auth = false;
-    await fetchUserProfile();
-  } catch (err) {
-    console.error('Logout error:', err);
-    addToast('Sign Out Error', err.message, 'error');
-  }
 }
 
 // Toggle Dark Mode
@@ -3080,7 +1477,7 @@ export function autoArrangeTables(mode = null) {
 
   proj.updatedAt = new Date().toISOString();
   saveGuestProjectsToStorage();
-  syncActiveProjectToFirestore();
+  saveProjectsLocally();
 
   const modeInfo = AUTO_ARRANGE_MODES.find(m => m.id === targetMode) || AUTO_ARRANGE_MODES[0];
   addToast(
@@ -3164,7 +1561,7 @@ export function addTable(tableData) {
   proj.updatedAt = new Date().toISOString();
   state.selectedTableId = newTable.id;
   saveGuestProjectsToStorage();
-  syncActiveProjectToFirestore();
+  saveProjectsLocally();
   addToast('Table Added', `Created table "${newTable.name}"`, 'success');
 }
 
@@ -3184,7 +1581,7 @@ export function deleteTable(tableId) {
     }
     proj.updatedAt = new Date().toISOString();
     saveGuestProjectsToStorage();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
     addToast('Table Removed', `Deleted table "${tblName}"`, 'warning');
   }
 }
@@ -3234,7 +1631,7 @@ export function addColumn(tableId, colData) {
     });
     proj.updatedAt = new Date().toISOString();
     saveGuestProjectsToStorage();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
   }
 }
 
@@ -3247,7 +1644,7 @@ export function deleteColumn(tableId, colIndex) {
     tbl.columns.splice(colIndex, 1);
     proj.updatedAt = new Date().toISOString();
     saveGuestProjectsToStorage();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
   }
 }
 
@@ -3290,7 +1687,7 @@ export function addRelationship(relData) {
   proj.relationships.push(newRel);
   proj.updatedAt = new Date().toISOString();
   saveGuestProjectsToStorage();
-  syncActiveProjectToFirestore();
+  saveProjectsLocally();
   addToast('Relationship Linked', `${relData.fromTable}.${relData.fromColumn} ${operator} ${relData.toTable}.${relData.toColumn}`, 'success');
 }
 
@@ -3303,7 +1700,7 @@ export function updateRelationship(relId, updates) {
     Object.assign(rel, updates);
     proj.updatedAt = new Date().toISOString();
     saveGuestProjectsToStorage();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
   }
 }
 
@@ -3342,7 +1739,7 @@ export function toggleRelationshipOptional(relId) {
 
   proj.updatedAt = new Date().toISOString();
   saveGuestProjectsToStorage();
-  syncActiveProjectToFirestore();
+  saveProjectsLocally();
   addToast('Relationship Updated', nextOptional ? 'Set to Optional FK (>? 0..N)' : 'Set to Mandatory FK (> 1:N)', 'info');
 }
 
@@ -3355,7 +1752,7 @@ export function deleteRelationship(relId) {
     proj.relationships.splice(idx, 1);
     proj.updatedAt = new Date().toISOString();
     saveGuestProjectsToStorage();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
     addToast('Relationship Removed', 'Foreign key deleted', 'info');
   }
 }
@@ -3446,7 +1843,7 @@ export function createCommit(versionName, description) {
 
   proj.history.unshift(commit);
   proj.updatedAt = new Date().toISOString();
-  syncActiveProjectToFirestore();
+  saveProjectsLocally();
   addToast('Snapshot Saved', `Created release checkpoint "${commit.versionName}"`, 'success');
 }
 
@@ -3459,7 +1856,7 @@ export function deleteCommit(commitId) {
     const vName = proj.history[idx].versionName;
     proj.history.splice(idx, 1);
     proj.updatedAt = new Date().toISOString();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
     addToast('Version Removed', `Deleted checkpoint "${vName}"`, 'info');
   }
 }
@@ -3473,7 +1870,7 @@ export function restoreCommit(commitId) {
     proj.tables = JSON.parse(JSON.stringify(commit.snapshotTables));
     proj.relationships = JSON.parse(JSON.stringify(commit.snapshotRelationships));
     proj.updatedAt = new Date().toISOString();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
     addToast('Version Restored', `Restored schema to "${commit.versionName}"`, 'info');
   }
 }
@@ -3484,7 +1881,7 @@ export function setProjectDialect(dialect) {
   if (!proj) return;
   proj.dialect = dialect;
   proj.updatedAt = new Date().toISOString();
-  syncActiveProjectToFirestore();
+  saveProjectsLocally();
   addToast('Dialect Updated', `Target dialect set to ${dialect.toUpperCase()}`, 'info');
 }
 
@@ -3501,12 +1898,11 @@ export function createProject(projectName, folderId, description = '', template 
     }
   }
 
-  const isAuth = Boolean(state.currentUser.isLoggedIn && auth.currentUser);
-  const currentOwnerUid = isAuth ? auth.currentUser.uid : (state.currentUser.id || 'guest');
-  const currentOwnerEmail = state.currentUser.email || (auth.currentUser ? auth.currentUser.email : '') || '';
+  const currentOwnerUid = 'guest';
+  const currentOwnerEmail = '';
 
   // Private (restricted) by default for logged-in accounts; open for guest scratchpad
-  const determinedAccessMode = customAccessMode || (isAuth ? 'restricted' : 'public');
+  const determinedAccessMode = customAccessMode || 'public';
 
   const newProj = {
     id: 'proj-' + Date.now().toString(36),
@@ -3517,7 +1913,7 @@ export function createProject(projectName, folderId, description = '', template 
     dialect: dialect || 'postgres',
     accessMode: determinedAccessMode,
     sharePassword: customPassword || '',
-    allowedEmails: isAuth && currentOwnerEmail ? [currentOwnerEmail.toLowerCase()] : [],
+    allowedEmails: [],
     tables: initialTables,
     relationships: initialRelationships,
     history: [],
@@ -3533,10 +1929,33 @@ export function createProject(projectName, folderId, description = '', template 
   }
 
   selectProject(newProj.id);
-  syncActiveProjectToFirestore();
+  saveProjectsLocally();
   saveGuestProjectsToStorage();
   addToast('Project Created', `Started "${projectName}" (${determinedAccessMode === 'restricted' ? 'Private' : 'Public'})`, 'success');
   return newProj;
+}
+
+export function restoreLocalProject(project) {
+  const restored = {
+    ...project,
+    id: 'proj-' + crypto.randomUUID(),
+    localOnly: true,
+    folderId: state.folders[0]?.id || 'folder-1',
+    ownerUid: 'guest',
+    accessMode: 'public',
+    updatedAt: new Date().toISOString(),
+    history: []
+  };
+  normalizeProjectKeys(restored);
+  const projects = [...state.projects, restored];
+  try {
+    localStorage.setItem('dbmaps_guest_projects', JSON.stringify(projects));
+  } catch {
+    throw new Error('The browser could not save this backup. Check available storage and try again.');
+  }
+  state.projects = projects;
+  selectProject(restored.id);
+  return restored;
 }
 
 // Import MySQL, PostgreSQL, or Microsoft SQL Server (MSSQL) / DBML schema
@@ -3555,13 +1974,12 @@ export function importSchema({ name, script, dialect = 'auto', folderId = null, 
     proj.relationships = result.relationships;
     proj.dialect = effectiveDialect;
     proj.updatedAt = new Date().toISOString();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
     addToast('Schema Imported', `Imported ${result.tables.length} table(s) and ${result.relationships.length} relation(s) into "${proj.name}"`, 'success');
     return proj;
   } else {
-    const isAuth = Boolean(state.currentUser.isLoggedIn && auth.currentUser);
-    const currentOwnerUid = isAuth ? auth.currentUser.uid : (state.currentUser.id || 'guest');
-    const currentOwnerEmail = state.currentUser.email || (auth.currentUser ? auth.currentUser.email : '') || '';
+    const currentOwnerUid = 'guest';
+  const currentOwnerEmail = '';
 
     const newProj = {
       id: 'proj-' + Date.now().toString(36),
@@ -3570,9 +1988,9 @@ export function importSchema({ name, script, dialect = 'auto', folderId = null, 
       description: `Imported from ${effectiveDialect.toUpperCase()} SQL script with ${result.tables.length} tables and ${result.relationships.length} relationships.`,
       updatedAt: new Date().toISOString(),
       dialect: effectiveDialect,
-      accessMode: isAuth ? 'restricted' : 'public',
+      accessMode: 'public',
       sharePassword: '',
-      allowedEmails: isAuth && currentOwnerEmail ? [currentOwnerEmail.toLowerCase()] : [],
+      allowedEmails: [],
       tables: result.tables,
       relationships: result.relationships,
       history: [],
@@ -3587,7 +2005,7 @@ export function importSchema({ name, script, dialect = 'auto', folderId = null, 
     }
 
     selectProject(newProj.id);
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
     saveGuestProjectsToStorage();
     addToast('Schema Imported', `Created new schema "${newProj.name}" with ${result.tables.length} table(s)`, 'success');
     return newProj;
@@ -3596,9 +2014,7 @@ export function importSchema({ name, script, dialect = 'auto', folderId = null, 
 
 // Import all sample schemas on explicit user action
 export function importSampleSchemas(targetFolderId = null) {
-  const currentOwnerUid = (state.currentUser.isLoggedIn && auth.currentUser)
-    ? auth.currentUser.uid
-    : (state.currentUser.id || 'guest');
+  const currentOwnerUid = 'guest';
   const currentOwnerEmail = state.currentUser.email || '';
   const folder = targetFolderId || state.folders[0]?.id || 'folder-1';
 
@@ -3630,7 +2046,7 @@ export function importSampleSchemas(targetFolderId = null) {
   if (importedProjects.length > 0) {
     selectProject(importedProjects[0].id);
     if (state.currentUser.isLoggedIn) {
-      syncActiveProjectToFirestore();
+      saveProjectsLocally();
     }
     saveGuestProjectsToStorage();
   }
@@ -3643,9 +2059,7 @@ export function importSampleSchemaByName(name, targetFolderId = null) {
   const sample = SAMPLE_PROJECTS.find(s => s.name.toLowerCase() === name.toLowerCase()) || SAMPLE_PROJECTS[0];
   if (!sample) return;
 
-  const currentOwnerUid = (state.currentUser.isLoggedIn && auth.currentUser)
-    ? auth.currentUser.uid
-    : (state.currentUser.id || 'guest');
+  const currentOwnerUid = 'guest';
   const currentOwnerEmail = state.currentUser.email || '';
   const folder = targetFolderId || state.folders[0]?.id || 'folder-1';
 
@@ -3673,429 +2087,21 @@ export function importSampleSchemaByName(name, targetFolderId = null) {
 
   selectProject(newProj.id);
   if (state.currentUser.isLoggedIn) {
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
   }
   saveGuestProjectsToStorage();
   addToast('Sample Schema Imported', `Loaded "${newProj.name}"`, 'success');
 }
 
 // Current user admin check
-export const isCurrentUserAdmin = computed(() => {
-  const email = (auth.currentUser?.email || state.currentUser.email || '').toLowerCase();
-  return email === 'aungkyawminn.aya@gmail.com' || state.userProfile.role === 'admin';
-});
+export const allMarketplaceTemplates = computed(() =>
+  MARKETPLACE_TEMPLATES.map(template => ({ ...template, isBuiltIn: true }))
+);
 
-// Open Marketplace
-export function openMarketplace() {
-  state.modals.marketplace = true;
-}
-
-// Open Submit to Marketplace Modal
-export function openSubmitToMarketplace(projectId = null) {
-  state.editingMarketplaceTemplate = null;
-  if (projectId) {
-    selectProject(projectId);
-  }
-  state.modals.submitToMarketplace = true;
-}
-
-// Open Editor for an existing Marketplace Template (Admin / Author)
-export function openEditMarketplaceTemplate(template) {
-  if (!template) return;
-  state.editingMarketplaceTemplate = JSON.parse(JSON.stringify(template));
-  state.modals.submitToMarketplace = true;
-}
-
-// Open Creator for an official dbmaps System Blueprint (Admin)
-export function openCreateSystemMarketplaceTemplate(projectId = null) {
-  if (projectId) {
-    selectProject(projectId);
-  }
-  state.editingMarketplaceTemplate = {
-    isSystem: true,
-    isNewSystem: true,
-    badge: 'dbmaps System',
-    isVerified: true,
-    authorName: 'dbmaps System',
-    authorTitle: 'dbmaps Core Architecture Engine',
-    authorAvatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=dbmaps-system'
-  };
-  state.modals.submitToMarketplace = true;
-}
-
-// Close Submit to Marketplace Modal
-export function closeSubmitToMarketplace() {
-  state.modals.submitToMarketplace = false;
-  state.editingMarketplaceTemplate = null;
-}
-
-// All Marketplace Templates (dbmaps System Generated + Community Submissions + Overrides)
-export const allMarketplaceTemplates = computed(() => {
-  const firestoreMap = new Map(state.marketplaceSubmissions.map(s => [s.id, s]));
-  
-  // Built-in templates from code, dynamically overridden if customized in Firestore
-  const mergedBuiltIns = MARKETPLACE_TEMPLATES.map(builtIn => {
-    if (firestoreMap.has(builtIn.id)) {
-      const override = firestoreMap.get(builtIn.id);
-      firestoreMap.delete(builtIn.id);
-      return { ...builtIn, ...override, isBuiltIn: true };
-    }
-    return { ...builtIn, isBuiltIn: true };
-  });
-
-  // Dynamic templates created in Firestore (both community and custom dbmaps System blueprints)
-  const dynamicSubmissions = Array.from(firestoreMap.values()).map(s => ({
-    ...s,
-    isBuiltIn: false
-  }));
-
-  return [...mergedBuiltIns, ...dynamicSubmissions];
-});
-
-// Real-time Firestore Listener for Marketplace Community Submissions & Dynamic System Blueprints
-let unsubscribeMarketplace = null;
-export function initMarketplaceListener() {
-  if (unsubscribeMarketplace) return;
-
-  try {
-    state.isMarketplaceLoading = true;
-    const q = collection(db, 'marketplace_templates');
-    unsubscribeMarketplace = onSnapshot(
-      q,
-      (snapshot) => {
-        state.isMarketplaceLoading = false;
-        const submissions = [];
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          if (data && data.name && Array.isArray(data.tables)) {
-            let dbml = data.dbml;
-            if (!dbml) {
-              try {
-                dbml = generateDBML(data.tables, data.relationships || []);
-              } catch (e) {
-                dbml = '';
-              }
-            }
-            const isSystem = !!data.isSystem;
-            submissions.push({
-              id: data.id || docSnap.id,
-              name: data.name,
-              slug: data.slug || (data.name || 'custom-schema').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-              category: data.category || 'saas',
-              complexity: data.complexity || 'Intermediate',
-              dialect: data.dialect || 'postgres',
-              tier: data.tier || 'free',
-              badge: data.badge || (isSystem ? 'dbmaps System' : 'Community'),
-              isSystem: isSystem,
-              isVerified: isSystem ? true : !!data.isVerified,
-              rating: data.rating || 5.0,
-              reviewsCount: data.reviewsCount || 1,
-              clonesCount: data.clonesCount || 0,
-              authorUid: data.authorUid || '',
-              authorEmail: data.authorEmail || '',
-              author: {
-                name: data.authorName || data.author?.name || (isSystem ? 'dbmaps System' : 'Community Architect'),
-                title: data.authorTitle || data.author?.title || (isSystem ? 'dbmaps Core Architecture Engine' : 'Community Architect'),
-                avatar: data.authorAvatar || data.author?.avatar || (isSystem ? 'https://api.dicebear.com/7.x/identicon/svg?seed=dbmaps-system' : `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(data.authorName || docSnap.id)}`),
-                isSystem: isSystem
-              },
-              description: data.description || (isSystem ? 'Official dbmaps system architecture blueprint' : 'Community submitted database schema'),
-              highlights: Array.isArray(data.highlights) && data.highlights.length > 0
-                ? data.highlights
-                : [
-                    `${data.tables.length} structured tables`,
-                    `${(data.relationships || []).length} foreign key relationships`,
-                    `Engineered for ${data.dialect || 'PostgreSQL'}`
-                  ],
-              tables: data.tables,
-              relationships: data.relationships || [],
-              dbml,
-              createdAt: data.createdAt || new Date().toISOString(),
-              updatedAt: data.updatedAt || new Date().toISOString()
-            });
-          }
-        });
-
-        // Sort newest first
-        submissions.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        state.marketplaceSubmissions = submissions;
-      },
-      (error) => {
-        state.isMarketplaceLoading = false;
-        if (isFirestoreApiDisabledOrOffline(error)) {
-          return;
-        }
-        console.warn('Marketplace listener note:', error.message || error);
-        if (error.code === 'permission-denied') {
-          handleFirestoreError(error, 'list', 'marketplace_templates');
-        }
-      }
-    );
-  } catch (err) {
-    state.isMarketplaceLoading = false;
-    console.warn('Failed to initialize marketplace listener:', err);
-  }
-}
-
-// Auto-initialize real-time public marketplace blueprints and submissions
-initMarketplaceListener();
-
-// Submit or Update a User's Project / Database to Marketplace (with Admin System Blueprint support)
-export async function submitProjectToMarketplace(formData) {
-  const isEditing = !!formData.id || !!formData.templateId;
-  const targetTemplateId = formData.id || formData.templateId;
-
-  let existingTpl = null;
-  if (isEditing) {
-    existingTpl = allMarketplaceTemplates.value.find(t => t.id === targetTemplateId);
-  }
-
-  let targetProject = null;
-  if (formData.projectId) {
-    targetProject = state.projects.find(p => p.id === formData.projectId);
-  }
-  if (!targetProject && activeProject.value && (!formData.useExistingTables || !existingTpl)) {
-    targetProject = activeProject.value;
-  }
-
-  let cleanTables = [];
-  let cleanRels = [];
-
-  if (formData.useExistingTables && existingTpl && Array.isArray(existingTpl.tables) && existingTpl.tables.length > 0) {
-    cleanTables = JSON.parse(JSON.stringify(existingTpl.tables));
-    cleanRels = JSON.parse(JSON.stringify(existingTpl.relationships || []));
-  } else if (targetProject && Array.isArray(targetProject.tables) && targetProject.tables.length > 0) {
-    cleanTables = JSON.parse(JSON.stringify(targetProject.tables));
-    cleanRels = JSON.parse(JSON.stringify(targetProject.relationships || []));
-  } else if (existingTpl && Array.isArray(existingTpl.tables) && existingTpl.tables.length > 0) {
-    cleanTables = JSON.parse(JSON.stringify(existingTpl.tables));
-    cleanRels = JSON.parse(JSON.stringify(existingTpl.relationships || []));
-  } else {
-    throw new Error('Your database blueprint must contain at least 1 table before publishing to Marketplace');
-  }
-
-  sanitizeTableColumns(cleanTables);
-
-  let dbmlCode = '';
-  try {
-    dbmlCode = generateDBML(cleanTables, cleanRels);
-  } catch (e) {
-    console.warn('Could not generate DBML for marketplace submission:', e);
-  }
-
-  const user = auth.currentUser;
-  const currentEmail = (user?.email || state.currentUser.email || '').toLowerCase();
-  const isAdmin = currentEmail === 'aungkyawminn.aya@gmail.com' || state.userProfile.role === 'admin';
-  const isSystem = isAdmin && (formData.isSystem === true || formData.badge === 'dbmaps System');
-
-  const currentUid = (state.currentUser.isLoggedIn && user)
-    ? user.uid
-    : (state.currentUser.id || 'community-user');
-
-  let authorDisplayName = (formData.authorName || state.currentUser.name || user?.displayName || 'Community Architect').trim();
-  let authorTitle = (formData.authorTitle || 'Community Architect').trim();
-  let authorAvatar = user?.photoURL || state.currentUser.avatar || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(authorDisplayName)}`;
-
-  if (isSystem) {
-    authorDisplayName = (formData.authorName || 'dbmaps System').trim();
-    authorTitle = (formData.authorTitle || 'dbmaps Core Architecture Engine').trim();
-    authorAvatar = (formData.authorAvatar || 'https://api.dicebear.com/7.x/identicon/svg?seed=dbmaps-system').trim();
-  }
-
-  const newId = targetTemplateId || (isSystem ? `tpl-${(formData.name || 'system').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Math.random().toString(36).substring(2, 5)}` : `mkt-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`);
-  const timestamp = new Date().toISOString();
-
-  // Parse highlights
-  let highlights = [];
-  if (Array.isArray(formData.highlights)) {
-    highlights = formData.highlights.filter(h => h && h.trim().length > 0);
-  } else if (typeof formData.highlights === 'string') {
-    highlights = formData.highlights.split('\n').map(s => s.trim()).filter(Boolean);
-  }
-  if (highlights.length === 0) {
-    highlights = [
-      `${cleanTables.length} relational tables with primary keys and indexes`,
-      `${cleanRels.length} relational foreign-key integrity constraints`,
-      `Engineered for ${formData.dialect || targetProject?.dialect || existingTpl?.dialect || 'PostgreSQL'}`
-    ];
-  }
-
-  const templatePayload = {
-    id: newId,
-    name: (formData.name || targetProject?.name || existingTpl?.name || 'Database Blueprint').trim(),
-    slug: (formData.slug || formData.name || targetProject?.name || existingTpl?.name || 'blueprint').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-    category: formData.category || existingTpl?.category || 'saas',
-    complexity: formData.complexity || existingTpl?.complexity || 'Intermediate',
-    dialect: formData.dialect || targetProject?.dialect || existingTpl?.dialect || 'postgres',
-    tier: formData.tier || existingTpl?.tier || 'free',
-    badge: isSystem ? 'dbmaps System' : (formData.badge || 'Community'),
-    isSystem: isSystem,
-    isVerified: isSystem ? true : (formData.isVerified !== undefined ? !!formData.isVerified : false),
-    rating: existingTpl?.rating || 5.0,
-    reviewsCount: existingTpl?.reviewsCount || 1,
-    clonesCount: existingTpl?.clonesCount || 0,
-    authorUid: isSystem ? 'system' : (existingTpl?.authorUid || currentUid),
-    authorEmail: isSystem ? 'system@dbmaps.io' : (existingTpl?.authorEmail || currentEmail),
-    authorName: authorDisplayName,
-    authorTitle: authorTitle,
-    authorAvatar: authorAvatar,
-    author: {
-      name: authorDisplayName,
-      title: authorTitle,
-      avatar: authorAvatar,
-      isSystem: isSystem
-    },
-    description: (formData.description || targetProject?.description || existingTpl?.description || 'Database architecture created in dbmaps').trim(),
-    highlights,
-    tables: cleanTables,
-    relationships: cleanRels,
-    dbml: dbmlCode,
-    createdAt: existingTpl?.createdAt || timestamp,
-    updatedAt: timestamp
-  };
-
-  try {
-    await setDoc(doc(db, 'marketplace_templates', newId), templatePayload, { merge: true });
-  } catch (err) {
-    console.warn('Marketplace setDoc error:', err);
-    if (!isFirestoreApiDisabledOrOffline(err)) {
-      handleFirestoreError(err, isEditing ? 'update' : 'create', `marketplace_templates/${newId}`);
-    }
-  }
-
-  // Ensure local reactive list updates immediately
-  const existsIdx = state.marketplaceSubmissions.findIndex(s => s.id === newId);
-  if (existsIdx !== -1) {
-    state.marketplaceSubmissions[existsIdx] = templatePayload;
-  } else {
-    state.marketplaceSubmissions.unshift(templatePayload);
-  }
-
-  addToast(
-    isEditing ? 'Blueprint Updated!' : 'Published to Marketplace!',
-    isSystem
-      ? `"${templatePayload.name}" is now live as an official dbmaps System Blueprint.`
-      : `"${templatePayload.name}" is now live in the dbmaps Community Marketplace.`,
-    'success'
-  );
-
-  state.modals.submitToMarketplace = false;
-  state.editingMarketplaceTemplate = null;
-  return templatePayload;
-}
-
-// Update an existing Marketplace Blueprint directly (Admin)
-export async function updateMarketplaceTemplate(templateId, updates) {
-  if (!templateId) throw new Error('Missing template ID');
-
-  const existingTpl = allMarketplaceTemplates.value.find(t => t.id === templateId);
-  if (!existingTpl) throw new Error('Template not found');
-
-  const timestamp = new Date().toISOString();
-  const payload = {
-    id: existingTpl.id,
-    name: updates.name !== undefined ? updates.name : existingTpl.name,
-    slug: updates.slug !== undefined ? updates.slug : existingTpl.slug,
-    category: updates.category !== undefined ? updates.category : existingTpl.category,
-    complexity: updates.complexity !== undefined ? updates.complexity : existingTpl.complexity,
-    dialect: updates.dialect !== undefined ? updates.dialect : existingTpl.dialect,
-    description: updates.description !== undefined ? updates.description : existingTpl.description,
-    highlights: updates.highlights !== undefined ? updates.highlights : existingTpl.highlights,
-    badge: updates.badge !== undefined ? updates.badge : existingTpl.badge,
-    isSystem: updates.isSystem !== undefined ? updates.isSystem : existingTpl.isSystem,
-    isVerified: updates.isVerified !== undefined ? updates.isVerified : existingTpl.isVerified,
-    authorName: updates.authorName || updates.author?.name || existingTpl.author?.name,
-    authorTitle: updates.authorTitle || updates.author?.title || existingTpl.author?.title,
-    authorAvatar: updates.authorAvatar || updates.author?.avatar || existingTpl.author?.avatar,
-    tables: updates.tables || existingTpl.tables,
-    relationships: updates.relationships || existingTpl.relationships || [],
-    dbml: updates.dbml || existingTpl.dbml || '',
-    author: {
-      name: updates.authorName || updates.author?.name || existingTpl.author?.name,
-      title: updates.authorTitle || updates.author?.title || existingTpl.author?.title,
-      avatar: updates.authorAvatar || updates.author?.avatar || existingTpl.author?.avatar,
-      isSystem: updates.isSystem !== undefined ? updates.isSystem : existingTpl.isSystem
-    },
-    updatedAt: timestamp
-  };
-
-  try {
-    await setDoc(doc(db, 'marketplace_templates', templateId), payload, { merge: true });
-  } catch (err) {
-    console.warn('Marketplace update error:', err);
-    if (!isFirestoreApiDisabledOrOffline(err)) {
-      handleFirestoreError(err, 'update', `marketplace_templates/${templateId}`);
-    }
-  }
-
-  const idx = state.marketplaceSubmissions.findIndex(s => s.id === templateId);
-  if (idx !== -1) {
-    state.marketplaceSubmissions[idx] = { ...state.marketplaceSubmissions[idx], ...payload };
-  } else {
-    state.marketplaceSubmissions.unshift(payload);
-  }
-
-  addToast('Template Saved', `"${payload.name}" updated successfully.`, 'success');
-  return payload;
-}
-
-// Toggle whether a template is an official dbmaps System blueprint (Admin)
-export async function toggleTemplateSystemStatus(templateId) {
-  const tpl = allMarketplaceTemplates.value.find(t => t.id === templateId);
-  if (!tpl) return;
-
-  const nextIsSystem = !tpl.isSystem;
-  const nextBadge = nextIsSystem ? 'dbmaps System' : 'Community';
-
-  await updateMarketplaceTemplate(templateId, {
-    isSystem: nextIsSystem,
-    badge: nextBadge,
-    isVerified: nextIsSystem ? true : !!tpl.isVerified,
-    authorName: nextIsSystem ? 'dbmaps System' : (tpl.author?.name || 'Community Architect'),
-    authorTitle: nextIsSystem ? 'dbmaps Core Architecture Engine' : (tpl.author?.title || 'Community Architect'),
-    authorAvatar: nextIsSystem ? 'https://api.dicebear.com/7.x/identicon/svg?seed=dbmaps-system' : (tpl.author?.avatar || '')
-  });
-
-  addToast(
-    nextIsSystem ? 'Promoted to System' : 'Demoted to Community',
-    `"${tpl.name}" is now marked as ${nextBadge}.`,
-    'info'
-  );
-}
-
-// Delete or Unpublish a Marketplace Submission (Author or Admin)
-export async function deleteMarketplaceTemplate(templateId) {
-  const item = allMarketplaceTemplates.value.find(s => s.id === templateId);
-  if (!item) return;
-
-  const currentEmail = (auth.currentUser?.email || state.currentUser.email || '').toLowerCase();
-  const isAdminUser = currentEmail === 'aungkyawminn.aya@gmail.com' || state.userProfile.role === 'admin';
-
-  if (item.authorUid !== (auth.currentUser?.uid || state.currentUser.id) && item.authorEmail !== currentEmail && !isAdminUser) {
-    addToast('Permission Denied', 'You can only unpublish templates that you submitted.', 'error');
-    return;
-  }
-
-  try {
-    await deleteDoc(doc(db, 'marketplace_templates', templateId));
-  } catch (err) {
-    console.warn('Marketplace delete error:', err);
-    if (!isFirestoreApiDisabledOrOffline(err)) {
-      handleFirestoreError(err, 'delete', `marketplace_templates/${templateId}`);
-    }
-  }
-
-  state.marketplaceSubmissions = state.marketplaceSubmissions.filter(s => s.id !== templateId);
-  addToast('Template Removed', `"${item.name}" removed from Marketplace`, 'info');
-}
-
-// Clone a template from the Marketplace into user's active workspace
 export function cloneMarketplaceTemplate(template, targetFolderId = null) {
   if (!template) return null;
 
-  const currentOwnerUid = (state.currentUser.isLoggedIn && auth.currentUser)
-    ? auth.currentUser.uid
-    : (state.currentUser.id || 'guest');
+  const currentOwnerUid = 'guest';
   const currentOwnerEmail = state.currentUser.email || '';
   const folder = targetFolderId || state.folders[0]?.id || 'folder-1';
 
@@ -4136,21 +2142,9 @@ export function cloneMarketplaceTemplate(template, targetFolderId = null) {
 
   selectProject(newProj.id);
   if (state.currentUser.isLoggedIn) {
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
   }
   saveGuestProjectsToStorage();
-
-  // If this was a community-submitted template, record clone count in Firestore
-  if (!template.isSystem && template.id && template.id.startsWith('mkt-')) {
-    try {
-      const docRef = doc(db, 'marketplace_templates', template.id);
-      const newClonesCount = (template.clonesCount || 0) + 1;
-      template.clonesCount = newClonesCount;
-      updateDoc(docRef, { clonesCount: newClonesCount }).catch(() => {});
-    } catch (e) {
-      console.warn('Could not increment clone count:', e);
-    }
-  }
 
   addToast('Template Cloned', `Cloned "${template.name}" with ${clonedTables.length} tables & ${(template.relationships || []).length} relations.`, 'success');
 
@@ -4167,15 +2161,7 @@ export async function deleteProject(projectId) {
   const idx = state.projects.findIndex(p => p.id === projectId);
   if (idx !== -1) {
     const targetProj = state.projects[idx];
-    const isOwner = Boolean(
-      !targetProj.ownerUid ||
-      targetProj.ownerUid === 'guest' ||
-      (auth.currentUser && targetProj.ownerUid === auth.currentUser.uid) ||
-      checkIsCurrentUserAdmin()
-    );
-
     const projName = targetProj.name || 'Untitled Schema';
-    const isSharedWithMe = Boolean(targetProj.isSharedWithMe);
 
     // 1. Record in deleted IDs set so it can NEVER resurrect
     recordDeletedProjectId(projectId);
@@ -4185,7 +2171,6 @@ export async function deleteProject(projectId) {
 
     // 3. Clean local storage caches
     try {
-      delete lastSyncedHashes[projectId];
       localStorage.removeItem('dbmaps_local_schema_' + projectId);
       saveGuestProjectsToStorage();
     } catch (e) {}
@@ -4196,9 +2181,7 @@ export async function deleteProject(projectId) {
         state.activeProjectId = state.projects[0].id;
         state.roomCode = state.projects[0].id;
       } else {
-        const currentOwnerUid = (state.currentUser.isLoggedIn && auth.currentUser)
-          ? auth.currentUser.uid
-          : 'guest';
+        const currentOwnerUid = 'guest';
         const currentOwnerEmail = state.currentUser.email || '';
         const fallbackFolderId = state.folders[0]?.id || 'folder-1';
         const fresh = {
@@ -4225,25 +2208,7 @@ export async function deleteProject(projectId) {
       }
     }
 
-    // 5. Collaborators can remove the project from their workspace without deleting the owner's source
-    if (isSharedWithMe || !isOwner) {
-      addToast('Removed from Workspace', `Removed shared schema "${projName}" from your workspace`, 'info');
-      return;
-    }
-
-    // 6. Delete from Firestore permanently
-    try {
-      await deleteDoc(doc(db, 'projects', projectId));
-      addToast('Database Schema Deleted', `Permanently removed "${projName}"`, 'info');
-    } catch (e) {
-      console.warn('Delete project error:', e.message);
-      if (isFirestoreApiDisabledOrOffline(e)) {
-        return;
-      }
-      if (e.code === 'permission-denied') {
-        handleFirestoreError(e, 'delete', `projects/${projectId}`);
-      }
-    }
+    addToast('Database Schema Deleted', `Removed "${projName}" from this browser`, 'info');
   }
 }
 
@@ -4297,11 +2262,11 @@ export function deleteFolder(folderId) {
       }
     });
 
-    // Save updated folders list to storage and Firestore so on reload it NEVER comes back!
+    // Save updated folders list to browser storage so on reload it NEVER comes back!
     saveFoldersToStorage();
 
     if (modifiedAny) {
-      syncActiveProjectToFirestore();
+      saveProjectsLocally();
       saveGuestProjectsToStorage();
     }
     
@@ -4329,7 +2294,7 @@ export function moveProjectToFolder(projectId, targetFolderId) {
     }
 
     saveProjectsOrderToStorage();
-    syncActiveProjectToFirestore();
+    saveProjectsLocally();
     addToast('Schema Moved', `Moved "${proj.name}" to database "${targetFolder.name}"`, 'success');
   }
 }
@@ -4540,698 +2505,6 @@ export const moveSchemaToTop = moveProjectToTop;
 export const moveSchemaToBottom = moveProjectToBottom;
 export const reorderSchemas = reorderProjectsInFolder;
 
-// Helper to open Presto AI with authentication verification
-export function openPrestoAiWithAuthCheck() {
-  if (!state.currentUser || !state.currentUser.isLoggedIn) {
-    state.authModalPromptReason = 'ai_presto';
-    state.modals.auth = true;
-    addToast(
-      'Sign In Required',
-      'Presto AI Schema Assistant is available for registered accounts. Sign in with Google to claim your 50,000 free monthly AI credits!',
-      'info'
-    );
-    return false;
-  }
-  state.modals.aiGen = true;
-  return true;
-}
-
-// Generate schema with server-side Gemini API + Token Metering
-export async function generateSchemaWithAI(prompt, dialect = 'postgres', mode = 'new') {
-  if (!state.currentUser || !state.currentUser.isLoggedIn) {
-    state.authModalPromptReason = 'ai_presto';
-    state.modals.auth = true;
-    throw new Error('Please sign in to use Presto AI Schema Generator. Registered users receive 50,000 free monthly AI credits.');
-  }
-
-  const proj = activeProject.value;
-  const existingTables = (proj && mode === 'extend') ? proj.tables : [];
-
-  const headers = await getAuthHeaders();
-  const response = await fetch('/api/generate-schema', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      prompt,
-      dialect,
-      mode,
-      existingTables,
-      userId: state.currentUser.id || 'guest',
-      userEmail: state.currentUser.email || '',
-      userName: state.currentUser.name || ''
-    })
-  });
-
-  const data = await response.json();
-  if (!response.ok || !data.success) {
-    if (response.status === 402 && isUpgradeCreditsEnabled.value) {
-      state.modals.billing = true; // Automatically open billing modal on insufficient credits
-    }
-    throw new Error(data.error || 'Failed to generate schema with AI');
-  }
-
-  // Update credit meter in local state
-  if (data.usage && typeof data.usage.creditsRemaining === 'number') {
-    state.userProfile.creditsRemaining = data.usage.creditsRemaining;
-    const modelUsed = data.model || 'Gemini';
-    const creditsUsed = data.usage.creditsDeducted || data.usage.totalTokensDeducted || 0;
-    const rawTokens = data.usage.rawTokens || creditsUsed;
-    const costText = typeof data.usage.estimatedCostUsd === 'number'
-      ? ` (~$${data.usage.estimatedCostUsd.toFixed(5)})`
-      : '';
-    addToast(
-      'AI Schema Generated',
-      `Deducted ${creditsUsed.toLocaleString()} credits (${modelUsed}) for ${rawTokens.toLocaleString()} tokens${costText}. ${data.usage.creditsRemaining.toLocaleString()} remaining.`,
-      'info'
-    );
-  }
-
-  return data.schema;
-}
-
-export async function applyAiGeneratedSchema(aiResult, mode = 'new') {
-  if (!aiResult || !aiResult.tables) return;
-
-  if (mode === 'new') {
-    const isAuth = Boolean(state.currentUser?.isLoggedIn && auth.currentUser);
-    const currentOwnerUid = isAuth ? auth.currentUser.uid : (state.currentUser?.id || 'guest');
-    const currentOwnerEmail = state.currentUser?.email || (auth.currentUser ? auth.currentUser.email : '') || '';
-    const determinedAccessMode = isAuth ? 'restricted' : 'public';
-    const targetFolderId = activeProject.value?.folderId || state.folders[0]?.id || 'folder-1';
-
-    const newProjId = 'proj-' + Date.now();
-    const newProjectObj = {
-      id: newProjId,
-      folderId: targetFolderId,
-      name: aiResult.schemaName || 'AI Generated Schema',
-      description: aiResult.description || 'Generated with Gemini AI',
-      dialect: activeProject.value?.dialect || 'postgres',
-      accessMode: determinedAccessMode,
-      sharePassword: '',
-      allowedEmails: isAuth && currentOwnerEmail ? [currentOwnerEmail.toLowerCase()] : [],
-      ownerUid: currentOwnerUid,
-      ownerEmail: currentOwnerEmail,
-      tables: aiResult.tables.map((t, idx) => ({
-        id: 'tbl-ai-' + Date.now() + '-' + idx,
-        name: t.name,
-        headerColor: t.headerColor || '#3b82f6',
-        comment: t.comment || '',
-        note: t.note || t.comment || '',
-        x: 60 + (idx % 3) * 380,
-        y: 60 + Math.floor(idx / 3) * 320,
-        columns: (t.columns || []).map((c, cIdx) => {
-          const isPk = Boolean(c.isPk ?? c.pk ?? c.primaryKey);
-          const isFk = Boolean(c.isFk ?? c.fk ?? c.foreignKey);
-          return {
-            id: 'col-' + Date.now() + '-' + idx + '-' + cIdx,
-            name: c.name,
-            type: c.type,
-            isPk,
-            pk: isPk,
-            isFk,
-            fk: isFk,
-            isNull: c.isNull !== undefined ? Boolean(c.isNull) : (c.notNull !== undefined ? !c.notNull : (isPk ? false : true)),
-            notNull: c.notNull !== undefined ? Boolean(c.notNull) : (c.isNull !== undefined ? !c.isNull : isPk),
-            isUnique: Boolean(c.isUnique ?? c.unique ?? isPk),
-            unique: Boolean(c.isUnique ?? c.unique ?? isPk),
-            note: c.note || c.comment || ''
-          };
-        })
-      })),
-      relationships: (aiResult.relationships || []).map((r, rIdx) => {
-        const rawType = (r.cardinality || r.type || '').toUpperCase().trim();
-        let card = 'N:1';
-        if (rawType === '1:1') card = '1:1';
-        else if (rawType === 'N:M' || rawType === 'M:N') card = 'N:M';
-        else card = 'N:1';
-
-        const isOptional = r.optional === true || (r.operator && r.operator.includes('?'));
-        let op = r.operator;
-        if (!op) {
-          if (card === '1:1') op = isOptional ? '-?' : '-';
-          else if (card === 'N:M') op = isOptional ? '<>?' : '<>';
-          else op = isOptional ? '>?' : '>';
-        }
-        return {
-          id: 'rel-ai-' + Date.now() + '-' + rIdx,
-          fromTable: r.fromTable,
-          fromColumn: r.fromColumn,
-          toTable: r.toTable,
-          toColumn: r.toColumn,
-          cardinality: card,
-          operator: op,
-          type: card
-        };
-      }),
-      enums: [],
-      tableGroups: [],
-      projectConfig: null,
-      customDbml: null,
-      history: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    // Normalize keys: set foreign-key flags consistently from valid relationship endpoints (even if Gemini omits fk flag)
-    normalizeTableKeys(newProjectObj.tables, newProjectObj.relationships);
-
-    // 1. Generate immediate DBML with pk and ref declarations so it displays instantly in the code editor
-    newProjectObj.customDbml = generateDBML(
-      newProjectObj.tables,
-      newProjectObj.relationships,
-      newProjectObj.name,
-      {
-        enums: newProjectObj.enums || [],
-        tableGroups: newProjectObj.tableGroups || [],
-        projectConfig: newProjectObj.projectConfig || null
-      }
-    );
-
-    // 2. Bring containing database/folder to the top of state.folders
-    const folderIdx = state.folders.findIndex(f => f.id === targetFolderId);
-    if (folderIdx > 0) {
-      const [folderObj] = state.folders.splice(folderIdx, 1);
-      state.folders.unshift(folderObj);
-      saveFoldersToStorage();
-    }
-
-    // 3. Insert new schema FIRST inside targetFolderId's ordering
-    if (!state.projectOrder) state.projectOrder = {};
-    const existingOrder = (state.projectOrder[targetFolderId] || []).filter(id => id !== newProjId);
-    const existingFolderProjects = state.projects
-      .filter(p => p.folderId === targetFolderId && p.id !== newProjId)
-      .map(p => p.id);
-    const combinedOtherIds = [...existingOrder];
-    existingFolderProjects.forEach(id => {
-      if (!combinedOtherIds.includes(id)) combinedOtherIds.push(id);
-    });
-    const newFolderOrder = [newProjId, ...combinedOtherIds];
-    state.projectOrder[targetFolderId] = newFolderOrder;
-
-    // 4. Insert new project into state.projects at the very beginning
-    if (state.projects.length === 1 && isUntouchedBlankStarter(state.projects[0])) {
-      state.projects = [newProjectObj];
-    } else {
-      state.projects.unshift(newProjectObj);
-    }
-
-    // 5. Reorder projects in folder and re-sort state.projects while preserving all other groups and schemas
-    reorderProjectsInFolder(targetFolderId, newFolderOrder);
-
-    // 6. Persist locally to storage immediately
-    saveGuestProjectsToStorage();
-
-    // 7. Coordinate initial Firestore creation before subscription to prevent premature access permission denial
-    let saveSucceeded = true;
-    if (isAuth && auth.currentUser && db) {
-      state.saveStatus = 'saving';
-      state.saveErrorMessage = null;
-      try {
-        const docRef = doc(db, 'projects', newProjId);
-        const payload = {
-          id: newProjectObj.id,
-          folderId: newProjectObj.folderId || 'folder-1',
-          name: newProjectObj.name,
-          description: newProjectObj.description || '',
-          dialect: newProjectObj.dialect || 'postgres',
-          accessMode: newProjectObj.accessMode,
-          sharePassword: newProjectObj.sharePassword || '',
-          allowedEmails: Array.isArray(newProjectObj.allowedEmails) ? JSON.parse(JSON.stringify(newProjectObj.allowedEmails)) : [],
-          tables: JSON.parse(JSON.stringify(newProjectObj.tables || [])),
-          relationships: JSON.parse(JSON.stringify(newProjectObj.relationships || [])),
-          enums: JSON.parse(JSON.stringify(newProjectObj.enums || [])),
-          tableGroups: JSON.parse(JSON.stringify(newProjectObj.tableGroups || [])),
-          projectConfig: newProjectObj.projectConfig ? JSON.parse(JSON.stringify(newProjectObj.projectConfig)) : null,
-          customDbml: newProjectObj.customDbml || null,
-          history: JSON.parse(JSON.stringify(newProjectObj.history || [])),
-          ownerUid: newProjectObj.ownerUid,
-          ownerEmail: newProjectObj.ownerEmail,
-          createdAt: newProjectObj.createdAt,
-          updatedAt: new Date().toISOString()
-        };
-        await setDoc(docRef, payload, { merge: true });
-        lastSyncedHashes[newProjId] = computeProjectHash(payload);
-        state.saveStatus = 'saved';
-        state.lastSavedAt = new Date().toISOString();
-      } catch (err) {
-        saveSucceeded = false;
-        console.error('Initial Firestore creation failed for new project:', err);
-        state.saveStatus = 'error';
-        state.saveErrorMessage = err.message || 'Error saving schema to cloud';
-        if (err.code === 'permission-denied') {
-          try {
-            handleFirestoreError(err, 'write', `projects/${newProjId}`);
-          } catch (_) {}
-        }
-        addToast('Save Failed', err.message || 'Permission denied saving new schema to Firestore', 'error');
-      }
-    }
-
-    if (saveSucceeded) {
-      // 8. Clear a stale restriction state only when it belongs to this newly created project and the authenticated owner’s access is confirmed
-      if (
-        state.collaborationAccessRestricted?.active &&
-        state.collaborationAccessRestricted.schemaId === newProjId &&
-        isAuth &&
-        auth.currentUser?.uid === newProjectObj.ownerUid
-      ) {
-        state.collaborationAccessRestricted.active = false;
-        state.collaborationAccessRestricted.reason = null;
-        state.collaborationAccessRestricted.pendingProjectData = null;
-      }
-
-      // 9. Automatically select and open the new schema in Studio immediately
-      selectProject(newProjId);
-
-      // 10. Auto-arrange tables and trigger smooth canvas fit
-      autoArrangeTables('flow');
-      state.canvasFitTrigger = Date.now();
-
-      // 11. Ensure Explorer tab is active so the newly created schema is visible in the sidebar
-      state.activeTab = 'explorer';
-
-      addToast('AI Schema Created', `Generated '${newProjectObj.name}' with ${newProjectObj.tables.length} tables.`, 'success');
-    }
-  } else {
-    const proj = activeProject.value;
-    if (!proj) return;
-
-    let addedTables = 0;
-    aiResult.tables.forEach((t, idx) => {
-      const existingIdx = proj.tables.findIndex(existing => existing.name.toLowerCase() === t.name.toLowerCase());
-      if (existingIdx >= 0) {
-        const targetTable = proj.tables[existingIdx];
-        (t.columns || []).forEach((c) => {
-          const colExists = targetTable.columns.some(col => col.name.toLowerCase() === c.name.toLowerCase());
-          if (!colExists) {
-            const isPk = Boolean(c.isPk ?? c.pk ?? c.primaryKey);
-            const isFk = Boolean(c.isFk ?? c.fk ?? c.foreignKey);
-            targetTable.columns.push({
-              id: 'col-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
-              name: c.name,
-              type: c.type,
-              isPk,
-              pk: isPk,
-              isFk,
-              fk: isFk,
-              isNull: c.isNull !== undefined ? Boolean(c.isNull) : (c.notNull !== undefined ? !c.notNull : (isPk ? false : true)),
-              notNull: c.notNull !== undefined ? Boolean(c.notNull) : (c.isNull !== undefined ? !c.isNull : isPk),
-              isUnique: Boolean(c.isUnique ?? c.unique ?? isPk),
-              unique: Boolean(c.isUnique ?? c.unique ?? isPk),
-              note: c.note || c.comment || ''
-            });
-          }
-        });
-      } else {
-        proj.tables.push({
-          id: 'tbl-ai-' + Date.now() + '-' + idx,
-          name: t.name,
-          headerColor: t.headerColor || '#3b82f6',
-          comment: t.comment || '',
-          note: t.note || t.comment || '',
-          x: 60 + (proj.tables.length % 3) * 380,
-          y: 60 + Math.floor(proj.tables.length / 3) * 320,
-          columns: (t.columns || []).map((c, cIdx) => {
-            const isPk = Boolean(c.isPk ?? c.pk ?? c.primaryKey);
-            const isFk = Boolean(c.isFk ?? c.fk ?? c.foreignKey);
-            return {
-              id: 'col-' + Date.now() + '-' + idx + '-' + cIdx,
-              name: c.name,
-              type: c.type,
-              isPk,
-              pk: isPk,
-              isFk,
-              fk: isFk,
-              isNull: c.isNull !== undefined ? Boolean(c.isNull) : (c.notNull !== undefined ? !c.notNull : (isPk ? false : true)),
-              notNull: c.notNull !== undefined ? Boolean(c.notNull) : (c.isNull !== undefined ? !c.isNull : isPk),
-              isUnique: Boolean(c.isUnique ?? c.unique ?? isPk),
-              unique: Boolean(c.isUnique ?? c.unique ?? isPk),
-              note: c.note || c.comment || ''
-            };
-          })
-        });
-        addedTables++;
-      }
-    });
-
-    (aiResult.relationships || []).forEach((r, rIdx) => {
-      const relExists = proj.relationships.some(existing => 
-        existing.fromTable.toLowerCase() === r.fromTable.toLowerCase() &&
-        existing.fromColumn.toLowerCase() === r.fromColumn.toLowerCase() &&
-        existing.toTable.toLowerCase() === r.toTable.toLowerCase()
-      );
-      if (!relExists) {
-        const card = r.cardinality || r.type || '1:N';
-        const isOptional = r.optional === true;
-        let op = r.operator;
-        if (!op) {
-          if (card === '1:1') op = isOptional ? '-?' : '-';
-          else if (card === 'N:M') op = isOptional ? '<>?' : '<>';
-          else op = isOptional ? '>?' : '>';
-        }
-        proj.relationships.push({
-          id: 'rel-ai-' + Date.now() + '-' + rIdx,
-          fromTable: r.fromTable,
-          fromColumn: r.fromColumn,
-          toTable: r.toTable,
-          toColumn: r.toColumn,
-          cardinality: card,
-          operator: op,
-          type: card
-        });
-      }
-    });
-
-    // Consistently normalize keys across extended schema
-    normalizeTableKeys(proj.tables, proj.relationships);
-
-    // Synchronize DBML while preserving existing custom DBML content
-    if (!proj.customDbml) {
-      proj.customDbml = generateDBML(
-        proj.tables,
-        proj.relationships,
-        proj.name,
-        {
-          enums: proj.enums || [],
-          tableGroups: proj.tableGroups || [],
-          projectConfig: proj.projectConfig || null
-        }
-      );
-    } else {
-      const existingDbml = proj.customDbml.trim();
-      const newTablesDbml = generateDBML(
-        proj.tables.filter(t => !existingDbml.includes(`Table ${t.name}`) && !existingDbml.includes(`Table "${t.name}"`) && !existingDbml.includes(`Table \`${t.name}\``)),
-        proj.relationships.filter(r => !existingDbml.includes(`${r.fromTable}.${r.fromColumn}`)),
-        proj.name
-      ).replace(/^\/\/ DBML Database Schema:.*\n\/\/ Generated on .*\n\n/i, '');
-      if (newTablesDbml.trim()) {
-        proj.customDbml = existingDbml + '\n\n' + newTablesDbml.trim() + '\n';
-      }
-    }
-
-    proj.updatedAt = new Date().toISOString();
-    autoArrangeTables();
-    syncActiveProjectToFirestore();
-    addToast('AI Schema Extended', `Updated active project '${proj.name}'.`, 'success');
-  }
-}
-
-// Create TallySale Seller Invoice via backend HMAC SHA256 integration
-export async function createTallySaleInvoice(options = {}) {
-  try {
-    const payload = typeof options === 'string'
-      ? {
-          plan: options,
-          userId: state.currentUser.id || 'guest',
-          userEmail: state.currentUser.email || '',
-          userName: state.currentUser.name || 'Developer',
-          currency: 'MMK'
-        }
-      : {
-          userId: state.currentUser.id || 'guest',
-          userEmail: state.currentUser.email || '',
-          userName: state.currentUser.name || 'Developer',
-          plan: 'pro',
-          currency: 'MMK',
-          ...options
-        };
-
-    const res = await fetch('/api/tallysale/create-invoice', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (!res.ok && !data.invoice && !data.data) {
-      throw new Error(data.error || 'Failed to create invoice with TallySale API');
-    }
-    const inv = data.invoice || data.data;
-    if (inv) {
-      addToast('TallySale Invoice Created', `Invoice #${inv.invoice_number || inv.id} generated. Ready for checkout.`, 'success');
-    }
-    return data;
-  } catch (err) {
-    addToast('TallySale API Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Generate Merchant SSO URL for Customer Portal
-export async function fetchMerchantSsoUrl(email = '', config = {}) {
-  try {
-    const targetEmail = email || state.currentUser.email || 'developer@dbmaps.io';
-    const res = await fetch('/api/tallysale/merchant-sso-url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: targetEmail, _config: config })
-    });
-    const data = await res.json();
-    if (!res.ok || !data.url) {
-      throw new Error(data.error || 'Failed to generate Customer Portal SSO URL');
-    }
-    return data.url;
-  } catch (err) {
-    addToast('SSO Portal Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Verify TallySale Payment Status (or forward AYA PGW callback)
-export async function verifyTallySalePayment(params = {}) {
-  try {
-    const body = typeof params === 'object' && params !== null
-      ? { userId: state.currentUser.id || 'guest', ...params }
-      : { requestId: params, userId: state.currentUser.id || 'guest' };
-
-    const res = await fetch('/api/tallysale/verify-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || 'Failed to verify payment with TallySale');
-    }
-
-    if (data.paid) {
-      await fetchUserProfile();
-      addToast('Payment Verified!', 'Your account has been upgraded to PRO Tier with 1,000,000 AI credits.', 'success');
-    } else {
-      addToast('Payment Status: Pending', data.message || 'Invoice payment is pending on TallySale portal.', 'info');
-    }
-    return data;
-  } catch (err) {
-    addToast('Verification Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Fetch received webhook logs (Admin only)
-export async function fetchWebhookLogs() {
-  try {
-    const headers = await getAuthHeaders();
-    const res = await fetch('/api/tallysale/webhook-logs', { headers });
-    const data = await res.json();
-    return data.logs || [];
-  } catch (err) {
-    return [];
-  }
-}
-
-// Submit TallySale Payment Reference for Tier Upgrade
-export async function submitTallySalePayment(invoiceRef, notes = '') {
-  try {
-    const headers = await getAuthHeaders();
-    const res = await fetch('/api/payment-request', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        userId: state.currentUser.id || 'guest',
-        userEmail: state.currentUser.email || '',
-        invoiceRef,
-        requestedTier: 'pro',
-        notes
-      })
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to submit payment proof');
-    }
-    addToast('TallySale Payment Submitted', 'Your invoice ref has been sent to Admin for approval.', 'success');
-    return data.payment;
-  } catch (err) {
-    addToast('Payment Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Get User's TallySale Payments
-export async function fetchUserPayments() {
-  try {
-    const userId = state.currentUser.id || 'guest';
-    const headers = await getAuthHeaders();
-    const res = await fetch(`/api/payment-requests?userId=${encodeURIComponent(userId)}`, { headers });
-    const data = await res.json();
-    return data.requests || [];
-  } catch (err) {
-    return [];
-  }
-}
-
-// Admin: Fetch all users and payment requests
-export async function fetchAdminUsersAndPayments() {
-  try {
-    const headers = await getAuthHeaders();
-    const [uRes, pRes] = await Promise.all([
-      fetch('/api/admin/users', { headers }),
-      fetch('/api/admin/payment-requests', { headers })
-    ]);
-    const uData = await uRes.json();
-    const pData = await pRes.json();
-    return {
-      users: uData.users || [],
-      requests: pData.requests || [],
-      logs: pData.logs || [],
-      metricsSummary: pData.metricsSummary || null
-    };
-  } catch (err) {
-    console.error('fetchAdminUsersAndPayments error:', err);
-    return { users: [], requests: [], logs: [], metricsSummary: null };
-  }
-}
-
-// Admin: Update User Tier & Credits
-export async function adminUpdateUserTier(targetUserId, newTier, addBonusCredits = 0, role = 'user', exactCredits = null) {
-  try {
-    const payload = {
-      targetUserId,
-      newTier,
-      addBonusCredits,
-      role
-    };
-    if (typeof exactCredits === 'number') {
-      payload.exactCredits = exactCredits;
-    }
-    const headers = await getAuthHeaders();
-    const res = await fetch('/api/admin/update-user', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to update user tier');
-    }
-    const toastMsg = typeof exactCredits === 'number'
-      ? `Credits set to ${exactCredits.toLocaleString()}`
-      : addBonusCredits > 0
-        ? `Tier: ${newTier.toUpperCase()} (+${addBonusCredits.toLocaleString()} bonus credits)`
-        : `Tier updated to ${newTier.toUpperCase()}`;
-    addToast('User Updated', toastMsg, 'success');
-    return data.updatedUser;
-  } catch (err) {
-    addToast('Admin Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Admin: Approve TallySale Payment
-export async function adminApprovePayment(requestId, status = 'APPROVED') {
-  try {
-    const headers = await getAuthHeaders();
-    const res = await fetch('/api/admin/approve-payment', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ requestId, status })
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to review payment');
-    }
-    addToast('Payment Request Reviewed', `Status marked as ${status}`, 'success');
-    return data;
-  } catch (err) {
-    addToast('Admin Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Admin: Update System Config Limits
-export async function adminUpdateSystemConfig(config) {
-  try {
-    const headers = await getAuthHeaders();
-    const res = await fetch('/api/admin/system-config', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(config)
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to update system config');
-    }
-    if (data.config) {
-      state.systemConfig = { ...state.systemConfig, ...data.config };
-      if (state.userProfile && state.userProfile.tier === 'free') {
-        state.userProfile.monthlyCreditAllowance = data.config.freeTierMonthlyCredits;
-        if (config.applyToExistingFreeUsers) {
-          state.userProfile.creditsRemaining = data.config.freeTierMonthlyCredits;
-        }
-      }
-    }
-    const msg = data.updatedUsersCount > 0 
-      ? `Saved! Applied ${Number(config.freeTierMonthlyCredits).toLocaleString()} credits to ${data.updatedUsersCount} free users.`
-      : 'Updated global credit and prompt length tier settings.';
-    addToast('System Config Saved', msg, 'success');
-    return data.config;
-  } catch (err) {
-    addToast('Config Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Admin: Create User Account
-export async function adminCreateUser(userData) {
-  try {
-    const headers = await getAuthHeaders();
-    const res = await fetch('/api/admin/create-user', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(userData)
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to create user account');
-    }
-    addToast('User Created', `Successfully provisioned ${data.user.email} (${data.user.tier.toUpperCase()})`, 'success');
-    return data.user;
-  } catch (err) {
-    addToast('Admin Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Admin: Delete User Account
-export async function adminDeleteUser(targetUserId) {
-  try {
-    const headers = await getAuthHeaders();
-    const res = await fetch('/api/admin/delete-user', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ targetUserId })
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to delete user account');
-    }
-    addToast('User Deleted', 'User account removed from database', 'info');
-    return true;
-  } catch (err) {
-    addToast('Admin Error', err.message, 'error');
-    throw err;
-  }
-}
-
-// Open Export Center directly to specified tab ('diagram' or 'script')
 export function openExportModal(tab = 'diagram') {
   state.exportTab = tab;
   state.modals.export = true;

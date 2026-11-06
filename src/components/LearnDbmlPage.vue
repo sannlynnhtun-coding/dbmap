@@ -342,7 +342,7 @@
             Ready to Design Your Architecture?
           </h2>
           <p class="text-blue-200 text-xs sm:text-sm max-w-xl">
-            Switch to the Studio workspace to start typing DBML code, drag tables on the visual canvas, or prompt Presto AI to generate whole schemas.
+            Switch to the Studio workspace to start typing DBML code, drag tables on the visual canvas.
           </p>
         </div>
 
