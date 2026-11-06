@@ -298,9 +298,10 @@
 </template>
 
 <script setup>
+import { getTableDimensions } from '../utils/diagramGeometry.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Table as TableIcon, Plus, Trash2, Key, Link, X, ChevronRight, Palette, Check, FileText, MessageSquare, RotateCcw } from 'lucide-vue-next';
-import { state, updateTableHeaderColor, updateTableNote, updateColumnNote, getTableDimensions } from '../stores/schemaStore';
+import { state, updateTableHeaderColor, updateTableNote, updateColumnNote } from '../stores/schemaStore';
 
 const props = defineProps({
   table: { type: Object, required: true },

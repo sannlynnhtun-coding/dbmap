@@ -807,6 +807,7 @@
 </template>
 
 <script setup>
+import { getTableDimensions, getTableCardHeight, isOptionalRelationship } from '../utils/diagramGeometry.js';
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import {
   state,
@@ -816,14 +817,11 @@ import {
   setTableDisplayMode,
   setShowOptionalRelationships,
   toggleShowOptionalRelationships,
-  isOptionalRelationship,
   deleteTable,
   deleteColumn,
   importSampleSchemas,
-  getTableDimensions,
   AUTO_ARRANGE_MODES,
   setAutoArrangeMode,
-  getTableCardHeight,
   openExportModal
 } from '../stores/schemaStore.js';
 import { calculateRelationshipsWithCoords } from '../utils/diagramRouting.js';
@@ -900,7 +898,7 @@ function fitDiagramToView(padding = 50) {
 
   tables.forEach(t => {
     const { width } = getTableDimensions(t);
-    const height = getTableCardHeight(t);
+    const height = getTableCardHeight(t, state.tableDisplayMode);
     if (t.x < minX) minX = t.x;
     if (t.y < minY) minY = t.y;
     if (t.x + width > maxX) maxX = t.x + width;

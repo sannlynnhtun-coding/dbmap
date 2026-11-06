@@ -1,3 +1,4 @@
+import { arrangeRelationshipFlow, arrangeCentralHubs } from '../utils/diagramLayout.js';
 import { reactive, computed, watch, ref } from 'vue';
 import { SAMPLE_PROJECTS, INITIAL_FOLDERS, createDefaultBlankProject } from '../utils/sampleSchemas.js';
 import { generateDBML, parseDBML, exportToSQL, extractCleanNote, updateTableHeaderColorInDBML } from '../utils/dbmlParser.js';
@@ -91,20 +92,6 @@ export function saveProjectsOrderToStorage() {
 
 }
 
-export async function loadProjectsOrderFromStorage() {
-  const key = getProjectOrderStorageKey();
-  try {
-    const local = localStorage.getItem(key) || localStorage.getItem('dbmaps_project_order_latest');
-    if (local) {
-      const parsed = JSON.parse(local);
-      if (parsed && typeof parsed === 'object') {
-        state.projectOrder = parsed;
-      }
-    }
-  } catch (e) {}
-
-}
-
 export function getSortedProjectsInFolder(folderId, projectsList = null, orderMap = null) {
   const allProjects = projectsList || (isStateInitialized ? state.projects : []);
   const list = allProjects.filter(p => p.folderId === folderId);
@@ -130,39 +117,6 @@ export function saveFoldersToStorage() {
     localStorage.setItem('dbmaps_folders_latest', data);
   } catch (e) {}
 
-}
-
-export async function loadFoldersFromStorage() {
-  const key = getFoldersStorageKey();
-  try {
-    const local = localStorage.getItem(key) || localStorage.getItem('dbmaps_folders_latest');
-    if (local) {
-      const parsed = JSON.parse(local);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        state.folders = parsed;
-      }
-    }
-  } catch (e) {}
-
-
-  // Ensure default active schema matches top-most database on direct load
-  if (typeof window !== 'undefined') {
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const explicitUrlSchema = urlParams.get('schema') || urlParams.get('project') || urlParams.get('room') || urlParams.get('id') || urlParams.get('share');
-      if (!explicitUrlSchema && state.folders.length > 0) {
-        if (!state.activeProjectId || !state.projects.some(p => p.id === state.activeProjectId)) {
-          const topFolderId = state.folders[0]?.id;
-          const sortedInTopFolder = getSortedProjectsInFolder(topFolderId);
-          const topDatabaseProj = sortedInTopFolder[0];
-          if (topDatabaseProj && state.activeProjectId !== topDatabaseProj.id) {
-            state.activeProjectId = topDatabaseProj.id;
-            state.roomCode = topDatabaseProj.id;
-          }
-        }
-      }
-    } catch (e) {}
-  }
 }
 
 export function saveGuestProjectsToStorage() {
@@ -331,49 +285,6 @@ export function normalizeProjectKeys(project) {
   if (!project || !Array.isArray(project.tables)) return project;
   normalizeTableKeys(project.tables, project.relationships || []);
   return project;
-}
-
-export function computeProjectHash(proj) {
-  if (!proj) return '';
-  return JSON.stringify({
-    id: proj.id || '',
-    folderId: proj.folderId || 'folder-1',
-    name: proj.name || '',
-    description: proj.description || '',
-    dialect: proj.dialect || 'postgres',
-    accessMode: proj.accessMode || 'public',
-    sharePassword: proj.sharePassword || '',
-    allowedEmails: Array.isArray(proj.allowedEmails) ? proj.allowedEmails.slice().sort() : [],
-    tables: (proj.tables || []).map(t => ({
-      id: t.id,
-      name: t.name,
-      headerColor: t.headerColor || '',
-      x: Math.round(t.x || 0),
-      y: Math.round(t.y || 0),
-      columns: (t.columns || []).map(c => ({
-        id: c.id,
-        name: c.name,
-        type: c.type,
-        isPk: Boolean(c.isPk || c.pk),
-        isFk: Boolean(c.isFk || c.fk),
-        isUnique: Boolean(c.isUnique || c.unique),
-        isNull: c.isNull !== undefined ? !!c.isNull : (c.notNull !== undefined ? !c.notNull : !Boolean(c.isPk || c.pk)),
-        note: c.note || ''
-      }))
-    })),
-    relationships: (proj.relationships || []).map(r => ({
-      id: r.id,
-      fromTable: r.fromTable,
-      fromColumn: r.fromColumn,
-      toTable: r.toTable,
-      toColumn: r.toColumn,
-      cardinality: r.cardinality || r.type || '1:n'
-    })),
-    enums: proj.enums || [],
-    tableGroups: proj.tableGroups || [],
-    projectConfig: proj.projectConfig || null,
-    customDbml: proj.customDbml || null
-  });
 }
 
 const initialFolders = loadInitialFolders();
@@ -705,21 +616,6 @@ export function sanitizeTableColumns(tables) {
 }
 
 // Helper to identify default, starter, sample, or public open schemas
-export function isDefaultOrPublicProject(projectData) {
-  if (!projectData) return true;
-  const mode = projectData.accessMode;
-  if (mode === 'restricted' || mode === 'password') return false;
-  if (mode === 'public') return true;
-  // Sample schemas are always public open schemas
-  if (projectData.id && (String(projectData.id).startsWith('sample-') || ['ecommerce', 'saas', 'social', 'blog'].includes(projectData.id))) return true;
-  // Starter blank demo project
-  if (projectData.name === 'New Database' && (!projectData.ownerUid || projectData.ownerUid === 'guest')) return true;
-  if (projectData.id === 'proj-public-demo') return true;
-  // Any unauthenticated guest project without explicit restricted whitelist
-  if ((!projectData.ownerUid || projectData.ownerUid === 'guest') && mode !== 'restricted' && mode !== 'password') return true;
-  return false;
-}
-
 // Get Active Project
 export const activeProject = computed(() => {
   let proj = state.projects.find(p => p.id === state.activeProjectId);
@@ -937,31 +833,6 @@ export function updateTablePosition(tableId, newX, newY) {
 }
 
 // Calculate responsive table dimensions based on table name and column contents
-export function getTableDimensions(table) {
-  if (!table) return { width: 300, headerHeight: 44, estimatedLines: 1 };
-  const name = table.name || '';
-  const nameLen = name.length;
-
-  // Standardize uniform, consistent card width (300px) across all tables
-  // to avoid uneven horizontal expansion while preserving crisp typography
-  let width = 300;
-  if (nameLen > 34) {
-    width = 340;
-  }
-
-  // Available width in header: width minus container padding (28px), table icon + gap (24px),
-  // and action buttons or note icon margin (~60px)
-  const availableHeaderWidth = width - 110;
-  const charsPerLine = Math.max(16, Math.floor(availableHeaderWidth / 8.2));
-  const estimatedLines = Math.max(1, Math.ceil(nameLen / charsPerLine));
-
-  // Base 1-line header is 44px
-  // Each additional wrapped line adds 22px
-  const headerHeight = estimatedLines === 1 ? 44 : 44 + (estimatedLines - 1) * 22;
-
-  return { width, headerHeight, estimatedLines };
-}
-
 // Auto Arrange Layout Modes configuration
 export const AUTO_ARRANGE_MODES = [
   {
@@ -993,471 +864,6 @@ export function setAutoArrangeMode(mode) {
   }
 }
 
-// Helper to compute actual table card height based on current display mode
-export function getTableCardHeight(t) {
-  if (!t) return 120;
-  const { headerHeight } = getTableDimensions(t);
-  let colCount = t.columns ? t.columns.length : 1;
-  if (state.tableDisplayMode === 'tables') {
-    colCount = 0;
-  } else if (state.tableDisplayMode === 'keys') {
-    const keys = (t.columns || []).filter(c => c.isPk || c.pk || c.isFk || c.fk || c.isUnique || c.unique);
-    colCount = keys.length === 0 ? 1 : keys.length;
-  }
-  return headerHeight + colCount * 33 + 28;
-}
-
-// Mode 1: Relationship Flow (Clean Left-to-Right Hierarchy with Compact Dynamic Columns)
-function arrangeRelationshipFlow(tables, rels) {
-  const tableMap = new Map();
-  tables.forEach(t => tableMap.set(t.name.toLowerCase(), t));
-
-  const parentsOf = new Map(); // tables this table references (parents / root entities)
-  const childrenOf = new Map(); // tables that reference this table (children / dependents)
-  tables.forEach(t => {
-    const k = t.name.toLowerCase();
-    parentsOf.set(k, new Set());
-    childrenOf.set(k, new Set());
-  });
-
-  rels.forEach(rel => {
-    const childKey = rel.fromTable?.toLowerCase();
-    const parentKey = rel.toTable?.toLowerCase();
-    if (childKey && parentKey && parentsOf.has(childKey) && parentsOf.has(parentKey) && childKey !== parentKey) {
-      parentsOf.get(childKey).add(parentKey);
-      childrenOf.get(parentKey).add(childKey);
-    }
-  });
-
-  // Separate connected tables from isolated tables
-  const connected = [];
-  const isolated = [];
-  tables.forEach(t => {
-    const k = t.name.toLowerCase();
-    if (parentsOf.get(k).size === 0 && childrenOf.get(k).size === 0) {
-      isolated.push(t);
-    } else {
-      connected.push(t);
-    }
-  });
-
-  // Determine DAG topological levels: tables with 0 parents start at level 0
-  const levels = new Map();
-  connected.forEach(t => {
-    const k = t.name.toLowerCase();
-    levels.set(k, 0);
-  });
-
-  let changed = true;
-  let passes = 0;
-  while (changed && passes < connected.length + 2) {
-    changed = false;
-    passes++;
-    connected.forEach(t => {
-      const childKey = t.name.toLowerCase();
-      const currentLvl = levels.get(childKey) || 0;
-      const parentKeys = parentsOf.get(childKey);
-      parentKeys.forEach(pKey => {
-        const parentLvl = levels.get(pKey) || 0;
-        if (currentLvl <= parentLvl) {
-          levels.set(childKey, parentLvl + 1);
-          changed = true;
-        }
-      });
-    });
-  }
-
-  // Compress level numbers to eliminate any gaps
-  const uniqueLevels = Array.from(new Set(connected.map(t => levels.get(t.name.toLowerCase()) || 0))).sort((a, b) => a - b);
-  const levelRankMap = new Map();
-  uniqueLevels.forEach((lvl, idx) => levelRankMap.set(lvl, idx));
-  connected.forEach(t => {
-    const k = t.name.toLowerCase();
-    levels.set(k, levelRankMap.get(levels.get(k)) || 0);
-  });
-
-  // Group connected tables by level
-  const levelGroups = new Map();
-  connected.forEach(t => {
-    const lvl = levels.get(t.name.toLowerCase()) || 0;
-    if (!levelGroups.has(lvl)) levelGroups.set(lvl, []);
-    levelGroups.get(lvl).push(t);
-  });
-
-  // Multi-column folding: if a level has more than 4 tables, fold it into adjacent sub-columns
-  // to avoid gigantic 3000px vertical poles
-  const sortedLevels = Array.from(levelGroups.keys()).sort((a, b) => a - b);
-  const visualColumns = [];
-  const MAX_PER_SUBCOL = 4;
-
-  sortedLevels.forEach(lvl => {
-    const group = levelGroups.get(lvl) || [];
-    if (group.length <= MAX_PER_SUBCOL) {
-      visualColumns.push(group);
-    } else {
-      for (let i = 0; i < group.length; i += MAX_PER_SUBCOL) {
-        visualColumns.push(group.slice(i, i + MAX_PER_SUBCOL));
-      }
-    }
-  });
-
-  const posMap = new Map();
-  let curX = 50;
-  const COL_GAP = 120; // Generous horizontal table gap for multi-track relation highways
-  const ROW_GAP = 60;  // Generous vertical table gap for cross-table relation bridges
-
-  visualColumns.forEach((colTables) => {
-    // Sort tables by barycenter (average Y position of connected tables)
-    colTables.sort((a, b) => {
-      const aN = [...parentsOf.get(a.name.toLowerCase()), ...childrenOf.get(a.name.toLowerCase())];
-      const bN = [...parentsOf.get(b.name.toLowerCase()), ...childrenOf.get(b.name.toLowerCase())];
-      const aAvgY = aN.length ? aN.reduce((sum, k) => sum + (posMap.get(k)?.y || 0), 0) / aN.length : 300;
-      const bAvgY = bN.length ? bN.reduce((sum, k) => sum + (posMap.get(k)?.y || 0), 0) / bN.length : 300;
-      return aAvgY - bAvgY || a.name.localeCompare(b.name);
-    });
-
-    const colWidth = Math.max(...colTables.map(t => getTableDimensions(t).width));
-    let curY = 40;
-    colTables.forEach(t => {
-      posMap.set(t.name.toLowerCase(), { x: curX, y: curY });
-      curY += getTableCardHeight(t) + ROW_GAP;
-    });
-    curX += colWidth + COL_GAP;
-  });
-
-  // Place isolated tables in a neat compact 2-column or 3-column grid
-  if (isolated.length > 0) {
-    let isoX = curX;
-    let isoY = 40;
-    isolated.forEach(t => {
-      const w = getTableDimensions(t).width;
-      const h = getTableCardHeight(t);
-      posMap.set(t.name.toLowerCase(), { x: isoX, y: isoY });
-      isoY += h + ROW_GAP;
-      if (isoY > 700) {
-        isoX += w + COL_GAP;
-        isoY = 40;
-      }
-    });
-  }
-
-  // Apply positions
-  tables.forEach(t => {
-    const pos = posMap.get(t.name.toLowerCase());
-    if (pos) {
-      t.x = Math.round(pos.x);
-      t.y = Math.round(pos.y);
-    }
-  });
-
-  // Final AABB separation guarantee for Flow layout
-  resolveAABBOverlaps(tables, 100, 50);
-}
-
-// AABB Collision & Overlap Resolver: iteratively separates any overlapping table bounding boxes
-// guaranteeing generous clearance margins (100px horizontal, 50px vertical) and zero overlap.
-export function resolveAABBOverlaps(tables, minClearanceX = 100, minClearanceY = 50, maxIterations = 40) {
-  if (!tables || tables.length <= 1) return;
-  let hasOverlap = true;
-  let iter = 0;
-
-  while (hasOverlap && iter < maxIterations) {
-    hasOverlap = false;
-    iter++;
-
-    for (let i = 0; i < tables.length; i++) {
-      for (let j = i + 1; j < tables.length; j++) {
-        const t1 = tables[i];
-        const t2 = tables[j];
-        const w1 = getTableDimensions(t1).width;
-        const h1 = getTableCardHeight(t1);
-        const w2 = getTableDimensions(t2).width;
-        const h2 = getTableCardHeight(t2);
-
-        const overlapX = Math.min(t1.x + w1, t2.x + w2) - Math.max(t1.x, t2.x) + minClearanceX;
-        const overlapY = Math.min(t1.y + h1, t2.y + h2) - Math.max(t1.y, t2.y) + minClearanceY;
-
-        if (overlapX > 0 && overlapY > 0) {
-          hasOverlap = true;
-          // Separating Axis Theorem: separate along the axis of minimal penetration
-          // to preserve the clean 2D layout and avoid cascading shifts
-          if (overlapX <= overlapY) {
-            // Horizontal separation
-            const shift = Math.ceil(overlapX / 2);
-            if (t1.x <= t2.x) {
-              t1.x -= shift;
-              t2.x += shift;
-            } else {
-              t1.x += shift;
-              t2.x -= shift;
-            }
-          } else {
-            // Vertical separation
-            const shift = Math.ceil(overlapY / 2);
-            if (t1.y <= t2.y) {
-              t1.y -= shift;
-              t2.y += shift;
-            } else {
-              t1.y += shift;
-              t2.y -= shift;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Diagram Boundary Normalization: ensure diagram starts cleanly at suitable boundary margins (x: 50, y: 40)
-  let minX = Infinity, minY = Infinity;
-  tables.forEach(t => {
-    minX = Math.min(minX, t.x);
-    minY = Math.min(minY, t.y);
-  });
-  if (isFinite(minX) && isFinite(minY)) {
-    const shiftX = 50 - minX;
-    const shiftY = 40 - minY;
-    tables.forEach(t => {
-      t.x = Math.round(t.x + shiftX);
-      t.y = Math.round(t.y + shiftY);
-    });
-  }
-}
-
-// Mode 2: Central Hubs (Clustered around core tables with compact 2D orbital layout and guaranteed 0 overlap)
-function arrangeCentralHubs(tables, rels) {
-  if (!tables || tables.length === 0) return;
-
-  const tableMap = new Map();
-  tables.forEach(t => tableMap.set(t.name.toLowerCase(), t));
-
-  const degreeMap = new Map();
-  const adjMap = new Map();
-  const parentsOf = new Map();
-  const childrenOf = new Map();
-
-  tables.forEach(t => {
-    const k = t.name.toLowerCase();
-    degreeMap.set(k, 0);
-    adjMap.set(k, new Set());
-    parentsOf.set(k, new Set());
-    childrenOf.set(k, new Set());
-  });
-
-  rels.forEach(r => {
-    const f = r.fromTable?.toLowerCase();
-    const t = r.toTable?.toLowerCase();
-    if (f && t && f !== t && tableMap.has(f) && tableMap.has(t)) {
-      degreeMap.set(f, degreeMap.get(f) + 1);
-      degreeMap.set(t, degreeMap.get(t) + 1);
-      adjMap.get(f).add(t);
-      adjMap.get(t).add(f);
-      parentsOf.get(f).add(t);
-      childrenOf.get(t).add(f);
-    }
-  });
-
-  const isolated = tables.filter(t => degreeMap.get(t.name.toLowerCase()) === 0);
-  const connected = tables.filter(t => degreeMap.get(t.name.toLowerCase()) > 0);
-
-  if (connected.length === 0) {
-    // All tables isolated, arrange in a clean compact grid with suitable boundary & gaps
-    let gridX = 50, gridY = 40;
-    tables.forEach((t, i) => {
-      t.x = gridX;
-      t.y = gridY;
-      gridX += getTableDimensions(t).width + 42;
-      if ((i + 1) % 3 === 0) {
-        gridX = 50;
-        gridY += getTableCardHeight(t) + 24;
-      }
-    });
-    return;
-  }
-
-  // Sort connected tables by degree descending
-  connected.sort((a, b) => degreeMap.get(b.name.toLowerCase()) - degreeMap.get(a.name.toLowerCase()));
-  const maxDegree = degreeMap.get(connected[0].name.toLowerCase());
-
-  // Determine Hub count: maintain compact clusters rather than wide horizontal expansions
-  let maxHubs = 1;
-  if (connected.length >= 14 && maxDegree >= 3) maxHubs = 3;
-  else if (connected.length >= 8 && maxDegree >= 3) maxHubs = 2;
-
-  const hubThreshold = Math.max(2, Math.floor(maxDegree * 0.65));
-  let hubs = connected.filter(t => degreeMap.get(t.name.toLowerCase()) >= hubThreshold).slice(0, maxHubs);
-  if (hubs.length === 0) hubs = [connected[0]];
-  const hubKeys = new Set(hubs.map(h => h.name.toLowerCase()));
-
-  const posMap = new Map();
-  const GAP_X = 110;
-  const ROW_GAP = 54;
-
-  // Partition non-hub tables into bridge tables or hub satellites
-  const satellitesByHub = new Map();
-  hubs.forEach(h => satellitesByHub.set(h.name.toLowerCase(), []));
-  const bridgeTables = [];
-
-  connected.forEach(t => {
-    const k = t.name.toLowerCase();
-    if (hubKeys.has(k)) return;
-
-    const connectedHubs = Array.from(adjMap.get(k) || []).filter(hKey => hubKeys.has(hKey));
-    if (connectedHubs.length >= 2) {
-      bridgeTables.push({ table: t, hubs: connectedHubs.slice(0, 2) });
-    } else if (connectedHubs.length === 1) {
-      satellitesByHub.get(connectedHubs[0]).push(t);
-    } else {
-      // Indirect satellite: associate with closest hub
-      let bestHub = hubs[0].name.toLowerCase();
-      hubs.forEach(h => {
-        const hKey = h.name.toLowerCase();
-        if (adjMap.get(k)?.has(hKey)) bestHub = hKey;
-      });
-      satellitesByHub.get(bestHub).push(t);
-    }
-  });
-
-  // Calculate balanced cluster layout for each hub with compact 24px vertical gaps
-  let currentClusterX = 50;
-  hubs.forEach((hub) => {
-    const hubKey = hub.name.toLowerCase();
-    const sats = satellitesByHub.get(hubKey) || [];
-    const hubDim = getTableDimensions(hub);
-    const hubH = getTableCardHeight(hub);
-
-    // Split satellites into Left Wing (parents/lookups), Right Wing (children/dependents),
-    // and Top/Bottom overflow if any wing has > 2 tables
-    const leftSats = [];
-    const rightSats = [];
-    const topSats = [];
-    const bottomSats = [];
-
-    sats.forEach(sat => {
-      const sKey = sat.name.toLowerCase();
-      if (parentsOf.get(hubKey)?.has(sKey)) {
-        leftSats.push(sat);
-      } else if (childrenOf.get(hubKey)?.has(sKey)) {
-        rightSats.push(sat);
-      } else {
-        if (leftSats.length <= rightSats.length) leftSats.push(sat);
-        else rightSats.push(sat);
-      }
-    });
-
-    // Balance wings
-    while (leftSats.length > 2 && rightSats.length < 2) {
-      rightSats.push(leftSats.pop());
-    }
-    while (rightSats.length > 2 && leftSats.length < 2) {
-      leftSats.push(rightSats.pop());
-    }
-
-    // Overflow to top/bottom if either wing has more than 2 tables
-    if (leftSats.length > 2) topSats.push(leftSats.pop());
-    if (rightSats.length > 2) bottomSats.push(rightSats.pop());
-    if (leftSats.length > 2) bottomSats.push(leftSats.pop());
-    if (rightSats.length > 2) topSats.push(rightSats.pop());
-
-    const maxLeftW = leftSats.length ? Math.max(...leftSats.map(t => getTableDimensions(t).width)) : 0;
-    const maxRightW = rightSats.length ? Math.max(...rightSats.map(t => getTableDimensions(t).width)) : 0;
-    const maxTopH = topSats.length ? Math.max(...topSats.map(t => getTableCardHeight(t))) : 0;
-
-    const totalLeftH = leftSats.reduce((sum, t) => sum + getTableCardHeight(t) + ROW_GAP, 0) - (leftSats.length ? ROW_GAP : 0);
-    const totalRightH = rightSats.reduce((sum, t) => sum + getTableCardHeight(t) + ROW_GAP, 0) - (rightSats.length ? ROW_GAP : 0);
-    const maxWingH = Math.max(hubH, totalLeftH, totalRightH);
-
-    const hubX = currentClusterX + (leftSats.length ? maxLeftW + GAP_X : 0);
-    const hubY = 40 + (topSats.length ? maxTopH + ROW_GAP : 0) + Math.max(0, (maxWingH - hubH) / 2);
-
-    posMap.set(hubKey, { x: hubX, y: hubY });
-
-    // Position Left Wing (vertically centered relative to maxWingH with exact ROW_GAP = 24px)
-    let leftY = hubY + (hubH - totalLeftH) / 2;
-    leftSats.forEach(sat => {
-      const sw = getTableDimensions(sat).width;
-      const sh = getTableCardHeight(sat);
-      posMap.set(sat.name.toLowerCase(), { x: hubX - sw - GAP_X, y: Math.round(leftY) });
-      leftY += sh + ROW_GAP;
-    });
-
-    // Position Right Wing (vertically centered relative to maxWingH with exact ROW_GAP = 24px)
-    let rightY = hubY + (hubH - totalRightH) / 2;
-    rightSats.forEach(sat => {
-      const sh = getTableCardHeight(sat);
-      posMap.set(sat.name.toLowerCase(), { x: hubX + hubDim.width + GAP_X, y: Math.round(rightY) });
-      rightY += sh + ROW_GAP;
-    });
-
-    // Position Top Satellite (neatly centered above hub with exact ROW_GAP = 24px)
-    topSats.forEach(sat => {
-      const sw = getTableDimensions(sat).width;
-      const sh = getTableCardHeight(sat);
-      posMap.set(sat.name.toLowerCase(), {
-        x: Math.round(hubX + (hubDim.width - sw) / 2),
-        y: Math.round(hubY - sh - ROW_GAP)
-      });
-    });
-
-    // Position Bottom Satellite (neatly centered below hub with exact ROW_GAP = 24px)
-    bottomSats.forEach(sat => {
-      const sw = getTableDimensions(sat).width;
-      posMap.set(sat.name.toLowerCase(), {
-        x: Math.round(hubX + (hubDim.width - sw) / 2),
-        y: Math.round(hubY + hubH + ROW_GAP)
-      });
-    });
-
-    currentClusterX = hubX + hubDim.width + (rightSats.length ? GAP_X + maxRightW : 0) + 72;
-  });
-
-  // Position bridge tables in center corridor between their hubs with exact ROW_GAP = 44px
-  if (bridgeTables.length > 0 && hubs.length >= 2) {
-    const p1 = posMap.get(hubs[0].name.toLowerCase());
-    const p2 = posMap.get(hubs[1].name.toLowerCase());
-    if (p1 && p2) {
-      const midX = Math.round((p1.x + getTableDimensions(hubs[0]).width + p2.x) / 2);
-      const totalBridgeH = bridgeTables.reduce((sum, b) => sum + getTableCardHeight(b.table) + ROW_GAP, 0) - ROW_GAP;
-      let bridgeY = Math.round((p1.y + p2.y) / 2 - totalBridgeH / 2);
-      bridgeTables.forEach(({ table }) => {
-        const bw = getTableDimensions(table).width;
-        posMap.set(table.name.toLowerCase(), {
-          x: Math.round(midX - bw / 2),
-          y: Math.round(bridgeY)
-        });
-        bridgeY += getTableCardHeight(table) + ROW_GAP;
-      });
-    }
-  }
-
-  // Apply positions to connected tables
-  connected.forEach(t => {
-    const p = posMap.get(t.name.toLowerCase());
-    if (p) {
-      t.x = Math.round(p.x);
-      t.y = Math.round(p.y);
-    }
-  });
-
-  // Position isolated tables in a clean compact grid below connected tables
-  if (isolated.length > 0) {
-    const maxConnectedY = Math.max(...connected.map(t => t.y + getTableCardHeight(t)));
-    let isoX = 50;
-    let isoY = maxConnectedY + 36;
-    isolated.forEach((t, i) => {
-      t.x = isoX;
-      t.y = isoY;
-      isoX += getTableDimensions(t).width + 50;
-      if ((i + 1) % 3 === 0) {
-        isoX = 50;
-        isoY += getTableCardHeight(t) + 36;
-      }
-    });
-  }
-
-  // Final AABB Collision & Overlap Resolver with zero overlap guarantee
-  resolveAABBOverlaps(tables, 100, 50);
-}
-
 // Auto Arrange / Auto Layout Tables (supports 'flow' and 'hubs')
 export function autoArrangeTables(mode = null) {
   const proj = activeProject.value;
@@ -1470,13 +876,12 @@ export function autoArrangeTables(mode = null) {
   const rels = proj.relationships || [];
 
   if (targetMode === 'hubs') {
-    arrangeCentralHubs(tables, rels);
+    arrangeCentralHubs(tables, rels, state.tableDisplayMode);
   } else {
-    arrangeRelationshipFlow(tables, rels);
+    arrangeRelationshipFlow(tables, rels, state.tableDisplayMode);
   }
 
   proj.updatedAt = new Date().toISOString();
-  saveGuestProjectsToStorage();
   saveProjectsLocally();
 
   const modeInfo = AUTO_ARRANGE_MODES.find(m => m.id === targetMode) || AUTO_ARRANGE_MODES[0];
@@ -1488,7 +893,6 @@ export function autoArrangeTables(mode = null) {
 }
 
 
-// Update Table Header Color
 export function updateTableHeaderColor(tableId, color) {
   const proj = activeProject.value;
   if (!proj) return;
@@ -1560,7 +964,6 @@ export function addTable(tableData) {
   proj.tables.push(newTable);
   proj.updatedAt = new Date().toISOString();
   state.selectedTableId = newTable.id;
-  saveGuestProjectsToStorage();
   saveProjectsLocally();
   addToast('Table Added', `Created table "${newTable.name}"`, 'success');
 }
@@ -1580,7 +983,6 @@ export function deleteTable(tableId) {
       state.selectedTableId = null;
     }
     proj.updatedAt = new Date().toISOString();
-    saveGuestProjectsToStorage();
     saveProjectsLocally();
     addToast('Table Removed', `Deleted table "${tblName}"`, 'warning');
   }
@@ -1630,7 +1032,6 @@ export function addColumn(tableId, colData) {
       note: colData.note || ''
     });
     proj.updatedAt = new Date().toISOString();
-    saveGuestProjectsToStorage();
     saveProjectsLocally();
   }
 }
@@ -1643,7 +1044,6 @@ export function deleteColumn(tableId, colIndex) {
   if (tbl && tbl.columns[colIndex]) {
     tbl.columns.splice(colIndex, 1);
     proj.updatedAt = new Date().toISOString();
-    saveGuestProjectsToStorage();
     saveProjectsLocally();
   }
 }
@@ -1686,7 +1086,6 @@ export function addRelationship(relData) {
 
   proj.relationships.push(newRel);
   proj.updatedAt = new Date().toISOString();
-  saveGuestProjectsToStorage();
   saveProjectsLocally();
   addToast('Relationship Linked', `${relData.fromTable}.${relData.fromColumn} ${operator} ${relData.toTable}.${relData.toColumn}`, 'success');
 }
@@ -1699,7 +1098,6 @@ export function updateRelationship(relId, updates) {
   if (rel) {
     Object.assign(rel, updates);
     proj.updatedAt = new Date().toISOString();
-    saveGuestProjectsToStorage();
     saveProjectsLocally();
   }
 }
@@ -1738,7 +1136,6 @@ export function toggleRelationshipOptional(relId) {
   }
 
   proj.updatedAt = new Date().toISOString();
-  saveGuestProjectsToStorage();
   saveProjectsLocally();
   addToast('Relationship Updated', nextOptional ? 'Set to Optional FK (>? 0..N)' : 'Set to Mandatory FK (> 1:N)', 'info');
 }
@@ -1751,7 +1148,6 @@ export function deleteRelationship(relId) {
   if (idx !== -1) {
     proj.relationships.splice(idx, 1);
     proj.updatedAt = new Date().toISOString();
-    saveGuestProjectsToStorage();
     saveProjectsLocally();
     addToast('Relationship Removed', 'Foreign key deleted', 'info');
   }
@@ -1791,39 +1187,6 @@ export function toggleShowOptionalRelationships() {
 }
 
 // Check if a relationship is optional (nullable/optional >?, ?>, -?, <? , <>?)
-export function isOptionalRelationship(rel, tables = null) {
-  if (!rel) return false;
-
-  // 1. Explicit optional flag or operator containing '?'
-  if (rel.optional === true || rel.isOptional === true) return true;
-  if (typeof rel.operator === 'string' && rel.operator.includes('?')) return true;
-  if (typeof rel.cardinality === 'string' && (rel.cardinality.includes('?') || rel.cardinality.includes('0..'))) return true;
-
-  // 2. Check inline ref definition on fromTable column
-  if (tables && rel.fromTable && rel.fromColumn) {
-    const fromTbl = Array.isArray(tables)
-      ? tables.find(t =>
-          t.name?.toLowerCase() === rel.fromTable?.toLowerCase() ||
-          (t.schema && `${t.schema}.${t.name}`.toLowerCase() === rel.fromTable?.toLowerCase()) ||
-          (rel.fromTable && rel.fromTable.toLowerCase().endsWith('.' + t.name?.toLowerCase()))
-        )
-      : tables;
-    if (fromTbl && fromTbl.columns) {
-      const col = fromTbl.columns.find(c =>
-        c.name?.toLowerCase().replace(/["'`]/g, '') === rel.fromColumn?.toLowerCase().replace(/["'`]/g, '')
-      );
-      if (col && col.inlineRef) {
-        if (col.inlineRef.optional === true || (typeof col.inlineRef.operator === 'string' && col.inlineRef.operator.includes('?'))) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
-}
-
-// Create Commit Snapshot (Version Control)
 export function createCommit(versionName, description) {
   const proj = activeProject.value;
   if (!proj) return;
@@ -1930,7 +1293,6 @@ export function createProject(projectName, folderId, description = '', template 
 
   selectProject(newProj.id);
   saveProjectsLocally();
-  saveGuestProjectsToStorage();
   addToast('Project Created', `Started "${projectName}" (${determinedAccessMode === 'restricted' ? 'Private' : 'Public'})`, 'success');
   return newProj;
 }
@@ -2006,7 +1368,6 @@ export function importSchema({ name, script, dialect = 'auto', folderId = null, 
 
     selectProject(newProj.id);
     saveProjectsLocally();
-    saveGuestProjectsToStorage();
     addToast('Schema Imported', `Created new schema "${newProj.name}" with ${result.tables.length} table(s)`, 'success');
     return newProj;
   }
@@ -2045,9 +1406,6 @@ export function importSampleSchemas(targetFolderId = null) {
 
   if (importedProjects.length > 0) {
     selectProject(importedProjects[0].id);
-    if (state.currentUser.isLoggedIn) {
-      saveProjectsLocally();
-    }
     saveGuestProjectsToStorage();
   }
 
@@ -2086,14 +1444,10 @@ export function importSampleSchemaByName(name, targetFolderId = null) {
   }
 
   selectProject(newProj.id);
-  if (state.currentUser.isLoggedIn) {
-    saveProjectsLocally();
-  }
   saveGuestProjectsToStorage();
   addToast('Sample Schema Imported', `Loaded "${newProj.name}"`, 'success');
 }
 
-// Current user admin check
 export const allMarketplaceTemplates = computed(() =>
   MARKETPLACE_TEMPLATES.map(template => ({ ...template, isBuiltIn: true }))
 );
@@ -2141,9 +1495,6 @@ export function cloneMarketplaceTemplate(template, targetFolderId = null) {
   }
 
   selectProject(newProj.id);
-  if (state.currentUser.isLoggedIn) {
-    saveProjectsLocally();
-  }
   saveGuestProjectsToStorage();
 
   addToast('Template Cloned', `Cloned "${template.name}" with ${clonedTables.length} tables & ${(template.relationships || []).length} relations.`, 'success');
@@ -2267,7 +1618,6 @@ export function deleteFolder(folderId) {
 
     if (modifiedAny) {
       saveProjectsLocally();
-      saveGuestProjectsToStorage();
     }
     
     addToast('Database Removed', `Deleted database "${fName}"`, 'info');

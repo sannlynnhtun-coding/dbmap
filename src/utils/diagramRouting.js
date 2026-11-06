@@ -1,6 +1,6 @@
 // Diagram Geometry & Relationship Routing Engine
 // Provides mathematically precise, obstacle-avoiding foreign key paths & cardinality anchors
-import { getTableDimensions, getTableCardHeight, isOptionalRelationship } from '../stores/schemaStore.js';
+import { getTableDimensions, isOptionalRelationship } from './diagramGeometry.js';
 
 export function createRoundedPath(points, radius = 10) {
   if (!points || points.length < 2) return '';

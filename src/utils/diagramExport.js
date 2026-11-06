@@ -1,6 +1,6 @@
 // Academic & High-Definition Diagram Exporter for dbmaps
 // Generates HD PNG, HD JPG, Vector SVG, and Academic Report PDF (A4/Letter)
-import { getTableDimensions, getTableCardHeight, isOptionalRelationship } from '../stores/schemaStore.js';
+import { getTableDimensions } from './diagramGeometry.js';
 import { calculateRelationshipsWithCoords } from './diagramRouting.js';
 import { jsPDF } from 'jspdf';
 
