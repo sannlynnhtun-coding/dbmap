@@ -28,15 +28,18 @@ try {
     do {
         Start-Sleep -Milliseconds 500
         $renderers = @(Get-CimInstance Win32_Process -Filter "Name='msedgewebview2.exe'" | Where-Object { $_.ExecutablePath -like "$installDir\WebView2Runtime\*" })
-        try { $pages = @(Invoke-RestMethod 'http://127.0.0.1:13377/json' -TimeoutSec 1) } catch { }
+        try {
+            $response = Invoke-WebRequest 'http://127.0.0.1:13377/json' -UseBasicParsing -TimeoutSec 1
+            $pages = ConvertFrom-Json -InputObject ([Text.Encoding]::UTF8.GetString($response.RawContentStream.ToArray()))
+        } catch { }
         $app.Refresh()
-    } while ((-not ($pages | Where-Object title -Like '*.dbml — DBMaps')) -and -not $app.HasExited -and (Get-Date) -lt $deadline)
+    } while ((-not ($pages | Where-Object title -Like '*.dbml*DBMaps')) -and -not $app.HasExited -and (Get-Date) -lt $deadline)
     Check (-not $app.HasExited) 'Desktop app launched offline'
     @{ pages = $pages; processes = @(Get-CimInstance Win32_Process -Filter "Name='msedgewebview2.exe'" | Select-Object Name, ExecutablePath, CommandLine) } | ConvertTo-Json -Depth 4 | Set-Content 'C:\DBMapsRelease\launch-diagnostics.json'
     $errorLog = Join-Path $env:LOCALAPPDATA 'DBMaps\last-error.txt'
     if (Test-Path $errorLog) { Copy-Item $errorLog 'C:\DBMapsRelease\startup-error.txt' }
     Check ($renderers.Count -gt 0) 'App launched the bundled runtime'
-    Check (@($pages | Where-Object title -Like '*.dbml — DBMaps').Count -gt 0) 'Editor loaded the DBML document offline'
+    Check (@($pages | Where-Object title -Like '*.dbml*DBMaps').Count -gt 0) 'Editor loaded the DBML document offline'
     Stop-Process -Id $app.Id
     $upgrade = Start-Process $installer -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG=C:\DBMapsRelease\upgrade.log' -PassThru -Wait
     Check ($upgrade.ExitCode -eq 0) 'Reinstall succeeded'
