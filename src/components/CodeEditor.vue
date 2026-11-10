@@ -89,7 +89,7 @@
                   ? 'bg-rose-950/80 text-rose-300 border-rose-800/80 hover:bg-rose-900/80'
                   : 'bg-slate-800/90 hover:bg-slate-700 text-slate-200 border-slate-700'
           ]"
-          :title="state.saveStatus === 'unsaved' ? 'Unsaved changes (Click or Ctrl+S to save now)' : state.saveStatus === 'saving' ? 'Saving changes in this browser...' : state.saveStatus === 'error' ? 'Save failed (Click to retry)' : 'All changes saved in this browser (Ctrl+S)'"
+          :title="state.saveStatus === 'unsaved' ? 'Unsaved changes (Click or Ctrl+S to save now)' : state.saveStatus === 'saving' ? 'Saving changes...' : state.saveStatus === 'error' ? 'Save failed (Click to retry)' : 'All changes saved (Ctrl+S)'"
         >
           <Loader2 v-if="state.saveStatus === 'saving'" class="w-3.5 h-3.5 animate-spin text-amber-400 shrink-0" />
           <CloudUpload v-else-if="state.saveStatus === 'unsaved'" class="w-3.5 h-3.5 text-blue-400 shrink-0" />
@@ -331,6 +331,7 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { activeProject, state, addToast, navigateTo, focusTableOnCanvas, saveGuestProjectsToStorage, forceSaveProject, flushActiveProjectSync, normalizeTableKeys } from '../stores/schemaStore.js';
 import { generateDBML, parseDBML, validateDBML, formatDBML } from '../utils/dbmlParser.js';
+import { matchPreviousTable } from '../utils/dbmlDocument.js';
 import {
   dbmlLanguage,
   dbmlHighlightStyleDark,
@@ -772,7 +773,7 @@ function initCodeMirror() {
 
   const isDark = state.isDarkMode;
   const proj = activeProject.value;
-  const initialText = proj.customDbml || generateDBML(
+  const initialText = proj.customDbml ?? generateDBML(
     proj.tables,
     proj.relationships,
     proj.name,
@@ -957,6 +958,7 @@ function onCodeMirrorChange(newText) {
     return;
   }
 
+  if (window.__DBMAPS_DESKTOP__) proj.customDbml = newText;
   try {
     const parsed = parseDBML(newText);
     const { tables, relationships, enums, tableGroups, projectConfig } = parsed;
@@ -969,7 +971,8 @@ function onCodeMirrorChange(newText) {
       }
 
       const mergedTables = tables.map((newTbl) => {
-        const existing = existingTablesMap.get(newTbl.name.toLowerCase());
+        const existing = existingTablesMap.get(newTbl.name.toLowerCase())
+          || (window.__DBMAPS_DESKTOP__ ? matchPreviousTable(newTbl, proj.tables || [], tables) : null);
         if (existing) {
           return {
             ...newTbl,
@@ -1153,7 +1156,7 @@ watch(
     if (!newId || !activeProject.value) return;
     currentEditorProjectId.value = newId;
     const proj = activeProject.value;
-    const newText = proj.customDbml || generateDBML(
+    const newText = proj.customDbml ?? generateDBML(
       proj.tables || [],
       proj.relationships || [],
       proj.name,
@@ -1170,16 +1173,16 @@ watch(
 
 // Watch store updates (e.g. table dragged on canvas, column edited, remote realtime sync)
 watch(
-  () => activeProject.value?.updatedAt,
-  (newUpdatedAt, oldUpdatedAt) => {
+  () => [activeProject.value?.updatedAt, activeProject.value?.customDbml],
+  ([newUpdatedAt, newDbml], [oldUpdatedAt, oldDbml]) => {
     if (!activeProject.value || !editorView) return;
     // If project changed, the project ID watcher handles it
     if (activeProject.value.id !== currentEditorProjectId.value) {
       currentEditorProjectId.value = activeProject.value.id;
     }
-    if (newUpdatedAt !== oldUpdatedAt && !editorView.hasFocus) {
+    if ((newUpdatedAt !== oldUpdatedAt || newDbml !== oldDbml) && !editorView.hasFocus) {
       const proj = activeProject.value;
-      const newText = proj.customDbml || generateDBML(
+      const newText = proj.customDbml ?? generateDBML(
         proj.tables || [],
         proj.relationships || [],
         proj.name,

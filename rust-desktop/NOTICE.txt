@@ -1,0 +1,14 @@
+DBMaps Desktop 1.0.0
+
+Desktop window hosting and embedded-asset serving are adapted from the local
+draw.io Rust desktop host, distributed under Apache License 2.0.
+See LICENSE-APACHE. DBMaps is not affiliated with or endorsed by draw.io.
+
+The installer bundles the Microsoft Edge WebView2 Fixed Version Runtime.
+Microsoft's notices and license files are retained in WebView2Runtime.
+The package's Visual C++ runtime DLLs are also deployed beside DBMaps.exe.
+Its runtime does not update itself; distribute a new build for runtime updates.
+
+Vue, Vite, CodeMirror, GPUI Kit, Wry and other dependencies retain their
+respective licenses. Build packaging must include the dependency license
+inventory before a public release.

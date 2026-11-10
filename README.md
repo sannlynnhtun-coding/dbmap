@@ -38,6 +38,9 @@ flowchart LR
 
 ## Run locally
 
+For the Windows offline desktop app, `.dbml` documents with layout, and installer
+build instructions, see [Desktop](rust-desktop/README.md).
+
     bun install
     npm run dev
 

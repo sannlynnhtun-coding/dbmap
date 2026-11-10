@@ -690,11 +690,15 @@ export async function finishTour(isComplete = true) {
 export function saveProjectsLocally() {
   try {
     localStorage.setItem('dbmaps_guest_projects', JSON.stringify(state.projects));
-    state.saveStatus = 'saved';
-    state.lastSavedAt = new Date().toISOString();
+    if (!window.__DBMAPS_DESKTOP__) {
+      state.saveStatus = 'saved';
+      state.lastSavedAt = new Date().toISOString();
+    }
   } catch {
-    state.saveStatus = 'error';
-    state.saveErrorMessage = 'Browser storage is unavailable or full.';
+    if (!window.__DBMAPS_DESKTOP__) {
+      state.saveStatus = 'error';
+      state.saveErrorMessage = 'Browser storage is unavailable or full.';
+    }
   }
 }
 
@@ -704,6 +708,10 @@ export function flushActiveProjectSync() {
 }
 
 export function forceSaveProject() {
+  if (window.__DBMAPS_DESKTOP__) {
+    window.dispatchEvent(new Event('dbmaps-save'));
+    return;
+  }
   flushActiveProjectSync();
   if (state.saveStatus === 'saved') {
     addToast('Saved Locally', 'Project saved in this browser.', 'success');

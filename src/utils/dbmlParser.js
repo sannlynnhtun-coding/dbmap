@@ -194,7 +194,7 @@ export function splitTableAndColumn(fullPath) {
   const column = parts[parts.length - 1];
   const table = parts[parts.length - 2];
   const schema = parts.slice(0, -2).join('.');
-  return { table, column, schema };
+  return { table: `${schema}.${table}`, column, schema };
 }
 
 /**
@@ -1313,7 +1313,8 @@ export function parseDBML(dbmlText) {
       pendingNoteType = null;
 
       const rawTableName = tableMatch[2] || tableMatch[1];
-      const tableName = rawTableName.replace(/^["'`]|["'`]$/g, '');
+      const tableName = [tableMatch[1], rawTableName].filter(Boolean)
+        .map(part => part.replace(/^["'`]|["'`]$/g, '')).join('.');
       const alias = tableMatch[3] ? tableMatch[3].replace(/^["'`]|["'`]$/g, '') : null;
       currentTable = {
         id: 'tbl-' + tableName.toLowerCase().replace(/[^a-z0-9_-]/g, '-'),
@@ -2008,7 +2009,8 @@ export function validateDBML(dbmlText) {
         });
       } else {
         const rawName = match[2] || match[1];
-        const tableName = rawName.replace(/^["'`]|["'`]$/g, '');
+        const tableName = [match[1], rawName].filter(Boolean)
+          .map(part => part.replace(/^["'`]|["'`]$/g, '')).join('.');
         if (declaredTables.has(tableName.toLowerCase())) {
           diagnostics.push({
             line: lineNum,

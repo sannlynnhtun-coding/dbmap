@@ -15,9 +15,10 @@
   <ChangelogPage v-else-if="isChangelogRoute" />
 
   <!-- Full ERD Studio Workspace (/app, /studio, /workspace) -->
-  <div v-else-if="isStudioRoute" class="studio-shell w-screen h-dvh overflow-hidden flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans select-none" :class="{ 'cursor-col-resize select-none': isResizing }">
+  <div v-else-if="isStudioRoute" :inert="isDesktop && desktop.busy" class="studio-shell w-screen h-dvh overflow-hidden flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans select-none" :class="{ 'cursor-col-resize select-none': isResizing }">
     <!-- Navbar -->
     <Navbar />
+    <DesktopFileBar />
 
     <!-- Main Workspace Layout -->
     <div class="studio-workspace flex-1 flex overflow-hidden relative">
@@ -97,6 +98,8 @@
 </template>
 
 <script setup>
+import DesktopFileBar from './components/DesktopFileBar.vue';
+import { desktop, isDesktop } from './desktop.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { 
   state, 

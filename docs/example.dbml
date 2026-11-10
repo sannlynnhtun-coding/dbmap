@@ -1,0 +1,12 @@
+// dbmaps-layout: {"version":1,"tables":{"public.users":{"x":80,"y":80},"public.posts":{"x":480,"y":80}},"display":{"tableDisplayMode":"all","showOptionalRelationships":true}}
+// DBMaps Desktop example: schema and layout in one text file.
+Table public.users {
+  id int [pk]
+  name varchar(100) [not null]
+}
+
+Table public.posts {
+  id int [pk]
+  user_id int [not null, ref: > public.users.id]
+  title varchar(200)
+}
