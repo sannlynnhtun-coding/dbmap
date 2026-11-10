@@ -62,15 +62,10 @@
       </button>
     </div>
 
-    <!-- Center Section: View Mode Switcher (Icons-only on small screens, Icons + Text on md+ screens) -->
-    <div role="radiogroup" aria-label="Workspace view" id="tour-view-modes" class="flex items-center bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shrink-0">
+    <!-- Workspace views share one connected control. -->
+    <div role="radiogroup" aria-label="Workspace view" id="tour-view-modes" class="workspace-view-group">
       <label
-        class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
-        :class="[
-          state.viewMode === 'split'
-            ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-        ]"
+        class="workspace-view-item"
         title="Split View (Editor & ERD Canvas)"
       >
         <input type="radio" name="workspace-view" value="split" v-model="state.viewMode" aria-label="Split view" class="sr-only" />
@@ -78,12 +73,7 @@
       </label>
 
       <label
-        class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
-        :class="[
-          state.viewMode === 'canvas'
-            ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-        ]"
+        class="workspace-view-item"
         title="Canvas View (Full ERD Diagram)"
       >
         <input type="radio" name="workspace-view" value="canvas" v-model="state.viewMode" aria-label="Diagram view" class="sr-only" />
@@ -91,12 +81,7 @@
       </label>
 
       <label
-        class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
-        :class="[
-          state.viewMode === 'editor'
-            ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-        ]"
+        class="workspace-view-item"
         title="Edit your database schema as DBML code"
       >
         <input type="radio" name="workspace-view" value="editor" v-model="state.viewMode" aria-label="Code view" class="sr-only" />
