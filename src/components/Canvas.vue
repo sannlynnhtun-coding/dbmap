@@ -17,466 +17,59 @@
     @touchmove="onTouchMove"
     @touchend="onTouchEnd"
   >
-    <!-- Top Floating Canvas Toolbar (Unified High-End Glassmorphic Bar) -->
-    <div
-      id="tour-canvas-toolbar"
-      class="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1 sm:gap-1.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-1 sm:p-1.2 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-md shadow-slate-950/5 dark:shadow-slate-950/40 text-xs transition-all duration-150 max-w-[calc(100%-1.5rem)] select-none overflow-visible"
-    >
-      <!-- Group 1: Navigation & Zoom -->
-      <div class="flex items-center gap-1 shrink-0">
-        <!-- Pan Tool Toggle -->
-        <button
-          @click="isPanningModeActive = !isPanningModeActive"
-          :title="isPanningModeActive ? 'Pan Mode Active (Click to return to select mode)' : 'Pan Canvas (H or hold Space)'"
-          class="h-8 px-2 rounded-lg font-medium transition-all duration-150 flex items-center gap-1.5 cursor-pointer"
-          :class="[
-            isPanningModeActive || isSpacePressed
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95'
-          ]"
-        >
-          <Hand class="w-3.5 h-3.5 shrink-0" />
-          <span v-if="canvasWidth >= 780" class="text-xs">Pan</span>
-        </button>
-
-        <!-- Segmented Zoom Controller -->
-        <div class="flex items-center bg-slate-100/90 dark:bg-slate-800/90 rounded-lg p-0.5 border border-slate-200/60 dark:border-slate-700/60 h-8">
-          <button
-            @click="zoomOut"
-            title="Zoom Out (Ctrl + -)"
-            class="h-7 w-7 rounded-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 transition cursor-pointer"
-          >
-            <ZoomOut class="w-3.5 h-3.5" />
+    <div id="tour-canvas-toolbar" role="group" aria-label="Diagram tools" class="canvas-tools absolute top-3 left-3 right-3 z-20 select-none">
+      <div class="canvas-tools-row">
+        <div class="canvas-tools-group" role="group" aria-label="Create and export">
+          <button class="canvas-tool-primary" @click="state.modals.newTable = true" title="Add table (T)">
+            <Plus class="w-4 h-4" /><span>Add table</span>
           </button>
-          
-          <button
-            @click="resetZoom"
-            title="Click to reset zoom to 100%"
-            class="h-7 px-1.5 font-mono text-[11px] font-semibold tabular-nums text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white/60 dark:hover:bg-slate-700/60 rounded transition cursor-pointer select-none"
-          >
-            {{ Math.round(state.zoomLevel * 100) }}%
+          <button @click="state.modals.newRel = true" title="Add a foreign key relationship (R)">
+            <Link class="w-4 h-4" /><span>Relationship</span>
           </button>
-          
-          <button
-            @click="zoomIn"
-            title="Zoom In (Ctrl + +)"
-            class="h-7 w-7 rounded-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 transition cursor-pointer"
-          >
-            <ZoomIn class="w-3.5 h-3.5" />
+          <button @click="openExportModal('diagram')" title="Export diagram as an image or PDF">
+            <Camera class="w-4 h-4" /><span>Export</span>
           </button>
-
-          <div class="h-3.5 w-px bg-slate-200 dark:bg-slate-700 mx-0.5"></div>
-
-          <!-- Fit to Screen -->
-          <button
-            @click="fitDiagramToView()"
-            title="Fit all tables to screen"
-            class="canvas-fit h-7 px-2 gap-1.5 rounded-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 transition cursor-pointer"
-          >
-            <Maximize2 class="w-3.5 h-3.5" /><span>Fit</span>
+        </div>
+        <div class="canvas-tools-group" role="group" aria-label="Canvas navigation">
+          <button @click="isPanningModeActive = !isPanningModeActive" :aria-pressed="isPanningModeActive" title="Pan canvas (H or hold Space)" aria-label="Pan canvas">
+            <Hand class="w-4 h-4" />
           </button>
+          <button @click="zoomOut" title="Zoom Out (Ctrl + -)" aria-label="Zoom out"><ZoomOut class="w-4 h-4" /></button>
+          <button @click="resetZoom" title="Click to reset zoom to 100%" class="canvas-zoom-value">{{ Math.round(state.zoomLevel * 100) }}%</button>
+          <button @click="zoomIn" title="Zoom In (Ctrl + +)" aria-label="Zoom in"><ZoomIn class="w-4 h-4" /></button>
+          <button @click="fitDiagramToView()" title="Fit all tables to screen"><Maximize2 class="w-4 h-4" /><span>Fit</span></button>
         </div>
       </div>
-
-      <!-- Divider -->
-      <div class="h-4 w-px bg-slate-200 dark:bg-slate-800 mx-0.5 shrink-0"></div>
-
-      <!-- Group 2: Diagram Tools (When canvas >= 460px) -->
-      <template v-if="canvasWidth >= 460">
-        <!-- Auto Arrange with 2 Suitable Modes -->
-        <div class="relative shrink-0" ref="autoArrangeDropdownRef">
-          <div class="h-8 inline-flex items-center rounded-lg border border-indigo-200/80 dark:border-indigo-900/60 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 overflow-hidden shadow-2xs">
-            <button
-              type="button"
-              @click="triggerAutoArrange(state.autoArrangeMode || 'flow')"
-              :title="`Auto Arrange (${currentAutoArrangeLabel}). Click to organize tables.`"
-              class="h-full px-2 sm:px-2.5 hover:bg-indigo-100/80 dark:hover:bg-indigo-900/60 font-medium transition flex items-center gap-1.5 cursor-pointer text-xs"
-            >
-              <component :is="currentAutoArrangeIcon" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              <span v-if="canvasWidth >= 780" class="font-medium">Arrange</span>
-              <span v-else-if="canvasWidth >= 620" class="font-medium">Arrange</span>
-              <span class="text-[10px] px-1 py-0.2 bg-indigo-200/70 dark:bg-indigo-900/80 text-indigo-800 dark:text-indigo-200 rounded font-semibold">{{ currentAutoArrangeShortLabel }}</span>
-            </button>
-            <button
-              type="button"
-              @click.stop="showAutoArrangeDropdown = !showAutoArrangeDropdown"
-              title="Choose auto arrange layout"
-              class="h-full px-1.5 hover:bg-indigo-100/80 dark:hover:bg-indigo-900/60 border-l border-indigo-200/60 dark:border-indigo-900/60 transition flex items-center justify-center cursor-pointer"
-              :class="{ 'bg-indigo-100 dark:bg-indigo-900': showAutoArrangeDropdown }"
-            >
-              <ChevronDown class="w-3 h-3 text-indigo-600 dark:text-indigo-400 transition-transform duration-200" :class="{ 'rotate-180': showAutoArrangeDropdown }" />
-            </button>
-          </div>
-
-          <!-- Auto Arrange Dropdown Popover -->
-          <div
-            v-if="showAutoArrangeDropdown"
-            @click.stop
-            class="absolute left-0 top-full mt-1.5 z-50 w-76 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl text-slate-800 dark:text-slate-100 animate-in fade-in slide-in-from-top-1 duration-150"
-          >
-            <div class="px-2 py-1 mb-1.5 flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60 pb-1.5">
-              <div>
-                <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Auto Arrange Layout</span>
-                <p class="text-[11px] text-slate-400">Select algorithm to organize tables</p>
-              </div>
-              <span class="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded">2 MODES</span>
-            </div>
-
-            <div class="space-y-1.5 pt-0.5">
-              <!-- Mode 1: Relationship Flow -->
-              <button
-                type="button"
-                @click="selectAndRunAutoArrange('flow')"
-                class="w-full text-left p-2.5 rounded-lg border transition flex items-start gap-2.5 cursor-pointer group"
-                :class="state.autoArrangeMode === 'flow'
-                  ? 'border-indigo-500 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-950 dark:text-indigo-100'
-                  : 'border-slate-200/80 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300'"
-              >
-                <div class="p-1.5 rounded-md bg-indigo-100/80 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5">
-                  <Workflow class="w-3.5 h-3.5" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between gap-1">
-                    <span class="font-semibold text-xs text-slate-900 dark:text-slate-100">Relationship Flow</span>
-                    <div class="flex items-center gap-1">
-                      <Check v-if="state.autoArrangeMode === 'flow'" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                      <span class="px-1.5 py-0.2 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-mono font-bold rounded border border-slate-200 dark:border-slate-600">1</span>
-                    </div>
-                  </div>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug mt-0.5">
-                    Aligns left to right along foreign-key dependencies. Best for parent-child hierarchies.
-                  </p>
-                </div>
-              </button>
-
-              <!-- Mode 2: Central Hubs -->
-              <button
-                type="button"
-                @click="selectAndRunAutoArrange('hubs')"
-                class="w-full text-left p-2.5 rounded-lg border transition flex items-start gap-2.5 cursor-pointer group"
-                :class="state.autoArrangeMode === 'hubs'
-                  ? 'border-indigo-500 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-950 dark:text-indigo-100'
-                  : 'border-slate-200/80 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300'"
-              >
-                <div class="p-1.5 rounded-md bg-indigo-100/80 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5">
-                  <Network class="w-3.5 h-3.5" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between gap-1">
-                    <span class="font-semibold text-xs text-slate-900 dark:text-slate-100">Central Hubs</span>
-                    <div class="flex items-center gap-1">
-                      <Check v-if="state.autoArrangeMode === 'hubs'" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                      <span class="px-1.5 py-0.2 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-mono font-bold rounded border border-slate-200 dark:border-slate-600">2</span>
-                    </div>
-                  </div>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug mt-0.5">
-                    Clusters tables around central entities. Keeps dense databases compact.
-                  </p>
-                </div>
-              </button>
-            </div>
-
-            <div class="mt-2 pt-1.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[10px] text-slate-400">
-              <span>Press <kbd class="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded font-mono font-bold">1</kbd> or <kbd class="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded font-mono font-bold">2</kbd></span>
-              <button type="button" @click="showAutoArrangeDropdown = false" class="hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">Close</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Line Style Toggle Button -->
-        <button
-          @click="lineStyle = lineStyle === 'orthogonal' ? 'curved' : 'orthogonal'"
-          :title="`Line Routing: ${lineStyle === 'orthogonal' ? 'Smart Orthogonal Elbows (Click for Curved)' : 'Smooth Bezier Curves (Click for Orthogonal)'}`"
-          class="h-8 px-2 sm:px-2.5 rounded-lg font-medium transition-all duration-150 flex items-center gap-1.5 cursor-pointer text-xs shrink-0 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <GitCommit class="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
-          <span v-if="canvasWidth >= 780" class="capitalize">{{ lineStyle }} Lines</span>
+      <div class="canvas-tools-row canvas-tools-options">
+        <label>
+          <span>Layout</span>
+          <select :value="state.autoArrangeMode" @change="selectAndRunAutoArrange($event.target.value)" aria-label="Diagram layout">
+            <option value="flow">Relationship flow</option>
+            <option value="hubs">Central hubs</option>
+          </select>
+        </label>
+        <button @click="triggerAutoArrange(state.autoArrangeMode || 'flow')" title="Arrange tables using the selected layout">
+          <Workflow class="w-4 h-4" /><span>Arrange</span>
         </button>
-
-        <!-- Table View Options (Density & Optional Lines) -->
-        <div class="relative shrink-0" ref="viewModeDropdownRef">
-          <button
-            type="button"
-            @click.stop="showViewModeDropdown = !showViewModeDropdown"
-            :title="`Table View Mode: ${currentViewModeLabel}. Click to switch density or toggle optional lines.`"
-            class="h-8 px-2 sm:px-2.5 rounded-lg font-medium transition-all duration-150 flex items-center gap-1.5 cursor-pointer text-xs"
-            :class="[
-              showViewModeDropdown
-                ? 'bg-indigo-50 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-500'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
-            ]"
-          >
-            <component :is="currentViewModeIcon" class="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
-            <span v-if="canvasWidth >= 780">{{ currentViewModeLabel }}</span>
-            <span
-              v-if="!state.showOptionalRelationships && optionalRelsCount > 0"
-              title="Optional relationships hidden"
-              class="px-1 py-0.2 bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 text-[9px] font-bold rounded-full border border-amber-300 dark:border-amber-700"
-            >
-              -{{ optionalRelsCount }}
-            </span>
-            <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': showViewModeDropdown }" />
-          </button>
-
-          <!-- View Mode Dropdown Menu -->
-          <div
-            v-if="showViewModeDropdown"
-            @click.stop
-            class="absolute left-0 top-full mt-1.5 z-50 w-64 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl text-slate-800 dark:text-slate-100 animate-in fade-in slide-in-from-top-1 duration-150"
-          >
-            <div class="px-2 py-1 mb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-              <span>Table Density</span>
-              <span class="px-1.5 py-0.2 bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[9px] font-bold rounded">DENSITY</span>
-            </div>
-
-            <div class="space-y-1">
-              <!-- 1. All Fields -->
-              <button
-                type="button"
-                @click="selectDisplayMode('all')"
-                class="w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition cursor-pointer"
-                :class="state.tableDisplayMode === 'all' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold' : 'hover:bg-slate-100 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-200'"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="w-6 h-6 rounded-md flex items-center justify-center bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                    <Columns class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-medium">1. All fields</div>
-                    <div class="text-[10px] text-slate-400 font-normal">Full columns, data types & notes</div>
-                  </div>
-                </div>
-                <Check v-if="state.tableDisplayMode === 'all'" class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              </button>
-
-              <!-- 2. Tables Only -->
-              <button
-                type="button"
-                @click="selectDisplayMode('tables')"
-                class="w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition cursor-pointer"
-                :class="state.tableDisplayMode === 'tables' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold' : 'hover:bg-slate-100 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-200'"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="w-6 h-6 rounded-md flex items-center justify-center bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                    <TableIcon class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-medium">2. Tables only</div>
-                    <div class="text-[10px] text-slate-400 font-normal">Compact headers for bird's-eye view</div>
-                  </div>
-                </div>
-                <Check v-if="state.tableDisplayMode === 'tables'" class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              </button>
-
-              <!-- 3. Keys Only -->
-              <button
-                type="button"
-                @click="selectDisplayMode('keys')"
-                class="w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition cursor-pointer"
-                :class="state.tableDisplayMode === 'keys' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold' : 'hover:bg-slate-100 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-200'"
-              >
-                <div class="flex items-center gap-2.5">
-                  <div class="w-6 h-6 rounded-md flex items-center justify-center bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
-                    <Key class="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div class="font-medium">3. Keys only</div>
-                    <div class="text-[10px] text-slate-400 font-normal">Primary (PK) & Foreign (FK) keys</div>
-                  </div>
-                </div>
-                <Check v-if="state.tableDisplayMode === 'keys'" class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              </button>
-            </div>
-
-            <!-- Divider -->
-            <div class="my-1.5 border-t border-slate-100 dark:border-slate-700/80"></div>
-
-            <!-- Optional Lines Toggle -->
-            <button
-              type="button"
-              id="toggle-optional-rel-lines-btn"
-              @click.stop="toggleShowOptionalRelationships"
-              class="w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-200"
-              :class="{ 'bg-amber-50/50 dark:bg-amber-950/20': !state.showOptionalRelationships }"
-              :title="state.showOptionalRelationships ? 'Hide optional relationship lines' : 'Show all optional relationship lines'"
-            >
-              <div class="flex items-start gap-2.5 flex-1 min-w-0 pr-2">
-                <div
-                  class="w-6 h-6 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-colors"
-                  :class="state.showOptionalRelationships ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400' : 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400'"
-                >
-                  <Eye v-if="state.showOptionalRelationships" class="w-3.5 h-3.5" />
-                  <EyeOff v-else class="w-3.5 h-3.5" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-1.5">
-                    <span class="font-medium text-slate-800 dark:text-slate-100">Optional lines</span>
-                    <span
-                      v-if="optionalRelsCount > 0"
-                      class="px-1.5 py-0.2 rounded-full text-[10px] font-mono"
-                      :class="state.showOptionalRelationships ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-semibold'"
-                    >
-                      {{ optionalRelsCount }}
-                    </span>
-                  </div>
-                  <div class="text-[10px] text-slate-400 font-normal leading-tight mt-0.5">
-                    {{ state.showOptionalRelationships ? 'Visible (>?, audit refs)' : 'Hidden (audit cols skipped)' }}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Switch -->
-              <div
-                class="w-7 h-4 rounded-full transition-colors relative flex items-center p-0.5 shrink-0"
-                :class="state.showOptionalRelationships ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'"
-              >
-                <div
-                  class="w-3 h-3 rounded-full bg-white transition-transform duration-200 shadow-xs"
-                  :class="state.showOptionalRelationships ? 'translate-x-3' : 'translate-x-0'"
-                ></div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </template>
-
-      <!-- Compact Popover for Diagram Tools (When canvas < 460px in split view) -->
-      <div v-else class="relative shrink-0" ref="canvasSettingsDropdownRef">
-        <button
-          type="button"
-          @click.stop="showCanvasSettingsDropdown = !showCanvasSettingsDropdown"
-          class="h-8 px-2 rounded-lg font-medium transition-all duration-150 flex items-center gap-1 cursor-pointer text-xs"
-          :class="[
-            showCanvasSettingsDropdown
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
-          ]"
-          title="Diagram Layout & Display Settings"
-        >
-          <SlidersHorizontal class="w-3.5 h-3.5" />
-          <span class="text-[11px]">Layout</span>
-          <ChevronDown class="w-3 h-3 ml-0.5" />
-        </button>
-
-        <!-- Compact Combined Layout Popover -->
-        <div
-          v-if="showCanvasSettingsDropdown"
-          @click.stop
-          class="absolute left-0 top-full mt-1.5 z-50 w-72 p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl text-slate-800 dark:text-slate-100 animate-in fade-in slide-in-from-top-1 duration-150 space-y-2.5"
-        >
-          <!-- Quick Auto Arrange -->
-          <div>
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Auto Arrange Tables</div>
-            <div class="grid grid-cols-2 gap-1.5">
-              <button
-                type="button"
-                @click="selectAndRunAutoArrange('flow'); showCanvasSettingsDropdown = false"
-                class="p-2 rounded-lg border text-left text-xs transition cursor-pointer flex flex-col gap-1"
-                :class="state.autoArrangeMode === 'flow' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750'"
-              >
-                <div class="flex items-center gap-1.5">
-                  <Workflow class="w-3.5 h-3.5 text-indigo-500" />
-                  <span class="font-semibold text-slate-900 dark:text-slate-100">Flow (1)</span>
-                </div>
-                <span class="text-[10px] text-slate-400 font-normal">Parent-child tree</span>
-              </button>
-              <button
-                type="button"
-                @click="selectAndRunAutoArrange('hubs'); showCanvasSettingsDropdown = false"
-                class="p-2 rounded-lg border text-left text-xs transition cursor-pointer flex flex-col gap-1"
-                :class="state.autoArrangeMode === 'hubs' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750'"
-              >
-                <div class="flex items-center gap-1.5">
-                  <Network class="w-3.5 h-3.5 text-indigo-500" />
-                  <span class="font-semibold text-slate-900 dark:text-slate-100">Hubs (2)</span>
-                </div>
-                <span class="text-[10px] text-slate-400 font-normal">Core cluster</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Line Style -->
-          <div class="border-t border-slate-100 dark:border-slate-700/80 pt-2 flex items-center justify-between">
-            <span class="text-xs text-slate-600 dark:text-slate-300 font-medium">Relationship Lines:</span>
-            <button
-              @click="lineStyle = lineStyle === 'orthogonal' ? 'curved' : 'orthogonal'"
-              class="px-2 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-md text-xs font-semibold text-slate-700 dark:text-slate-200 capitalize transition flex items-center gap-1.5 cursor-pointer"
-            >
-              <GitCommit class="w-3.5 h-3.5 text-indigo-500" />
-              <span>{{ lineStyle }}</span>
-            </button>
-          </div>
-
-          <!-- Table Density -->
-          <div class="border-t border-slate-100 dark:border-slate-700/80 pt-2">
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Table Density</div>
-            <div class="grid grid-cols-3 gap-1">
-              <button
-                @click="selectDisplayMode('all')"
-                class="py-1 px-1.5 text-center rounded text-xs transition cursor-pointer"
-                :class="state.tableDisplayMode === 'all' ? 'bg-indigo-600 text-white font-semibold' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200'"
-              >
-                All
-              </button>
-              <button
-                @click="selectDisplayMode('tables')"
-                class="py-1 px-1.5 text-center rounded text-xs transition cursor-pointer"
-                :class="state.tableDisplayMode === 'tables' ? 'bg-indigo-600 text-white font-semibold' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200'"
-              >
-                Tables
-              </button>
-              <button
-                @click="selectDisplayMode('keys')"
-                class="py-1 px-1.5 text-center rounded text-xs transition cursor-pointer"
-                :class="state.tableDisplayMode === 'keys' ? 'bg-indigo-600 text-white font-semibold' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200'"
-              >
-                Keys
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div class="h-4 w-px bg-slate-200 dark:bg-slate-800 mx-0.5 shrink-0"></div>
-
-      <!-- Group 3: Schema Actions (Add Table & Add Relationship) -->
-      <div class="flex items-center gap-1 shrink-0">
-        <!-- Quick Add Table Button -->
-        <button
-          @click="state.modals.newTable = true"
-          title="Add New Database Table (T)"
-          class="h-8 px-2 sm:px-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-150 flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 text-xs"
-        >
-          <Plus class="w-3.5 h-3.5 shrink-0" />
-          <span v-if="canvasWidth >= 620">Add table</span>
-          <span v-else>Table</span>
-        </button>
-
-        <!-- Quick Add Foreign Key Button -->
-        <button
-          @click="state.modals.newRel = true"
-          title="Add Foreign Key Relationship (R)"
-          class="h-8 px-2 sm:px-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-all duration-150 flex items-center gap-1.5 cursor-pointer active:scale-95 text-xs"
-        >
-          <Link class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
-          <span v-if="canvasWidth >= 780">Add relation</span>
-          <span v-else-if="canvasWidth >= 520">Ref</span>
-        </button>
-
-        <!-- Divider -->
-        <div class="h-4 w-px bg-slate-200 dark:bg-slate-800 mx-0.5 shrink-0"></div>
-
-        <!-- Export HD Diagram Button -->
-        <button
-          @click="openExportModal('diagram')"
-          title="Export HD Diagram (JPG, PNG, PDF, SVG) for Academic Reports"
-          class="h-8 px-2 sm:px-2.5 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 font-semibold rounded-lg transition-all duration-150 flex items-center gap-1.5 cursor-pointer active:scale-95 text-xs shadow-2xs"
-        >
-          <Camera class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span v-if="canvasWidth >= 880">Export</span>
-          <span v-else-if="canvasWidth >= 620">Export</span>
-        </button>
+        <label>
+          <span>Fields</span>
+          <select :value="state.tableDisplayMode" @change="selectDisplayMode($event.target.value)" aria-label="Visible table fields">
+            <option value="all">All fields</option>
+            <option value="keys">Keys only</option>
+            <option value="tables">Table names</option>
+          </select>
+        </label>
+        <label>
+          <span>Lines</span>
+          <select v-model="lineStyle" aria-label="Relationship line style">
+            <option value="orthogonal">Straight</option>
+            <option value="curved">Curved</option>
+          </select>
+        </label>
+        <label class="canvas-tools-checkbox">
+          <input type="checkbox" :checked="state.showOptionalRelationships" @change="toggleShowOptionalRelationships()" />
+          <span>Optional relationships</span>
+        </label>
       </div>
     </div>
 
