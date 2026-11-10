@@ -1013,7 +1013,6 @@ function onCodeMirrorChange(newText) {
       proj.tableGroups = tableGroups || [];
       if (projectConfig) proj.projectConfig = projectConfig;
       proj.customDbml = newText;
-      proj.updatedAt = new Date().toISOString();
       proj.isStarterProject = false;
       state.saveStatus = 'unsaved';
       saveGuestProjectsToStorage();
@@ -1077,7 +1076,6 @@ async function formatCode() {
     }
     activeProject.value.customDbml = formatted;
     activeProject.value.isStarterProject = false;
-    activeProject.value.updatedAt = new Date().toISOString();
 
     saveGuestProjectsToStorage();
     await flushActiveProjectSync();
@@ -1173,14 +1171,15 @@ watch(
 
 // Watch store updates (e.g. table dragged on canvas, column edited, remote realtime sync)
 watch(
-  () => [activeProject.value?.updatedAt, activeProject.value?.customDbml],
-  ([newUpdatedAt, newDbml], [oldUpdatedAt, oldDbml]) => {
+  () => [activeProject.value?.customDbml, activeProject.value?.tables, activeProject.value?.relationships,
+    activeProject.value?.enums, activeProject.value?.tableGroups, activeProject.value?.projectConfig, activeProject.value?.name],
+  () => {
     if (!activeProject.value || !editorView) return;
     // If project changed, the project ID watcher handles it
     if (activeProject.value.id !== currentEditorProjectId.value) {
       currentEditorProjectId.value = activeProject.value.id;
     }
-    if ((newUpdatedAt !== oldUpdatedAt || newDbml !== oldDbml) && !editorView.hasFocus) {
+    if (!editorView.hasFocus) {
       const proj = activeProject.value;
       const newText = proj.customDbml ?? generateDBML(
         proj.tables || [],
@@ -1194,7 +1193,8 @@ watch(
       );
       updateEditorText(newText);
     }
-  }
+  },
+  { deep: true }
 );
 
 onMounted(() => {
