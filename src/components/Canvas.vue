@@ -1323,13 +1323,27 @@ function delTbl(tableId) {
   deleteTable(tableId);
 }
 
-// Zoom handlers
+function changeZoom(direction) {
+  const rect = canvasContainer.value?.getBoundingClientRect();
+  if (!rect) return;
+  const x = rect.width / 2;
+  const y = rect.height / 2;
+  const previous = state.zoomLevel;
+  const next = Math.max(0.1, Math.min(2, Math.round((previous + direction * 0.15) * 100) / 100));
+  const ratio = next / previous;
+  state.panOffset = {
+    x: x - (x - state.panOffset.x) * ratio,
+    y: y - (y - state.panOffset.y) * ratio
+  };
+  state.zoomLevel = next;
+}
+
 function zoomIn() {
-  state.zoomLevel = Math.min(2.0, state.zoomLevel + 0.15);
+  changeZoom(1);
 }
 
 function zoomOut() {
-  state.zoomLevel = Math.max(0.1, state.zoomLevel - 0.15);
+  changeZoom(-1);
 }
 
 function resetZoom() {
@@ -1338,13 +1352,12 @@ function resetZoom() {
 }
 
 function onWheel(e) {
-  if (e.ctrlKey || e.metaKey) {
-    if (e.deltaY < 0) zoomIn();
-    else zoomOut();
-  } else {
-    state.panOffset.x -= e.deltaX * 0.8;
-    state.panOffset.y -= e.deltaY * 0.8;
+  if (e.shiftKey) {
+    state.panOffset.x -= e.deltaX || e.deltaY;
+    return;
   }
+  if (e.deltaY < 0) zoomIn();
+  else if (e.deltaY > 0) zoomOut();
 }
 
 // Key listeners for Spacebar Panning & Auto Arrange shortcuts
