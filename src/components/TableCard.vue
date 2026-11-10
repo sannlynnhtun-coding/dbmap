@@ -248,7 +248,7 @@
 
         <!-- Right Column Info: Data Type + Attributes -->
         <div class="flex items-center gap-1.5 font-mono text-[11px] shrink-0">
-          <span class="text-slate-500 dark:text-slate-400 font-normal">
+          <span class="column-data-type font-normal">
             {{ item.col.type }}
           </span>
           

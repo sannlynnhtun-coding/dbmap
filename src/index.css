@@ -1533,6 +1533,8 @@ select:focus-visible {
 .sidebar-app-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 8px; border-top: 1px solid var(--board-border); }
 .sidebar-app-links button { min-height: 36px; text-align: left; padding: 8px; border-radius: 6px; color: var(--page-muted); }
 .sidebar-app-links button:hover { background: var(--page-well); color: var(--page-ink); }
+.column-data-type { color: #0369a1; }
+.dark .column-data-type { color: #67e8f9; }
 @media (max-width: 767px) {
   .studio-shell > .studio-header { column-gap: 6px; }
   .studio-header #btn-navbar-new-database { display: none; }
