@@ -856,7 +856,7 @@ select:focus-visible {
   font-weight: 400;
 }
 .home-faq details[open] summary::after {
-  content: "âˆ’";
+  content: "−";
 }
 .home-capabilities {
   display: block;
