@@ -328,7 +328,7 @@
             </span>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <button
               @click="copyMarkdownToClipboard"
               class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition flex items-center gap-1.5 cursor-pointer"
@@ -507,6 +507,7 @@
           >
             Export Full Project Backup
           </button>
+          <button type="button" @click="downloadWorkspaceBackup" class="px-4 py-2 text-blue-700 dark:text-blue-300 font-medium rounded-xl hover:underline">Export All Projects (JSON)</button>
         </div>
 
       </div>
@@ -517,7 +518,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { state, activeProject, addToast } from '../stores/schemaStore.js';
+import { state, activeProject, addToast, exportWorkspaceBackup } from '../stores/schemaStore.js';
+import { downloadJsonBackup } from '../utils/workspaceBackup.js';
 import { createProjectBackup } from '../utils/projectBackup.js';
 import { exportToSQL, generateDBML } from '../utils/dbmlParser.js';
 import {
@@ -720,6 +722,11 @@ const generatedScript = computed(() => {
 function copyScriptToClipboard() {
   navigator.clipboard.writeText(generatedScript.value);
   addToast('Copied to Clipboard', 'Schema export script copied', 'success');
+}
+
+function downloadWorkspaceBackup() {
+  try { downloadJsonBackup(exportWorkspaceBackup(), `dbmaps-workspace-${new Date().toISOString().slice(0, 10)}.json`); }
+  catch (error) { addToast('Backup failed', error.message, 'error'); }
 }
 
 function downloadProjectBackup() {

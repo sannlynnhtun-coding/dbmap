@@ -1,3 +1,4 @@
+import { createWorkspaceBackup, prepareBackupImport, recentProjects } from '../utils/workspaceBackup.js';
 import { createProjectStorage, validateLegacyStorage } from '../utils/projectStorage.js';
 import { toast } from '@yusufceng1z/ding';
 import { arrangeRelationshipFlow, arrangeCentralHubs } from '../utils/diagramLayout.js';
@@ -21,6 +22,9 @@ let storageReady = false;
 let deletedProjectIds = [];
 let saveSequence = 0;
 let mutationRevision = 0;
+let applyingSavedTimestamps = false;
+let savedProjectContents = new Map();
+const projectContent = project => JSON.stringify({ ...project, updatedAt: undefined });
 
 export function getDeletedProjectIds() {
   if (storageReady) return [...deletedProjectIds];
@@ -169,7 +173,7 @@ export function loadInitialProjects() {
       }
     }
   } catch (e) {}
-  return [initialBlankProject];
+  return typeof window !== 'undefined' && window.__DBMAPS_DESKTOP__ ? [initialBlankProject] : [];
 }
 
 export function getInitialActiveProjectId(projectsList = [], foldersList = [], orderMap = null) {
@@ -289,6 +293,8 @@ export const state = reactive({
   isDarkMode: isDarkInitial,
   isSidebarCollapsed: typeof window === 'undefined' || window.innerWidth < 1280,
   activeTab: 'tables', // 'explorer' | 'tables' | 'relationships' | 'history' | 'settings'
+  showStartPage: true,
+  startPageMessage: '',
   viewMode: 'split', // 'split' | 'canvas' | 'editor'
   editorWidth: 420, // width in pixels for split view editor pane
   
@@ -382,6 +388,7 @@ export const state = reactive({
   modals: {
     export: false,
     importSchema: false,
+    backupImport: false,
     share: false,
     auth: false,
     version: false,
@@ -542,10 +549,14 @@ export async function navigateTo(path) {
     startStudioLoading('Preparing database workspace...', 35);
   }
 
-  state.currentRoute = path;
+  state.currentRoute = path.split('?')[0];
   if (typeof window !== 'undefined') {
     window.history.pushState(null, '', path);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  if (isTargetingStudio) {
+    loadLocalProjectFromUrl();
+    if (state.showStartPage) { finishStudioLoading(0); return; }
   }
 
   if (isTargetingStudio && !isCurrentlyInStudio) {
@@ -699,7 +710,9 @@ export async function initializeProjectStorage() {
     validateLegacyStorage(localStorage);
     return workspaceSnapshot();
   });
-  state.projects = snapshot.projects.map(project => normalizeProjectKeys(project));
+  state.projects = snapshot.projects.map(project => normalizeProjectKeys({
+    history: [], dialect: 'postgres', accessMode: 'public', sharePassword: '', allowedEmails: [], ...project
+  }));
   state.folders = snapshot.workspace.folders;
   state.projectOrder = snapshot.workspace.projectOrder;
   deletedProjectIds = snapshot.workspace.deletedIds;
@@ -709,17 +722,31 @@ export async function initializeProjectStorage() {
   state.activeProjectId = getInitialActiveProjectId(state.projects, state.folders, state.projectOrder);
   currentWatchedProjectId = state.activeProjectId;
   await nextTick();
+  savedProjectContents = new Map(state.projects.map(project => [project.id, projectContent(project)]));
   storageReady = true;
 }
 
-export async function saveProjectsLocally(projects = state.projects) {
+export async function saveProjectsLocally(projects = state.projects, workspace = null) {
   if (!storageReady) return false;
   const sequence = ++saveSequence;
   const revision = mutationRevision;
   const isBrowser = !window.__DBMAPS_DESKTOP__;
   if (isBrowser) state.saveStatus = 'saving';
   try {
-    await projectStorage.save(workspaceSnapshot(projects));
+    const snapshot = JSON.parse(JSON.stringify(workspace ? { projects, workspace } : workspaceSnapshot(projects)));
+    const now = new Date().toISOString();
+    for (const project of snapshot.projects) {
+      if (savedProjectContents.get(project.id) !== projectContent(project)) project.updatedAt = now;
+    }
+    await projectStorage.save(snapshot);
+    savedProjectContents = new Map(snapshot.projects.map(project => [project.id, projectContent(project)]));
+    applyingSavedTimestamps = true;
+    try {
+      for (const saved of snapshot.projects) {
+        const current = projects.find(project => project.id === saved.id);
+        if (current && projectContent(current) === projectContent(saved)) current.updatedAt = saved.updatedAt;
+      }
+    } finally { applyingSavedTimestamps = false; }
     if (isBrowser && sequence === saveSequence && revision === mutationRevision) {
       state.saveStatus = 'saved';
       state.saveErrorMessage = null;
@@ -754,7 +781,9 @@ export async function forceSaveProject() {
 }
 
 export function selectProject(projectId) {
-  if (!projectId || projectId === state.activeProjectId) return;
+  if (!projectId || !state.projects.some(project => project.id === projectId)) return;
+  state.showStartPage = false;
+  state.startPageMessage = '';
 
   // Flush any pending auto-sync for the current active project before switching away
   if (state.activeProjectId && state.saveStatus === 'unsaved' && !isSampleProjectId(state.activeProjectId) && !isProjectDeleted(state.activeProjectId)) {
@@ -780,8 +809,51 @@ export function selectProject(projectId) {
 }
 
 export function loadLocalProjectFromUrl() {
-  const id = new URLSearchParams(window.location.search).get('schema');
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('schema') || params.get('project') || params.get('share') || params.get('room') || params.get('id');
   if (id && state.projects.some(project => project.id === id)) selectProject(id);
+  else {
+    state.showStartPage = true;
+    state.startPageMessage = id ? 'This project is not available in this browser. Open a recent project or import a backup.' : '';
+  }
+}
+
+export async function openStartPage() {
+  if (storageReady && state.saveStatus !== 'saved') await flushActiveProjectSync();
+  state.showStartPage = true;
+  state.startPageMessage = state.saveStatus === 'error' ? 'Some changes could not be saved. Export a backup before closing this browser.' : '';
+  state.currentRoute = '/app';
+  window.history.replaceState(null, '', '/app');
+}
+
+export function exportWorkspaceBackup() {
+  return createWorkspaceBackup(recentProjects(state.projects), state.folders, state.projectOrder, {
+    tableDisplayMode: state.tableDisplayMode,
+    showOptionalRelationships: state.showOptionalRelationships,
+    autoArrangeMode: state.autoArrangeMode
+  });
+}
+
+export async function restoreBackupFile(backup) {
+  clearTimeout(syncTimeout);
+  if (!await flushActiveProjectSync()) throw new Error(state.saveErrorMessage || 'Storage is not ready.');
+  const prepared = prepareBackupImport(backup, state);
+  prepared.imported.forEach(normalizeProjectKeys);
+  const workspace = { ...workspaceSnapshot().workspace, folders: prepared.folders,
+    projectOrder: prepared.projectOrder, ...prepared.preferences };
+  if (!await saveProjectsLocally(prepared.projects, workspace)) {
+    throw new Error(state.saveErrorMessage || 'The backup could not be saved.');
+  }
+  storageReady = false;
+  state.projects = prepared.projects;
+  state.folders = prepared.folders;
+  state.projectOrder = prepared.projectOrder;
+  Object.assign(state, prepared.preferences);
+  await nextTick();
+  storageReady = true;
+  if (prepared.imported.length === 1) selectProject(prepared.imported[0].id);
+  else await openStartPage();
+  return prepared.imported;
 }
 
 // Toast helper
@@ -813,7 +885,7 @@ let currentWatchedProjectId = state.activeProjectId;
 watch(
   () => activeProject.value,
   (proj) => {
-    if (!storageReady || !proj || !proj.id) return;
+    if (!storageReady || applyingSavedTimestamps || !proj || !proj.id) return;
     if (proj.id !== currentWatchedProjectId) {
       currentWatchedProjectId = proj.id;
       return; // Switched active project reference; wait for actual user mutations
@@ -937,7 +1009,6 @@ export function autoArrangeTables(mode = null) {
     arrangeRelationshipFlow(tables, rels, state.tableDisplayMode);
   }
 
-  proj.updatedAt = new Date().toISOString();
   saveProjectsLocally();
 
   const modeInfo = AUTO_ARRANGE_MODES.find(m => m.id === targetMode) || AUTO_ARRANGE_MODES[0];
@@ -973,7 +1044,6 @@ export function updateTableHeaderColor(tableId, color) {
       proj.customDbml = updateTableHeaderColorInDBML(proj.customDbml, tbl.name, color);
     }
 
-    proj.updatedAt = new Date().toISOString();
     saveGuestProjectsToStorage();
   }
 }
@@ -985,7 +1055,7 @@ export function updateTableNote(tableId, note) {
   const tbl = proj.tables.find(t => t.id === tableId);
   if (tbl) {
     tbl.note = extractCleanNote(note);
-    proj.updatedAt = new Date().toISOString();
+
   }
 }
 
@@ -996,7 +1066,7 @@ export function updateColumnNote(tableId, colIndex, note) {
   const tbl = proj.tables.find(t => t.id === tableId);
   if (tbl && tbl.columns[colIndex]) {
     tbl.columns[colIndex].note = extractCleanNote(note);
-    proj.updatedAt = new Date().toISOString();
+
   }
 }
 
@@ -1018,7 +1088,7 @@ export function addTable(tableData) {
   };
 
   proj.tables.push(newTable);
-  proj.updatedAt = new Date().toISOString();
+
   state.selectedTableId = newTable.id;
   saveProjectsLocally();
   addToast('Table Added', `Created table "${newTable.name}"`, 'success');
@@ -1038,7 +1108,7 @@ export function deleteTable(tableId) {
     if (state.selectedTableId === tableId || state.selectedTableId === tblName) {
       state.selectedTableId = null;
     }
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
     addToast('Table Removed', `Deleted table "${tblName}"`, 'warning');
   }
@@ -1087,7 +1157,7 @@ export function addColumn(tableId, colData) {
       isUnique: colData.isUnique || false,
       note: colData.note || ''
     });
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
   }
 }
@@ -1099,7 +1169,7 @@ export function deleteColumn(tableId, colIndex) {
   const tbl = proj.tables.find(t => t.id === tableId || t.name === tableId);
   if (tbl && tbl.columns[colIndex]) {
     tbl.columns.splice(colIndex, 1);
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
   }
 }
@@ -1141,7 +1211,7 @@ export function addRelationship(relData) {
   }
 
   proj.relationships.push(newRel);
-  proj.updatedAt = new Date().toISOString();
+
   saveProjectsLocally();
   addToast('Relationship Linked', `${relData.fromTable}.${relData.fromColumn} ${operator} ${relData.toTable}.${relData.toColumn}`, 'success');
 }
@@ -1153,7 +1223,7 @@ export function updateRelationship(relId, updates) {
   const rel = proj.relationships.find(r => r.id === relId);
   if (rel) {
     Object.assign(rel, updates);
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
   }
 }
@@ -1191,7 +1261,6 @@ export function toggleRelationshipOptional(relId) {
     }
   }
 
-  proj.updatedAt = new Date().toISOString();
   saveProjectsLocally();
   addToast('Relationship Updated', nextOptional ? 'Set to Optional FK (>? 0..N)' : 'Set to Mandatory FK (> 1:N)', 'info');
 }
@@ -1203,7 +1272,7 @@ export function deleteRelationship(relId) {
   const idx = proj.relationships.findIndex(r => r.id === relId);
   if (idx !== -1) {
     proj.relationships.splice(idx, 1);
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
     addToast('Relationship Removed', 'Foreign key deleted', 'info');
   }
@@ -1261,7 +1330,7 @@ export function createCommit(versionName, description) {
   };
 
   proj.history.unshift(commit);
-  proj.updatedAt = new Date().toISOString();
+
   saveProjectsLocally();
   addToast('Snapshot Saved', `Created release checkpoint "${commit.versionName}"`, 'success');
 }
@@ -1274,7 +1343,7 @@ export function deleteCommit(commitId) {
   if (idx !== -1) {
     const vName = proj.history[idx].versionName;
     proj.history.splice(idx, 1);
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
     addToast('Version Removed', `Deleted checkpoint "${vName}"`, 'info');
   }
@@ -1288,7 +1357,7 @@ export function restoreCommit(commitId) {
   if (commit && commit.snapshotTables) {
     proj.tables = JSON.parse(JSON.stringify(commit.snapshotTables));
     proj.relationships = JSON.parse(JSON.stringify(commit.snapshotRelationships));
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
     addToast('Version Restored', `Restored schema to "${commit.versionName}"`, 'info');
   }
@@ -1299,7 +1368,7 @@ export function setProjectDialect(dialect) {
   const proj = activeProject.value;
   if (!proj) return;
   proj.dialect = dialect;
-  proj.updatedAt = new Date().toISOString();
+
   saveProjectsLocally();
   addToast('Dialect Updated', `Target dialect set to ${dialect.toUpperCase()}`, 'info');
 }
@@ -1361,6 +1430,8 @@ export async function restoreLocalProject(project) {
     folderId: state.folders[0]?.id || 'folder-1',
     ownerUid: 'guest',
     accessMode: 'public',
+    sharePassword: '',
+    allowedEmails: [],
     updatedAt: new Date().toISOString(),
     history: []
   };
@@ -1390,7 +1461,7 @@ export function importSchema({ name, script, dialect = 'auto', folderId = null, 
     proj.tables = result.tables;
     proj.relationships = result.relationships;
     proj.dialect = effectiveDialect;
-    proj.updatedAt = new Date().toISOString();
+
     saveProjectsLocally();
     addToast('Schema Imported', `Imported ${result.tables.length} table(s) and ${result.relationships.length} relation(s) into "${proj.name}"`, 'success');
     return proj;
@@ -1573,6 +1644,7 @@ export async function deleteProject(projectId) {
     recordDeletedProjectId(projectId);
 
     // 2. Remove from local store
+    if (state.projects.length === 1 && !window.__DBMAPS_DESKTOP__) state.showStartPage = true;
     state.projects.splice(idx, 1);
 
     // 3. Clean local storage caches
@@ -1585,6 +1657,9 @@ export async function deleteProject(projectId) {
       if (state.projects.length > 0) {
         state.activeProjectId = state.projects[0].id;
         state.roomCode = state.projects[0].id;
+      } else if (!window.__DBMAPS_DESKTOP__) {
+        state.activeProjectId = null;
+        await openStartPage();
       } else {
         const currentOwnerUid = 'guest';
         const currentOwnerEmail = state.currentUser.email || '';

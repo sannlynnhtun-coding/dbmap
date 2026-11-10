@@ -131,10 +131,7 @@
 
       <!-- Footer Actions -->
       <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <label v-if="!state.currentUser.isLoggedIn" class="cursor-pointer text-blue-700 dark:text-blue-300 font-medium focus-within:underline">
-          Import Project Backup
-          <input type="file" accept=".json" class="sr-only" @change="importBackup" />
-        </label>
+        <button @click="closeModal(); state.modals.backupImport = true" class="text-blue-700 dark:text-blue-300 font-medium hover:underline">Import JSON Backup</button>
 
         <div class="flex items-center gap-2.5 ml-auto">
           <button
@@ -163,8 +160,7 @@ import { EditorView, lineNumbers } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
 import { StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { dbmlLanguage, dbmlHighlightStyleDark } from '../utils/dbmlCodeMirror.js';
-import { state, activeProject, importSchema, restoreLocalProject, addToast } from '../stores/schemaStore.js';
-import { readProjectBackup } from '../utils/projectBackup.js';
+import { state, activeProject, importSchema, addToast } from '../stores/schemaStore.js';
 import { parseSQLSchema, SAMPLE_IMPORT_TEMPLATES } from '../utils/sqlImporter.js';
 import {
   UploadCloud,
@@ -306,19 +302,6 @@ function handleFileUpload(event) {
   reader.readAsText(file);
   // Reset input
   event.target.value = '';
-}
-
-async function importBackup(event) {
-  const file = event.target.files[0];
-  event.target.value = '';
-  if (!file) return;
-  try {
-    const project = await restoreLocalProject(readProjectBackup(await file.text()));
-    closeModal();
-    addToast('Project Restored', `Opened "${project.name}" as a local copy.`, 'success');
-  } catch (error) {
-    parseError.value = error.message;
-  }
 }
 
 function closeModal() {

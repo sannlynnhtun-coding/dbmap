@@ -461,6 +461,7 @@
       <!-- Project / Database Name Input -->
       <div class="studio-project-row flex items-center gap-1.5 min-w-0 group/projname relative">
         <Database class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0 hidden xs:block" />
+        <button v-if="!isDesktop" @click="openStartPage" title="Close project and return to start" aria-label="Back to projects" class="px-3 py-2 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">Projects</button>
         <label for="studio-project-name" class="sr-only">Project name</label>
         <div class="project-name-field">
           <input
@@ -483,7 +484,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { state, activeProject, toggleDarkMode, startTour, navigateTo, forceSaveProject } from '../stores/schemaStore.js';
+import { isDesktop } from '../desktop.js';
+import { state, activeProject, toggleDarkMode, startTour, navigateTo, forceSaveProject, openStartPage } from '../stores/schemaStore.js';
 import DbMapLogo from './DbMapLogo.vue';
 import {
   Pencil,

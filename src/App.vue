@@ -14,6 +14,8 @@
   <!-- Changelog & Issue Tracker Dedicated View (/changelog, /issues, /updates, /releases) -->
   <ChangelogPage v-else-if="isChangelogRoute" />
 
+  <StudioStartPage v-else-if="isStudioRoute && state.showStartPage && !isDesktop" />
+
   <!-- Full ERD Studio Workspace (/app, /studio, /workspace) -->
   <div v-else-if="isStudioRoute" :inert="isDesktop && desktop.busy" class="studio-shell w-screen h-dvh overflow-hidden flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans select-none" :class="{ 'cursor-col-resize select-none': isResizing }">
     <!-- Navbar -->
@@ -58,16 +60,6 @@
       </main>
     </div>
 
-    <!-- Studio-Specific Modals & Guided Walkthrough Tour -->
-    <OnboardingTour />
-    <ExportModal />
-    <ImportModal />
-    <NewTableModal />
-    <NewRelModal />
-    <NewProjectModal />
-    <NewFolderModal />
-    <VersionModal />
-    <DocsModal />
   </div>
 
   <!-- Landing Page as Home Page (Default for '/', '/features', '/landing', '/about') -->
@@ -75,10 +67,24 @@
 
   <!-- Global Application Modals (Accessible everywhere: Home, Studio, Marketplace, Learn, Legal) -->
   <MarketplaceModal />
+  <BackupImportModal />
+  <!-- Shared dialogs are also available from the start page. -->
+  <OnboardingTour v-if="isStudioRoute && !state.showStartPage" />
+  <ExportModal />
+  <ImportModal />
+  <NewTableModal />
+  <NewRelModal />
+  <NewProjectModal />
+  <NewFolderModal />
+  <VersionModal />
+  <DocsModal />
+
 
 </template>
 
 <script setup>
+import StudioStartPage from './components/StudioStartPage.vue';
+import BackupImportModal from './components/BackupImportModal.vue';
 import DesktopFileBar from './components/DesktopFileBar.vue';
 import { desktop, isDesktop } from './desktop.js';
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
@@ -155,7 +161,8 @@ const handlePopState = () => {
     window.location.hash === '#studio' ||
     window.location.hash === '#app'
   ) {
-    navigateTo('/app');
+    state.currentRoute = '/app';
+    loadLocalProjectFromUrl();
   } else if (path === '/privacy-policy' || path === '/terms-of-service') {
     state.currentRoute = path;
   } else if (path === '/learn-dbml' || path === '/learn' || path === '/dbml' || isLearnQuery) {
@@ -246,7 +253,7 @@ onMounted(async () => {
   // Reopen a project from this browser.
   loadLocalProjectFromUrl();
 
-  if (isStudioRoute.value) {
+  if (isStudioRoute.value && !state.showStartPage) {
     state.initialLoadingStage = 'Loading tables & schema models...';
     state.initialLoadingProgress = 55;
     await waitForStudioDataReady(5000);
