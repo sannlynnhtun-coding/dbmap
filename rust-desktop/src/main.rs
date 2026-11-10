@@ -248,6 +248,9 @@ fn main() {
                 let protocol_workspace = workspace.clone();
                 let ipc_workspace = workspace.clone();
                 let web = WebViewBuilder::new()
+                    .with_additional_browser_args(
+                        std::env::var("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS").unwrap_or_default(),
+                    )
                     .with_https_scheme(true)
                     .with_incognito(true)
                     .with_initialization_script(
