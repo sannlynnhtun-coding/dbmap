@@ -1,4 +1,4 @@
-# Run inside Windows Sandbox with C:\DBMapsRelease mapped to the release test folder.
+﻿# Run inside Windows Sandbox with C:\DBMapsRelease mapped to the release test folder.
 $ErrorActionPreference = 'Stop'
 $resultPath = 'C:\DBMapsRelease\offline-results.json'
 $steps = [System.Collections.Generic.List[string]]::new()
@@ -9,7 +9,7 @@ function Check($Condition, $Message) {
 try {
     @{ status = 'running' } | ConvertTo-Json | Set-Content $resultPath
     $installDir = Join-Path $env:LOCALAPPDATA 'Programs\DBMaps'
-    $installer = 'C:\DBMapsRelease\DBMaps-Setup-1.0.1-x64.exe'
+    $installer = 'C:\DBMapsRelease\DBMaps-Setup-1.1.0-x64.exe'
     $install = Start-Process $installer -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG=C:\DBMapsRelease\install.log' -PassThru -Wait
     Check ($install.ExitCode -eq 0) 'Offline install succeeded'
     Check (Test-Path "$installDir\WebView2Runtime\msedgewebview2.exe") 'Fixed runtime is bundled'

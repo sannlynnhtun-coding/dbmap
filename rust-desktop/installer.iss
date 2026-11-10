@@ -11,8 +11,8 @@
 [Setup]
 AppId={{BAEC8ECA-BCBF-40A2-912D-BF41E9E327E0}
 AppName=DBMaps
-AppVersion=1.0.1
-VersionInfoVersion=1.0.1.0
+AppVersion=1.1.0
+VersionInfoVersion=1.1.0.0
 DefaultDirName={localappdata}\Programs\DBMaps
 DefaultGroupName=DBMaps
 PrivilegesRequired=lowest
@@ -20,7 +20,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 ChangesAssociations=yes
-OutputBaseFilename=DBMaps-Setup-1.0.1-x64
+OutputBaseFilename=DBMaps-Setup-1.1.0-x64
 Compression=lzma2/fast
 SolidCompression=yes
 SetupIconFile=assets\DBMaps.ico
