@@ -1,3 +1,4 @@
+import { toast } from '@yusufceng1z/ding';
 import { arrangeRelationshipFlow, arrangeCentralHubs } from '../utils/diagramLayout.js';
 import { reactive, computed, watch, ref } from 'vue';
 import { SAMPLE_PROJECTS, INITIAL_FOLDERS, createDefaultBlankProject } from '../utils/sampleSchemas.js';
@@ -469,7 +470,7 @@ export const state = reactive({
       })()
     : '/',
 
-  toasts: []
+
 });
 
 isStateInitialized = true;
@@ -753,11 +754,7 @@ export function loadLocalProjectFromUrl() {
 
 // Toast helper
 export function addToast(title, message, type = 'info') {
-  const id = Date.now() + Math.random();
-  state.toasts.push({ id, title, message, type });
-  setTimeout(() => {
-    state.toasts = state.toasts.filter(t => t.id !== id);
-  }, 3500);
+  return toast.show(type, title, { description: message, duration: type === 'error' ? 0 : 5000 });
 }
 
 // Maximum safety timeout for initial landing page display

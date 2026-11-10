@@ -1624,3 +1624,25 @@ select:focus-visible {
   }
 }
 
+html .tst-viewport {
+  --tst-bg: var(--page-surface);
+  --tst-fg: var(--page-ink);
+  --tst-ring: var(--board-border);
+  --tst-info: #2563eb;
+  --tst-success: #15803d;
+  --tst-warning: #a16207;
+  --tst-error: #dc2626;
+  --tst-pad: 20px;
+  font-family: var(--font-sans);
+}
+html.dark .tst-viewport {
+  --tst-info: #60a5fa;
+  --tst-success: #4ade80;
+  --tst-warning: #fbbf24;
+  --tst-error: #f87171;
+}
+@media (max-width: 767px) {
+  html .tst-viewport[data-position^=bottom] .tst-slot {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+}

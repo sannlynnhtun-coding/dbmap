@@ -76,31 +76,13 @@
   <!-- Global Application Modals (Accessible everywhere: Home, Studio, Marketplace, Learn, Legal) -->
   <MarketplaceModal />
 
-  <!-- Global Toast Notifications Floating Stack -->
-  <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
-    <div
-      v-for="toast in state.toasts"
-      :key="toast.id"
-      class="p-3.5 rounded-xl shadow-xl border backdrop-blur-md text-xs pointer-events-auto flex items-start gap-2.5 transition-all duration-300"
-      :class="[
-        toast.type === 'success' ? 'bg-emerald-900/90 text-emerald-100 border-emerald-700' :
-        toast.type === 'warning' ? 'bg-amber-900/90 text-amber-100 border-amber-700' :
-        toast.type === 'error' ? 'bg-red-900/90 text-red-100 border-red-700' :
-        'bg-slate-900/90 text-slate-100 border-slate-700'
-      ]"
-    >
-      <div class="flex-1">
-        <div class="font-bold text-sm">{{ toast.title }}</div>
-        <div class="opacity-90 leading-relaxed mt-0.5">{{ toast.message }}</div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>
 import DesktopFileBar from './components/DesktopFileBar.vue';
 import { desktop, isDesktop } from './desktop.js';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { mountToaster, toast } from '@yusufceng1z/ding';
 import { 
   state, 
   addToast, 
@@ -193,6 +175,18 @@ function adaptWorkspace() {
   if (state.viewMode === 'split') state.viewMode = 'canvas';
   state.isSidebarCollapsed = true;
 }
+
+let unmountToaster;
+onMounted(() => {
+  unmountToaster = mountToaster({
+    position: 'bottom-right',
+    theme: state.isDarkMode ? 'dark' : 'light'
+  });
+});
+watch(() => state.isDarkMode, dark => {
+  toast.configure({ theme: dark ? 'dark' : 'light' });
+});
+onUnmounted(() => unmountToaster?.());
 
 onMounted(async () => {
   adaptWorkspace();
