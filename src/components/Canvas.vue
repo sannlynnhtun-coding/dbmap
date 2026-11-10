@@ -7,9 +7,7 @@
     :class="[
       isCurrentlyPanning
         ? 'cursor-grabbing'
-        : isPanningModeActive || isSpacePressed
-          ? 'cursor-grab'
-          : 'cursor-default'
+        : 'cursor-grab'
     ]"
     @wheel.prevent="onWheel"
     @mousedown="onCanvasMouseDown"
@@ -1383,11 +1381,11 @@ function onKeyUp(e) {
 
 // Canvas Drag Panning
 function onCanvasMouseDown(e) {
-  const isButton = e.target.closest('button');
-  if (isButton) return;
+  if (e.target.closest('#tour-canvas-toolbar, button, input, select, textarea, a, [contenteditable="true"]')) return;
 
-  // Canvas drag is activated ONLY when Pan Canvas mode is active, Space Bar is pressed, or Middle Click
-  if (isPanningModeActive.value || isSpacePressed.value || e.button === 1) {
+  const isBackground = !e.target.closest('[id^="table-card-"], .pointer-events-auto');
+  if (e.button === 1 || (e.button === 0 && (isBackground || isPanningModeActive.value || isSpacePressed.value))) {
+    e.preventDefault();
     isCurrentlyPanning.value = true;
     startPanX = e.clientX - state.panOffset.x;
     startPanY = e.clientY - state.panOffset.y;
