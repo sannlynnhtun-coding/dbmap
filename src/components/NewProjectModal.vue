@@ -21,6 +21,7 @@
         <button
           id="btn-close-new-project-modal"
           @click="closeModal"
+          aria-label="Close dialog"
           class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700 rounded-lg transition cursor-pointer"
           title="Close dialog (Esc)"
         >
