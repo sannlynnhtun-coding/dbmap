@@ -127,7 +127,7 @@
           <div
             v-if="showMoreMenu"
             @click.stop
-            class="absolute right-0 top-full mt-1.5 z-50 w-52 p-1.5 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl text-slate-200 text-xs animate-in fade-in slide-in-from-top-1 duration-150"
+            class="board-dropdown-panel absolute right-0 top-full mt-1.5 z-50 w-52 p-1.5 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl text-slate-200 text-xs animate-in fade-in slide-in-from-top-1 duration-150"
           >
             <button
               v-if="editorWidth < 360"

@@ -360,7 +360,7 @@
                 <!-- Dropdown Menu -->
                 <div
                   v-if="activeFolderMenuId === database.id"
-                  class="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-1 z-40 text-xs"
+                  class="board-dropdown-panel absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-1 z-40 text-xs"
                 >
                   <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-700 mb-1">
                     Arrange Database
@@ -610,7 +610,7 @@
                     <!-- Dropdown Menu -->
                     <div
                       v-if="activeProjectMenuId === proj.id"
-                      class="absolute right-0 bottom-full mb-1 w-52 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-1 z-40 text-xs"
+                      class="board-dropdown-panel absolute right-0 bottom-full mb-1 w-52 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-1 z-40 text-xs"
                       @click.stop
                     >
                       <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-700 mb-1">
@@ -697,7 +697,7 @@
                     <!-- Inline Move Dropdown (Opens upwards cleanly) -->
                     <div
                       v-if="movingProjectId === proj.id"
-                      class="absolute right-0 bottom-full mb-1 w-44 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-1 z-30 text-xs"
+                      class="board-dropdown-panel absolute right-0 bottom-full mb-1 w-44 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-1 z-30 text-xs"
                     >
                       <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-700 mb-1">
                         Move to Database

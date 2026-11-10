@@ -150,7 +150,7 @@
         >
           <div
             v-if="isActionsMenuOpen"
-            class="absolute right-0 top-full mt-2 w-72 sm:w-84 max-h-[calc(100vh-4.5rem)] overflow-y-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2 z-50 text-slate-800 dark:text-slate-100 space-y-1"
+            class="board-dropdown-panel absolute right-0 top-full mt-2 w-72 sm:w-84 max-h-[calc(100vh-4.5rem)] overflow-y-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2 z-50 text-slate-800 dark:text-slate-100 space-y-1"
           >
             <!-- Quick Database Creation -->
             <button
