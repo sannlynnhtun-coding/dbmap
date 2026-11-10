@@ -232,6 +232,22 @@ fn main() {
                 {
                     let hwnd = windows::Win32::Foundation::HWND(handle.hwnd.get() as *mut _);
                     unsafe {
+                        let instance =
+                            windows::Win32::System::LibraryLoader::GetModuleHandleW(None)
+                                .expect("Cannot find DBMaps module");
+                        let icon = LoadIconW(
+                            Some(instance.into()),
+                            windows::core::PCWSTR(1usize as *const u16),
+                        )
+                        .expect("Cannot load original DBMaps icon");
+                        for size in [ICON_BIG, ICON_SMALL] {
+                            SendMessageW(
+                                hwnd,
+                                WM_SETICON,
+                                Some(windows::Win32::Foundation::WPARAM(size as usize)),
+                                Some(windows::Win32::Foundation::LPARAM(icon.0 as isize)),
+                            );
+                        }
                         let style = GetWindowLongPtrW(hwnd, GWL_STYLE);
                         SetWindowLongPtrW(hwnd, GWL_STYLE, style | WS_CLIPCHILDREN.0 as isize);
                         let _ = SetWindowPos(

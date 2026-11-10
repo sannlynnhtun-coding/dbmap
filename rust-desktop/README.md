@@ -1,8 +1,11 @@
-# DBMaps Desktop 1.0
+# DBMaps Desktop 1.0.1
 
 Windows x64 desktop host for the existing Vue editor. The installer includes a
 Fixed Version WebView2 runtime and embedded editor assets. No server or account
 is needed for editing local documents.
+
+The desktop icon is converted directly from the [original DBMaps logo](../public/favicon.svg).
+See [icon provenance](assets/README.md).
 
 ## Build and test
 
@@ -36,7 +39,7 @@ Visual C++ runtime installation.
 $sourceExe = (Resolve-Path rust-desktop/target/release/DBMaps.exe).Path
 $runtimeDir = 'C:\path\to\Microsoft.WebView2.FixedVersionRuntime.VERSION.x64'
 & 'C:\path\to\Inno Setup 6\ISCC.exe' "/DSourceExe=$sourceExe" "/DRuntimeDir=$runtimeDir" rust-desktop/installer.iss
-Get-FileHash rust-desktop/Output/DBMaps-Setup-1.0.0-x64.exe -Algorithm SHA256
+Get-FileHash rust-desktop/Output/DBMaps-Setup-1.0.1-x64.exe -Algorithm SHA256
 ```
 
 The installer grants the runtime renderer read access required on Windows 10.
@@ -74,7 +77,7 @@ document does not contain workspace folders or version-history snapshots.
 
 ## Release gate
 
-Follow `docs/windows-desktop-plan.my.md`. Do not publish stable `v1.0.0` until
+Follow `docs/windows-desktop-plan.my.md`. Do not publish a stable release until
 automated checks, native file dialogs, external-change/read-only failures,
 schema/layout round-trip, and installation/upgrade/uninstall on clean offline
 Windows have passed. Include the installer, SHA256SUMS.txt, example.dbml and

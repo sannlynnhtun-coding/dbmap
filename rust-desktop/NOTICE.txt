@@ -1,4 +1,4 @@
-DBMaps Desktop 1.0.0
+DBMaps Desktop 1.0.1
 
 Desktop window hosting and embedded-asset serving are adapted from the local
 draw.io Rust desktop host, distributed under Apache License 2.0.
