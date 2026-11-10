@@ -8,6 +8,8 @@ DBMaps is a browser-based database schema designer. Write DBML, visualize tables
 
 DBMaps is a Vue application built with Vite and deployed as a static site on Vercel. Parsing, diagram layout, and export run in the browser. The app stores projects and preferences in browser storage, so each browser profile and site origin has its own workspace.
 
+Projects, folders, ordering, and workspace display settings are saved in IndexedDB. On first launch after upgrading, existing localStorage projects migrate automatically in a transaction; the original localStorage data is retained for recovery. Small preferences such as theme remain in localStorage. A save is confirmed only after the database transaction completes. If another tab has saved newer changes, export any unsaved project and reload before continuing.
+
 ## Workflows
 
 ### Design and export a schema
