@@ -4,6 +4,7 @@ import { nextTick } from 'vue';
 import { IDBFactory, IDBObjectStore } from 'fake-indexeddb';
 import { createProjectStorage } from '../src/utils/projectStorage.js';
 import { createProjectBackup, readProjectBackup } from '../src/utils/projectBackup.js';
+import { readBackupFile } from '../src/utils/workspaceBackup.js';
 
 const original = { id: 'local-project', localOnly: true, name: 'Migrated project', folderId: 'folder-1', dialect: 'postgres',
   tables: [{ id: 'users', name: 'users', x: 218, y: 450, columns: [{ id: 'id', name: 'id', type: 'integer', pk: true }] }],
@@ -18,6 +19,7 @@ globalThis.localStorage = { getItem: key => legacy.get(key) ?? null, setItem: (k
 globalThis.window = Object.assign(new EventTarget(), {
   location: { pathname: '/app', search: '', hash: '' }, innerWidth: 1400, history: { replaceState() {} }
 });
+
 globalThis.document = { documentElement: { classList: { add() {}, remove() {} } } };
 const store = await import('../src/stores/schemaStore.js');
 
@@ -57,4 +59,34 @@ test('Vue store migrates, awaits backup persistence, and reports failed saves wi
   } finally { IDBObjectStore.prototype.put = put; }
   assert.equal(await store.saveProjectsLocally(), true);
   assert.equal(store.state.saveStatus, 'saved');
+});
+
+test('start navigation preserves save times; workspace import appends copies atomically', async () => {
+  const current = store.activeProject.value;
+  await store.flushActiveProjectSync();
+  const savedTime = current.updatedAt;
+  await store.openStartPage();
+  assert.equal(store.state.showStartPage, true);
+  store.selectProject(current.id);
+  await store.flushActiveProjectSync();
+  assert.equal(store.state.showStartPage, false);
+  assert.equal(current.updatedAt, savedTime, 'Opening a project must not change its save time');
+  window.location.search = '?schema=missing';
+  store.loadLocalProjectFromUrl();
+  assert.equal(store.state.showStartPage, true);
+  assert.match(store.state.startPageMessage, /not available/);
+  window.location.search = '';
+  const backup = readBackupFile(JSON.stringify(store.exportWorkspaceBackup()));
+  const before = store.state.projects.length;
+  const imported = await store.restoreBackupFile(backup);
+  assert.equal(store.state.projects.length, before + backup.projects.length);
+  assert.equal(new Set(store.state.projects.map(p => p.id)).size, store.state.projects.length);
+  assert.equal(imported[0].tables[0].x, backup.projects[0].tables[0].x);
+  const put = IDBObjectStore.prototype.put;
+  IDBObjectStore.prototype.put = function () { throw new DOMException('Storage full', 'QuotaExceededError'); };
+  const count = store.state.projects.length;
+  try {
+    await assert.rejects(store.restoreBackupFile(backup), /Storage full/);
+    assert.equal(store.state.projects.length, count);
+  } finally { IDBObjectStore.prototype.put = put; }
 });
