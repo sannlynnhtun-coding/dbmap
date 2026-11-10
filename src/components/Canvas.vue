@@ -1323,13 +1323,13 @@ function delTbl(tableId) {
   deleteTable(tableId);
 }
 
-function changeZoom(direction) {
+function changeZoom(direction, step = 0.15) {
   const rect = canvasContainer.value?.getBoundingClientRect();
   if (!rect) return;
   const x = rect.width / 2;
   const y = rect.height / 2;
   const previous = state.zoomLevel;
-  const next = Math.max(0.1, Math.min(2, Math.round((previous + direction * 0.15) * 100) / 100));
+  const next = Math.max(0.1, Math.min(2, Math.round((previous + direction * step) * 10000) / 10000));
   const ratio = next / previous;
   state.panOffset = {
     x: x - (x - state.panOffset.x) * ratio,
@@ -1356,8 +1356,10 @@ function onWheel(e) {
     state.panOffset.x -= e.deltaX || e.deltaY;
     return;
   }
-  if (e.deltaY < 0) zoomIn();
-  else if (e.deltaY > 0) zoomOut();
+  // Touchpads send many small deltas; scale by distance instead of taking a button-sized step per event.
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? canvasContainer.value.clientHeight : 1;
+  const pixels = e.deltaY * unit;
+  if (pixels) changeZoom(-Math.sign(pixels), Math.min(Math.abs(pixels) * 0.0005, 0.05));
 }
 
 // Key listeners for Spacebar Panning & Auto Arrange shortcuts
