@@ -1,6 +1,7 @@
+import { createProjectStorage, validateLegacyStorage } from '../utils/projectStorage.js';
 import { toast } from '@yusufceng1z/ding';
 import { arrangeRelationshipFlow, arrangeCentralHubs } from '../utils/diagramLayout.js';
-import { reactive, computed, watch, ref } from 'vue';
+import { reactive, computed, watch, ref, nextTick } from 'vue';
 import { SAMPLE_PROJECTS, INITIAL_FOLDERS, createDefaultBlankProject } from '../utils/sampleSchemas.js';
 import { generateDBML, parseDBML, exportToSQL, extractCleanNote, updateTableHeaderColorInDBML } from '../utils/dbmlParser.js';
 import { parseSQLSchema } from '../utils/sqlImporter.js';
@@ -15,8 +16,14 @@ export const DEFAULT_GUEST_AVATAR = `data:image/svg+xml;utf8,<svg xmlns='http://
 
 // --- Deletion & Folder Persistence Helpers ---
 const DELETED_PROJECTS_KEY = 'dbmaps_deleted_project_ids';
+const projectStorage = createProjectStorage();
+let storageReady = false;
+let deletedProjectIds = [];
+let saveSequence = 0;
+let mutationRevision = 0;
 
 export function getDeletedProjectIds() {
+  if (storageReady) return [...deletedProjectIds];
   try {
     const raw = localStorage.getItem(DELETED_PROJECTS_KEY);
     return raw ? JSON.parse(raw) : [];
@@ -32,7 +39,7 @@ export function recordDeletedProjectId(id) {
     if (!ids.includes(id)) {
       ids.push(id);
       if (ids.length > 300) ids.shift();
-      localStorage.setItem(DELETED_PROJECTS_KEY, JSON.stringify(ids));
+      deletedProjectIds = ids;
     }
   } catch (e) {}
 }
@@ -84,13 +91,7 @@ export function loadInitialProjectOrder() {
 }
 
 export function saveProjectsOrderToStorage() {
-  try {
-    const key = getProjectOrderStorageKey();
-    const data = JSON.stringify(state.projectOrder || {});
-    localStorage.setItem(key, data);
-    localStorage.setItem('dbmaps_project_order_latest', data);
-  } catch (e) {}
-
+  return saveProjectsLocally();
 }
 
 export function getSortedProjectsInFolder(folderId, projectsList = null, orderMap = null) {
@@ -111,20 +112,11 @@ export function getSortedProjectsInFolder(folderId, projectsList = null, orderMa
 }
 
 export function saveFoldersToStorage() {
-  try {
-    const key = getFoldersStorageKey();
-    const data = JSON.stringify(state.folders);
-    localStorage.setItem(key, data);
-    localStorage.setItem('dbmaps_folders_latest', data);
-  } catch (e) {}
-
+  return saveProjectsLocally();
 }
 
 export function saveGuestProjectsToStorage() {
-  try {
-    const data = JSON.stringify(state.projects);
-    localStorage.setItem('dbmaps_guest_projects', data);
-  } catch (e) {}
+  return saveProjectsLocally();
 }
 
 export function isUntouchedBlankStarter(projectData) {
@@ -688,35 +680,75 @@ export async function finishTour(isComplete = true) {
   }
 }
 
-export function saveProjectsLocally() {
+function workspaceSnapshot(projects = state.projects) {
+  return {
+    projects,
+    workspace: {
+      folders: state.folders,
+      projectOrder: state.projectOrder,
+      deletedIds: storageReady ? deletedProjectIds : getDeletedProjectIds(),
+      tableDisplayMode: state.tableDisplayMode,
+      showOptionalRelationships: state.showOptionalRelationships,
+      autoArrangeMode: state.autoArrangeMode
+    }
+  };
+}
+
+export async function initializeProjectStorage() {
+  const snapshot = await projectStorage.initialize(() => {
+    validateLegacyStorage(localStorage);
+    return workspaceSnapshot();
+  });
+  state.projects = snapshot.projects.map(project => normalizeProjectKeys(project));
+  state.folders = snapshot.workspace.folders;
+  state.projectOrder = snapshot.workspace.projectOrder;
+  deletedProjectIds = snapshot.workspace.deletedIds;
+  for (const key of ['tableDisplayMode', 'showOptionalRelationships', 'autoArrangeMode']) {
+    if (snapshot.workspace[key] !== undefined) state[key] = snapshot.workspace[key];
+  }
+  state.activeProjectId = getInitialActiveProjectId(state.projects, state.folders, state.projectOrder);
+  currentWatchedProjectId = state.activeProjectId;
+  await nextTick();
+  storageReady = true;
+}
+
+export async function saveProjectsLocally(projects = state.projects) {
+  if (!storageReady) return false;
+  const sequence = ++saveSequence;
+  const revision = mutationRevision;
+  const isBrowser = !window.__DBMAPS_DESKTOP__;
+  if (isBrowser) state.saveStatus = 'saving';
   try {
-    localStorage.setItem('dbmaps_guest_projects', JSON.stringify(state.projects));
-    if (!window.__DBMAPS_DESKTOP__) {
+    await projectStorage.save(workspaceSnapshot(projects));
+    if (isBrowser && sequence === saveSequence && revision === mutationRevision) {
       state.saveStatus = 'saved';
+      state.saveErrorMessage = null;
       state.lastSavedAt = new Date().toISOString();
     }
-  } catch {
-    if (!window.__DBMAPS_DESKTOP__) {
+    return true;
+  } catch (error) {
+    if (isBrowser && sequence === saveSequence) {
       state.saveStatus = 'error';
-      state.saveErrorMessage = 'Browser storage is unavailable or full.';
+      state.saveErrorMessage = error.message || 'Browser storage is unavailable or full.';
     }
+    return false;
   }
 }
 
 export function flushActiveProjectSync() {
   clearTimeout(syncTimeout);
-  saveProjectsLocally();
+  return saveProjectsLocally();
 }
 
-export function forceSaveProject() {
+export async function forceSaveProject() {
   if (window.__DBMAPS_DESKTOP__) {
     window.dispatchEvent(new Event('dbmaps-save'));
     return;
   }
-  flushActiveProjectSync();
-  if (state.saveStatus === 'saved') {
+  const saved = await flushActiveProjectSync();
+  if (saved && state.saveStatus === 'saved') {
     addToast('Saved Locally', 'Project saved in this browser.', 'success');
-  } else {
+  } else if (!saved) {
     addToast('Save Warning', state.saveErrorMessage, 'warning');
   }
 }
@@ -781,13 +813,14 @@ let currentWatchedProjectId = state.activeProjectId;
 watch(
   () => activeProject.value,
   (proj) => {
-    if (!proj || !proj.id) return;
+    if (!storageReady || !proj || !proj.id) return;
     if (proj.id !== currentWatchedProjectId) {
       currentWatchedProjectId = proj.id;
       return; // Switched active project reference; wait for actual user mutations
     }
 
     // Mark as unsaved immediately when user makes schema mutations
+    mutationRevision++;
     state.saveStatus = 'unsaved';
 
     if (syncTimeout) clearTimeout(syncTimeout);
@@ -795,17 +828,35 @@ watch(
       saveProjectsLocally();
     }, 1500);
   },
-  { deep: true }
+  { deep: true, flush: 'sync' }
 );
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
-    saveGuestProjectsToStorage();
-    if (state.saveStatus === 'unsaved') {
-      flushActiveProjectSync();
+  window.addEventListener('beforeunload', event => {
+    if (!window.__DBMAPS_DESKTOP__ && storageReady && state.saveStatus !== 'saved') {
+      void flushActiveProjectSync();
+      event.preventDefault();
+      event.returnValue = '';
     }
   });
+  if (typeof document?.addEventListener === 'function') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && storageReady && state.saveStatus === 'unsaved') {
+        void flushActiveProjectSync();
+      }
+    });
+  }
 }
+
+watch(
+  () => [state.tableDisplayMode, state.showOptionalRelationships, state.autoArrangeMode],
+  () => {
+    if (!storageReady) return;
+    mutationRevision++;
+    void saveProjectsLocally();
+  },
+  { flush: 'sync' }
+);
 
 // Toggle Dark Mode
 export function toggleDarkMode() {
@@ -1302,7 +1353,7 @@ export function createProject(projectName, folderId, description = '', template 
   return newProj;
 }
 
-export function restoreLocalProject(project) {
+export async function restoreLocalProject(project) {
   const restored = {
     ...project,
     id: 'proj-' + crypto.randomUUID(),
@@ -1315,10 +1366,9 @@ export function restoreLocalProject(project) {
   };
   normalizeProjectKeys(restored);
   const projects = [...state.projects, restored];
-  try {
-    localStorage.setItem('dbmaps_guest_projects', JSON.stringify(projects));
-  } catch {
-    throw new Error('The browser could not save this backup. Check available storage and try again.');
+  clearTimeout(syncTimeout);
+  if (!await saveProjectsLocally(projects)) {
+    throw new Error(state.saveErrorMessage || 'The browser could not save this backup. Try again after storage is ready.');
   }
   state.projects = projects;
   selectProject(restored.id);
@@ -1527,7 +1577,6 @@ export async function deleteProject(projectId) {
 
     // 3. Clean local storage caches
     try {
-      localStorage.removeItem('dbmaps_local_schema_' + projectId);
       saveGuestProjectsToStorage();
     } catch (e) {}
 

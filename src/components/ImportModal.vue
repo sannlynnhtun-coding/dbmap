@@ -313,7 +313,7 @@ async function importBackup(event) {
   event.target.value = '';
   if (!file) return;
   try {
-    const project = restoreLocalProject(readProjectBackup(await file.text()));
+    const project = await restoreLocalProject(readProjectBackup(await file.text()));
     closeModal();
     addToast('Project Restored', `Opened "${project.name}" as a local copy.`, 'success');
   } catch (error) {
