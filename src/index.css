@@ -1608,6 +1608,11 @@ select:focus-visible {
   .canvas-tools-checkbox { margin-left: 0; }
 }
 
+@keyframes relationship-flow { to { stroke-dashoffset: -40; } }
+.relationship-flow { animation: relationship-flow 2.4s linear infinite; opacity: .6; }
+@media (prefers-reduced-motion: reduce) {
+  .relationship-flow { display: none; animation: none; }
+}
 @media (max-width: 767px) {
   .studio-shell #tour-sidebar:not(.w-14) {
     position: absolute;

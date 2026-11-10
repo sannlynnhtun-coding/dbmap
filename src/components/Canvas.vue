@@ -119,15 +119,22 @@
             <path
               :d="rel.pathD"
               fill="none"
-              :stroke="rel.isSelected || hoveredRelId === rel.id
-                ? (rel.isOptional ? '#6366f1' : '#2563eb')
-                : (rel.isOptional
-                    ? (state.isDarkMode ? '#818cf8' : '#6366f1')
-                    : (state.isDarkMode ? '#64748b' : '#94a3b8'))"
+              :stroke="rel.color"
               :stroke-width="rel.isSelected || hoveredRelId === rel.id ? 2.5 : (rel.isOptional ? 2 : 1.8)"
               :stroke-dasharray="rel.isOptional ? '7,4' : undefined"
               stroke-linecap="round"
               class="transition-all duration-150"
+            />
+
+            <path
+              class="relationship-flow"
+              :d="rel.pathD"
+              :stroke="rel.color"
+              fill="none"
+              stroke-width="3"
+              stroke-dasharray="2 18"
+              stroke-linecap="round"
+              pointer-events="none"
             />
 
             <!-- Wide Invisible Path for Easy Mouse Click / Hover Detection -->
@@ -152,7 +159,7 @@
               :cx="rel.x1"
               :cy="rel.y1"
               :r="rel.isOptional ? 4.5 : 4"
-              :fill="rel.isOptional ? (state.isDarkMode ? '#0f172a' : '#ffffff') : (rel.isSelected || hoveredRelId === rel.id ? '#2563eb' : state.isDarkMode ? '#38bdf8' : '#64748b')"
+              :fill="rel.isOptional ? (state.isDarkMode ? '#0f172a' : '#ffffff') : rel.color"
               :stroke="rel.isSelected || hoveredRelId === rel.id
                 ? (rel.isOptional ? '#6366f1' : '#2563eb')
                 : (rel.isOptional ? (state.isDarkMode ? '#818cf8' : '#6366f1') : (state.isDarkMode ? '#0f172a' : '#ffffff'))"
@@ -164,7 +171,7 @@
               :cx="rel.x2"
               :cy="rel.y2"
               r="4"
-              :fill="rel.isSelected || hoveredRelId === rel.id ? '#2563eb' : state.isDarkMode ? '#38bdf8' : '#64748b'"
+              :fill="rel.color"
               :stroke="state.isDarkMode ? '#0f172a' : '#ffffff'"
               stroke-width="2"
               class="transition-colors"
@@ -900,6 +907,7 @@ const relationshipsWithCoords = computed(() => {
 
       return {
         ...rel,
+        color: fromTbl.headerColor || '#3b82f6',
         isOptional,
         pathD,
         x1, y1,
@@ -1249,6 +1257,7 @@ const relationshipsWithCoords = computed(() => {
 
     return {
       ...rel,
+      color: fromTbl.headerColor || '#3b82f6',
       isOptional,
       pathD,
       x1, y1,
