@@ -12,6 +12,10 @@ Projects, folders, ordering, and workspace display settings are saved in Indexed
 
 ## Workflows
 
+### Open your workspace
+
+Open `/app` for the start page. Recent projects are listed by their last successful save, newest first; opening a project alone does not change this timestamp. Start a new project, import SQL/DBML or a JSON backup, or browse templates. Project links open directly; missing links return to the start page. Use **Projects** in the studio header to return.
+
 ### Design and export a schema
 
 Start with an empty project, import SQL or DBML, or clone a template. Edit the schema in DBML, inspect the relationships on the canvas, and arrange tables manually or with auto-layout. Export SQL or DBML for development, an image or PDF for sharing, or a Markdown data dictionary for documentation.
@@ -29,6 +33,8 @@ flowchart LR
 ### Back up and restore a project
 
 Use **Export Full Project Backup** to download a `.dbmap.json` file containing the schema, diagram layout, and project settings. Use **Import Project Backup** in the destination browser to restore it as a separate project. Keep the backup file if you plan to clear browser storage or move to another device.
+
+Use **Export all projects** on the start page (or **Export All Projects (JSON)** in the studio export dialog) to download one workspace JSON file, including folders, ordering, layouts, and display preferences. **Import JSON backup** accepts either project or workspace files, previews their contents, and appends new copies with fresh IDs in one transaction. Existing projects remain in place. Workspace imports apply the backed-up field visibility, optional relationship visibility, and layout preference.
 
 ```mermaid
 flowchart LR
