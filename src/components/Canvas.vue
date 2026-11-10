@@ -1,30 +1,16 @@
 <template>
-  <div
-    id="canvas-container"
-    data-ui
-    ref="canvasContainer"
-    class="relative w-full h-full overflow-hidden bg-slate-50 dark:bg-slate-900 bg-grid-pattern select-none flex-1"
-    :class="[
-      isCurrentlyPanning
-        ? 'cursor-grabbing'
-        : 'cursor-grab'
-    ]"
-    @wheel.prevent="onWheel"
-    @mousedown="onCanvasMouseDown"
-    @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"
-  >
-    <div id="tour-canvas-toolbar" role="group" aria-label="Diagram tools" class="canvas-tools absolute top-3 left-3 right-3 z-20 select-none">
+  <div class="canvas-workspace flex flex-col w-full h-full min-h-0 overflow-hidden">
+    <div id="tour-canvas-toolbar" role="group" aria-label="Diagram tools" class="canvas-tools relative shrink-0 z-20 select-none">
       <div class="canvas-tools-row">
+        <div class="canvas-tools-scroll">
         <div class="canvas-tools-group" role="group" aria-label="Create and export">
           <button class="canvas-tool-primary" @click="state.modals.newTable = true" title="Add table (T)">
             <Plus class="w-4 h-4" /><span>Add table</span>
           </button>
-          <button @click="state.modals.newRel = true" title="Add a foreign key relationship (R)">
+          <button @click="state.modals.newRel = true" aria-label="Add relationship" title="Add a foreign key relationship (R)">
             <Link class="w-4 h-4" /><span>Relationship</span>
           </button>
-          <button @click="openExportModal('diagram')" title="Export diagram as an image or PDF">
+          <button @click="openExportModal('diagram')" aria-label="Export diagram" title="Export diagram as an image or PDF">
             <Camera class="w-4 h-4" /><span>Export</span>
           </button>
         </div>
@@ -37,8 +23,10 @@
           <button @click="zoomIn" title="Zoom In (Ctrl + +)" aria-label="Zoom in"><ZoomIn class="w-4 h-4" /></button>
           <button @click="fitDiagramToView()" title="Fit all tables to screen"><Maximize2 class="w-4 h-4" /><span>Fit</span></button>
         </div>
-      </div>
-      <div class="canvas-tools-row canvas-tools-options">
+        </div>
+        <details ref="canvasSettingsDropdownRef" class="canvas-tools-settings" @keydown.esc.prevent="canvasSettingsDropdownRef.open = false; canvasSettingsDropdownRef.querySelector('summary').focus()">
+          <summary><SlidersHorizontal class="w-4 h-4" /><span>Options</span><ChevronDown class="w-3 h-3" /></summary>
+          <div class="canvas-tools-options board-dropdown-panel" role="group" aria-label="Diagram options">
         <label>
           <span>Layout</span>
           <select :value="state.autoArrangeMode" @change="selectAndRunAutoArrange($event.target.value)" aria-label="Diagram layout">
@@ -68,8 +56,27 @@
           <input type="checkbox" :checked="state.showOptionalRelationships" @change="toggleShowOptionalRelationships()" />
           <span>Optional relationships</span>
         </label>
+          </div>
+        </details>
       </div>
     </div>
+
+  <div
+    id="canvas-container"
+    data-ui
+    ref="canvasContainer"
+    class="relative w-full min-h-0 overflow-hidden bg-slate-50 dark:bg-slate-900 bg-grid-pattern select-none flex-1"
+    :class="[
+      isCurrentlyPanning
+        ? 'cursor-grabbing'
+        : 'cursor-grab'
+    ]"
+    @wheel.prevent="onWheel"
+    @mousedown="onCanvasMouseDown"
+    @touchstart="onTouchStart"
+    @touchmove="onTouchMove"
+    @touchend="onTouchEnd"
+  >
 
     <!-- Active Pan Indicator Toast Banner -->
     <div
@@ -402,6 +409,7 @@
       </button>
     </div>
   </div>
+  </div>
 </template>
 
 <script setup>
@@ -472,7 +480,6 @@ const showAutoArrangeDropdown = ref(false);
 const autoArrangeDropdownRef = ref(null);
 
 // Compact Canvas Layout Settings Dropdown (< 460px in split view)
-const showCanvasSettingsDropdown = ref(false);
 const canvasSettingsDropdownRef = ref(null);
 
 const currentAutoArrangeMode = computed(() => {
@@ -588,7 +595,7 @@ function handleClickOutside(e) {
     showAutoArrangeDropdown.value = false;
   }
   if (canvasSettingsDropdownRef.value && !canvasSettingsDropdownRef.value.contains(e.target)) {
-    showCanvasSettingsDropdown.value = false;
+    canvasSettingsDropdownRef.value.open = false;
   }
 }
 
