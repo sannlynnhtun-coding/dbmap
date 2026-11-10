@@ -1175,21 +1175,12 @@
         </kbd>
       </button>
 
-      <!-- Sidebar Compact Legal & Home Footer -->
-      <div class="px-3 py-1.5 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
-        <button @click="navigateTo('/')" class="font-mono font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition">
-          dbmaps
-        </button>
-        <div class="flex items-center gap-1.5 flex-wrap">
-          <button @click="navigateTo('/')" class="hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline cursor-pointer">Home</button>
-          <span>&bull;</span>
-          <button @click="navigateTo('/changelog')" class="hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline cursor-pointer font-medium text-slate-600 dark:text-slate-300">Changelog</button>
-          <span>&bull;</span>
-          <button @click="navigateTo('/privacy-policy')" class="hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline cursor-pointer">Privacy</button>
-          <span>&bull;</span>
-          <button @click="navigateTo('/terms-of-service')" class="hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline cursor-pointer">Terms</button>
-        </div>
-      </div>
+      <nav aria-label="App links" class="sidebar-app-links">
+        <button @click="navigateTo('/')">Home</button>
+        <button @click="navigateTo('/changelog')">What's new</button>
+        <button @click="navigateTo('/privacy-policy')">Privacy</button>
+        <button @click="navigateTo('/terms-of-service')">Terms</button>
+      </nav>
     </div>
   </template>
 

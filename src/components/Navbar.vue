@@ -1,7 +1,14 @@
 <template>
-  <header class="h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80 px-2 sm:px-4 flex items-center justify-between select-none z-30 shrink-0 relative">
+  <header class="studio-header h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80 px-2 sm:px-4 flex items-center justify-between select-none z-30 shrink-0 relative">
     <!-- Left Section: Logo & Project Name -->
     <div id="tour-header-project" class="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+      <button
+        @click="state.isSidebarCollapsed = !state.isSidebarCollapsed"
+        aria-label="Toggle sidebar"
+        :aria-expanded="!state.isSidebarCollapsed"
+        class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
+        title="Show or hide sidebar (Ctrl+B)"
+      ><Columns class="w-4 h-4" /></button>
       <!-- Logo: Go to Home / Landing Page -->
       <button
         @click="openHomePage"
@@ -14,27 +21,7 @@
         </span>
       </button>
 
-      <div class="h-5 w-[1px] bg-slate-200 dark:bg-slate-700 mx-0.5 sm:mx-1 shrink-0"></div>
 
-      <!-- Project / Database Name Input -->
-      <div class="flex items-center gap-1.5 min-w-0 group/projname relative">
-        <Database class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0 hidden xs:block" />
-        <h1 class="inline-grid items-center min-w-0">
-          <!-- Invisible sizer to size the container to the full database name without premature truncation -->
-          <span
-            class="invisible col-start-1 row-start-1 px-1.5 sm:px-2 py-1 text-xs sm:text-sm font-semibold whitespace-pre pointer-events-none select-none max-w-[180px] xs:max-w-[260px] sm:max-w-[380px] md:max-w-[500px] lg:max-w-[650px] xl:max-w-[800px]"
-            aria-hidden="true"
-          >
-            {{ activeProject.name || 'Untitled Database' }}
-          </span>
-          <input
-            v-model="activeProject.name"
-            type="text"
-            class="col-start-1 row-start-1 font-semibold text-slate-800 dark:text-slate-100 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-700/60 px-1.5 sm:px-2 py-1 rounded-lg outline-none focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500 transition text-xs sm:text-sm w-full min-w-[110px] max-w-[180px] xs:max-w-[260px] sm:max-w-[380px] md:max-w-[500px] lg:max-w-[650px] xl:max-w-[800px]"
-            :title="`Database: ${activeProject.name} (Click to rename)`"
-            placeholder="Database Name"
-          />
-        </h1>
 
         <!-- Live Saving Process Indicator & Immediate Save Trigger -->
         <button
@@ -56,15 +43,11 @@
           <CloudUpload v-else-if="state.saveStatus === 'unsaved'" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <AlertCircle v-else-if="state.saveStatus === 'error'" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
           <CloudCheck v-else class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          
-          <span class="font-semibold hidden xs:inline">
-            {{ state.saveStatus === 'saving' ? 'Saving...' : state.saveStatus === 'unsaved' ? 'Unsaved' : state.saveStatus === 'error' ? 'Retry Save' : 'Saved' }}
-          </span>
-          <span v-if="state.saveStatus === 'saved' && formattedLastSaved" class="hidden 2xl:inline text-[9px] opacity-75 font-normal">
-            {{ formattedLastSaved }}
+
+          <span class="save-badge-label font-semibold">
+            {{ state.saveStatus === 'saving' ? 'Saving...' : state.saveStatus === 'unsaved' ? 'Unsaved' : state.saveStatus === 'error' ? 'Retry Save' : 'Saved in this browser' }}
           </span>
         </button>
-      </div>
 
       <!-- Direct 1-Click "New Database" Button in Navbar -->
       <button
@@ -80,9 +63,8 @@
     </div>
 
     <!-- Center Section: View Mode Switcher (Icons-only on small screens, Icons + Text on md+ screens) -->
-    <div id="tour-view-modes" class="flex items-center bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shrink-0">
-      <button
-        @click="state.viewMode = 'split'" :aria-pressed="state.viewMode === 'split'" aria-label="Split view"
+    <div role="radiogroup" aria-label="Workspace view" id="tour-view-modes" class="flex items-center bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shrink-0">
+      <label
         class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
         :class="[
           state.viewMode === 'split'
@@ -91,11 +73,11 @@
         ]"
         title="Split View (Editor & ERD Canvas)"
       >
+        <input type="radio" name="workspace-view" value="split" v-model="state.viewMode" aria-label="Split view" class="sr-only" />
         <Columns class="w-3.5 h-3.5 shrink-0" /><span class="view-mode-label">Split</span>
-      </button>
+      </label>
 
-      <button
-        @click="state.viewMode = 'canvas'" :aria-pressed="state.viewMode === 'canvas'" aria-label="Diagram view"
+      <label
         class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
         :class="[
           state.viewMode === 'canvas'
@@ -104,21 +86,22 @@
         ]"
         title="Canvas View (Full ERD Diagram)"
       >
+        <input type="radio" name="workspace-view" value="canvas" v-model="state.viewMode" aria-label="Diagram view" class="sr-only" />
         <LayoutGrid class="w-3.5 h-3.5 shrink-0" /><span class="view-mode-label">Diagram</span>
-      </button>
+      </label>
 
-      <button
-        @click="state.viewMode = 'editor'" :aria-pressed="state.viewMode === 'editor'" aria-label="DBML view"
+      <label
         class="px-2 sm:px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer"
         :class="[
           state.viewMode === 'editor'
             ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
             : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
         ]"
-        title="Code View (DBML Schema Editor)"
+        title="Edit your database schema as DBML code"
       >
-        <Code2 class="w-3.5 h-3.5 shrink-0" /><span class="view-mode-label">DBML</span>
-      </button>
+        <input type="radio" name="workspace-view" value="editor" v-model="state.viewMode" aria-label="Code view" class="sr-only" />
+        <Code2 class="w-3.5 h-3.5 shrink-0" /><span class="view-mode-label">Code</span>
+      </label>
     </div>
 
     <!-- Right Section: Compact, responsive, organized dropdowns -->
@@ -456,7 +439,7 @@
                 class="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-semibold transition flex items-center gap-1 cursor-pointer"
               >
                 <BookOpen class="w-3 h-3 text-purple-500" />
-                <span>DBML</span>
+                <span>Code</span>
               </button>
               <span class="text-slate-300 dark:text-slate-700">&bull;</span>
               <button
@@ -490,6 +473,26 @@
       </button>
 
     </div>
+      <!-- Project / Database Name Input -->
+      <div class="studio-project-row flex items-center gap-1.5 min-w-0 group/projname relative">
+        <Database class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0 hidden xs:block" />
+        <label for="studio-project-name" class="sr-only">Project name</label>
+        <div class="project-name-field">
+          <input
+            id="studio-project-name"
+            v-model="activeProject.name"
+            type="text"
+            aria-label="Project name"
+            title="Rename project"
+            placeholder="Enter a project name"
+            @keydown.enter="$event.target.blur()"
+          />
+          <Pencil class="project-rename-hint w-4 h-4" aria-hidden="true" />
+        </div>
+
+
+      </div>
+
   </header>
 </template>
 
@@ -498,6 +501,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { state, activeProject, toggleDarkMode, startTour, navigateTo, forceSaveProject } from '../stores/schemaStore.js';
 import DbMapLogo from './DbMapLogo.vue';
 import {
+  Pencil,
   Columns,
   LayoutGrid,
   Code2,
