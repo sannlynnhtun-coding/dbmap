@@ -31,75 +31,39 @@
 
       <!-- Controls & Format Selection -->
       <div class="p-4 border-b border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50 space-y-3 text-xs">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <!-- Dialect Selector -->
-          <div class="flex items-center gap-2">
-            <span class="font-semibold text-slate-600 dark:text-slate-300">Dialect:</span>
-            <div class="flex flex-wrap rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0.5">
-              <button
-                v-for="d in dialects"
-                :key="d.id"
-                @click="selectedDialect = d.id"
-                class="px-2.5 py-1 rounded-md font-medium text-[11px] transition flex items-center gap-1"
-                :class="[
-                  selectedDialect === d.id
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                ]"
-              >
-                <span>{{ d.label }}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Quick Sample Loaders -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] text-slate-400">Try sample:</span>
-            <button
-              @click="loadSample('postgres')"
-              class="px-2 py-0.5 rounded bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 text-[10px] font-medium transition"
-            >
-              Postgres
-            </button>
-            <button
-              @click="loadSample('mysql')"
-              class="px-2 py-0.5 rounded bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 text-[10px] font-medium transition"
-            >
-              MySQL
-            </button>
-            <button
-              @click="loadSample('mssql')"
-              class="px-2 py-0.5 rounded bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 text-[10px] font-medium transition"
-            >
-              MSSQL
-            </button>
-
-            <button
-              @click="openMarketplaceFromImport"
-              class="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] font-bold transition flex items-center gap-1"
-              title="Open full Marketplace blueprints"
-            >
-              <Store class="w-3 h-3 text-blue-600 dark:text-blue-400" />
-              <span>Browse Marketplace</span>
-            </button>
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="block space-y-1">
+            <span class="font-medium text-slate-600 dark:text-slate-300">Script format</span>
+            <select v-model="selectedDialect" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+              <option v-for="dialect in dialects" :key="dialect.id" :value="dialect.id">{{ dialect.label }}</option>
+            </select>
+          </label>
+          <label class="block space-y-1">
+            <span class="font-medium text-slate-600 dark:text-slate-300">Start with an example</span>
+            <select :value="''" @change="loadSample($event.target.value); $event.target.value = ''" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+              <option value="">Choose a sample…</option>
+              <option value="postgres">PostgreSQL</option>
+              <option value="mysql">MySQL</option>
+              <option value="mssql">SQL Server</option>
+            </select>
+          </label>
         </div>
 
         <!-- Destination & Project Settings -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           <div>
-            <label class="block font-medium text-slate-600 dark:text-slate-300 mb-1">Target Mode</label>
+            <label class="block font-medium text-slate-600 dark:text-slate-300 mb-1">Import into</label>
             <select
               v-model="importMode"
               class="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
             >
-              <option value="new">Create New Schema Project</option>
-              <option value="merge">Replace / Merge in Active Schema</option>
+              <option value="new">New project</option>
+              <option value="merge">Add to current project</option>
             </select>
           </div>
 
           <div v-if="importMode === 'new'">
-            <label class="block font-medium text-slate-600 dark:text-slate-300 mb-1">Destination Database</label>
+            <label class="block font-medium text-slate-600 dark:text-slate-300 mb-1">Folder</label>
             <select
               v-model="targetFolderId"
               class="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
@@ -127,9 +91,9 @@
       </div>
 
       <!-- File Dropzone & Editor -->
-      <div class="p-4 flex-1 flex flex-col min-h-0 space-y-2">
-        <div class="flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2">
+      <div class="p-4 flex-1 flex flex-col min-h-0 space-y-3 overflow-y-auto">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex flex-wrap items-center gap-2">
             <span class="font-medium text-slate-700 dark:text-slate-300">Paste SQL / DBML script</span>
             <span v-if="previewStats" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-semibold">
               <Check class="w-3 h-3" />
@@ -150,24 +114,10 @@
           </label>
         </div>
 
-        <!-- Textarea Code Input -->
-        <div class="relative flex-1 min-h-[220px] max-h-[360px] flex flex-col rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-950">
-          <textarea
-            v-model="scriptText"
-            placeholder="-- Paste your MySQL, PostgreSQL, or Microsoft SQL Server (MSSQL) CREATE TABLE statements here...&#10;&#10;CREATE TABLE users (&#10;  id SERIAL PRIMARY KEY,&#10;  email VARCHAR(255) NOT NULL UNIQUE&#10;);"
-            spellcheck="false"
-            class="w-full h-full p-3 font-mono text-xs text-slate-200 bg-transparent outline-none resize-none leading-relaxed select-text"
-          ></textarea>
-
-          <button
-            v-if="scriptText"
-            @click="scriptText = ''"
-            title="Clear text"
-            class="absolute top-2 right-2 p-1 bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white rounded-md transition text-[10px]"
-          >
-            Clear
-          </button>
+        <div class="flex justify-end">
+          <button v-if="scriptText" @click="scriptText = ''" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white">Clear script</button>
         </div>
+        <div ref="editorHost" class="import-script-editor min-h-0 shrink-0 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700"></div>
 
         <!-- Parse Error Banner -->
         <div
@@ -180,7 +130,7 @@
       </div>
 
       <!-- Footer Actions -->
-      <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+      <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 text-xs">
         <label v-if="!state.currentUser.isLoggedIn" class="cursor-pointer text-blue-700 dark:text-blue-300 font-medium focus-within:underline">
           Import Project Backup
           <input type="file" accept=".json" class="sr-only" @change="importBackup" />
@@ -208,7 +158,11 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue';
+import { EditorView, lineNumbers } from '@codemirror/view';
+import { EditorState, Compartment } from '@codemirror/state';
+import { StreamLanguage, syntaxHighlighting } from '@codemirror/language';
+import { dbmlLanguage, dbmlHighlightStyleDark } from '../utils/dbmlCodeMirror.js';
 import { state, activeProject, importSchema, restoreLocalProject, addToast } from '../stores/schemaStore.js';
 import { readProjectBackup } from '../utils/projectBackup.js';
 import { parseSQLSchema, SAMPLE_IMPORT_TEMPLATES } from '../utils/sqlImporter.js';
@@ -218,8 +172,7 @@ import {
   X,
   FileUp,
   Check,
-  AlertCircle,
-  Store
+  AlertCircle
 } from 'lucide-vue-next';
 
 const dialects = [
@@ -236,6 +189,64 @@ const projectName = ref('');
 const targetFolderId = ref('folder-1');
 const scriptText = ref('');
 const parseError = ref(null);
+const editorHost = ref(null);
+const language = new Compartment();
+let editor;
+const sqlLanguage = StreamLanguage.define({
+  ...dbmlLanguage.streamParser,
+  token(stream, context) {
+    if (!context.inBlockComment && !context.inString) {
+      if (stream.match('--')) {
+        stream.skipToEnd();
+        return 'lineComment';
+      }
+      if (stream.match(/^(CREATE|ALTER|DROP|TABLE|ADD|COLUMN|CONSTRAINT|REFERENCES|FOREIGN|KEY|PRIMARY|DEFAULT|CHECK|INDEX|UNIQUE|NOT|NULL|GO|USE|IF|EXISTS|ON|DELETE|CASCADE)\b/i)) return 'keyword';
+    }
+    return dbmlLanguage.streamParser.token(stream, context);
+  }
+});
+
+watch(() => state.modals.importSchema, async isOpen => {
+  editor?.destroy();
+  editor = null;
+  if (!isOpen) return;
+  await nextTick();
+  if (!editorHost.value) return;
+  editor = new EditorView({
+    parent: editorHost.value,
+    state: EditorState.create({
+      doc: scriptText.value,
+      extensions: [
+        lineNumbers(),
+        language.of(selectedDialect.value === 'dbml' ? dbmlLanguage : sqlLanguage),
+        syntaxHighlighting(dbmlHighlightStyleDark),
+        EditorView.contentAttributes.of({ 'aria-label': 'SQL or DBML script' }),
+        EditorView.theme({
+          '&': { height: '260px', backgroundColor: '#0f172a', color: '#e2e8f0' },
+          '.cm-scroller': { overflow: 'auto', fontFamily: 'monospace', fontSize: '13px' },
+          '.cm-content': { minHeight: '100%', padding: '12px 0' },
+          '.cm-gutters': { backgroundColor: '#0f172a', color: '#64748b', border: 'none' },
+          '.cm-cursor': { borderLeftColor: '#e2e8f0' },
+          '&.cm-focused': { outline: '2px solid #2563eb', outlineOffset: '-2px' }
+        }, { dark: true }),
+        EditorView.updateListener.of(update => {
+          if (update.docChanged) scriptText.value = update.state.doc.toString();
+        })
+      ]
+    })
+  });
+});
+
+watch(scriptText, text => {
+  if (editor && editor.state.doc.toString() !== text) {
+    editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: text } });
+  }
+});
+watch(selectedDialect, dialect => {
+  editor?.dispatch({ effects: language.reconfigure(dialect === 'dbml' ? dbmlLanguage : sqlLanguage) });
+});
+onBeforeUnmount(() => editor?.destroy());
+
 
 watch(
   () => state.modals.importSchema,
@@ -313,11 +324,6 @@ async function importBackup(event) {
 function closeModal() {
   state.modals.importSchema = false;
   parseError.value = null;
-}
-
-function openMarketplaceFromImport() {
-  closeModal();
-  state.modals.marketplace = true;
 }
 
 function executeImport() {
