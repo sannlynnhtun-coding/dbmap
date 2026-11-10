@@ -1175,12 +1175,6 @@
         </kbd>
       </button>
 
-      <nav aria-label="App links" class="sidebar-app-links">
-        <button @click="navigateTo('/')">Home</button>
-        <button @click="navigateTo('/changelog')">What's new</button>
-        <button @click="navigateTo('/privacy-policy')">Privacy</button>
-        <button @click="navigateTo('/terms-of-service')">Terms</button>
-      </nav>
     </div>
   </template>
 

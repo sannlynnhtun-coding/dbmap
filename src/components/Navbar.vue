@@ -350,7 +350,7 @@
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                   <div class="font-semibold text-xs text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                    Changelog & Issues
+                    What's new
                   </div>
                   <span class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
                     v1.4.3
