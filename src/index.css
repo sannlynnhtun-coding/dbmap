@@ -175,7 +175,7 @@ select:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 8px;
   background: var(--page-accent);
   color: var(--page-ground);
   padding: 15px 24px;
