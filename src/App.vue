@@ -8,8 +8,6 @@
   <!-- Learn DBML Dedicated Guide & Cheatsheet View (/learn-dbml, /learn, /dbml) -->
   <LearnDbmlPage v-else-if="isLearnDbmlRoute" />
 
-  <!-- Marketplace & Community Templates Dedicated View (/marketplace, /templates) -->
-  <MarketplacePage v-else-if="isMarketplaceRoute" />
 
   <!-- Changelog & Issue Tracker Dedicated View (/changelog, /issues, /updates, /releases) -->
   <ChangelogPage v-else-if="isChangelogRoute" />
@@ -66,7 +64,6 @@
   <LandingPage v-else />
 
   <!-- Global Application Modals (Accessible everywhere: Home, Studio, Marketplace, Learn, Legal) -->
-  <MarketplaceModal />
   <BackupImportModal />
   <!-- Shared dialogs are also available from the start page. -->
   <OnboardingTour v-if="isStudioRoute && !state.showStartPage" />
@@ -113,9 +110,7 @@ import VersionModal from './components/VersionModal.vue';
 import DocsModal from './components/DocsModal.vue';
 import LegalPage from './components/LegalPage.vue';
 import LearnDbmlPage from './components/LearnDbmlPage.vue';
-import MarketplacePage from './components/MarketplacePage.vue';
 import ChangelogPage from './components/ChangelogPage.vue';
-import MarketplaceModal from './components/MarketplaceModal.vue';
 import LandingPage from './components/LandingPage.vue';
 import LoadingScreen from './components/LoadingScreen.vue';
 
@@ -128,10 +123,6 @@ const isLearnDbmlRoute = computed(() => {
   return state.currentRoute === '/learn-dbml' || state.currentRoute === '/learn' || state.currentRoute === '/dbml';
 });
 
-const isMarketplaceRoute = computed(() => {
-  const r = (state.currentRoute || '').toLowerCase();
-  return r === '/marketplace' || r === '/templates';
-});
 
 const isChangelogRoute = computed(() => {
   const r = (state.currentRoute || '').toLowerCase();
@@ -168,7 +159,8 @@ const handlePopState = () => {
   } else if (path === '/learn-dbml' || path === '/learn' || path === '/dbml' || isLearnQuery) {
     state.currentRoute = '/learn-dbml';
   } else if (path === '/marketplace' || path === '/templates' || isMarketplaceQuery) {
-    state.currentRoute = '/marketplace';
+    state.currentRoute = '/app';
+    state.showStartPage = true;
   } else if (path === '/changelog' || path === '/issues' || path === '/updates' || path === '/releases' || window.location.hash === '#changelog' || window.location.hash === '#issues') {
     state.currentRoute = '/changelog';
   } else {
@@ -233,7 +225,8 @@ onMounted(async () => {
     urlParams.get('marketplace') === '1' ||
     urlParams.get('templates') === '1'
   ) {
-    state.currentRoute = '/marketplace';
+    state.currentRoute = '/app';
+    state.showStartPage = true;
   } else if (
     window.location.pathname === '/changelog' ||
     window.location.pathname === '/issues' ||

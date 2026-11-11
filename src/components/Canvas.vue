@@ -341,7 +341,7 @@
             {{ activeProject ? activeProject.name : 'Start Your Schema' }}
           </h3>
           <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Your schema is currently empty. Add a table to begin, or import sample templates to explore.
+            Your schema is empty. Add a table or import a schema to begin.
           </p>
         </div>
 
@@ -362,13 +362,7 @@
             <span>Import SQL (MySQL / PG / MSSQL)</span>
           </button>
 
-          <button
-            @click="importSampleSchemas()"
-            class="w-full py-2 px-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition"
-          >
-            <Sparkles class="w-3.5 h-3.5" />
-            <span>Import Sample Schemas</span>
-          </button>
+
         </div>
       </div>
     </div>
@@ -425,7 +419,6 @@ import {
   toggleShowOptionalRelationships,
   deleteTable,
   deleteColumn,
-  importSampleSchemas,
   AUTO_ARRANGE_MODES,
   setAutoArrangeMode,
   openExportModal

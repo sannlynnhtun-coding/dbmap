@@ -47,12 +47,7 @@
             class="hover:text-blue-600 dark:hover:text-blue-400 transition"
             >Data Dictionary</a
           >
-          <button
-            @click="goToMarketplace"
-            class="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium flex items-center gap-1"
-          >
-            <span>Template Library</span>
-          </button>
+
           <button
             @click="goToChangelog"
             class="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium flex items-center gap-1"
@@ -113,7 +108,7 @@
           <button class="home-primary" @click="goToStudio">
             Open studio <ArrowRight :size="18" />
           </button>
-            <button class="board-secondary" @click="goToMarketplace">Browse templates</button>
+
           </div>
         </div>
       </section>
@@ -246,34 +241,7 @@
               Explore the dictionary
             </button>
           </article>
-          <article>
-            <h3>Start with an idea.</h3>
-            <p>
-              Find a starting schema in the Template Library.
-            </p>
-            <div class="feature-fragment template-preview" data-ui>
-              <div class="pane-heading">
-                Sample schemas
-                <span>{{ SAMPLE_PROJECTS.length }} examples</span>
-              </div>
-              <button
-                v-for="(sample, index) in SAMPLE_PROJECTS"
-                :key="sample.id"
-                @click="
-                  previewIndex = index;
-                  scrollToPreview();
-                "
-              >
-                <span class="template-info"
-                  ><strong>{{ sample.name }}</strong
-                  ><small>{{ sample.description }}</small></span
-                ><span>{{ sample.tables.length }} tables</span>
-              </button>
-            </div>
-            <div class="capability-actions">
-              <button @click="goToMarketplace">Browse templates</button>
-            </div>
-          </article>
+
         </div>
       </section>
 
@@ -371,9 +339,7 @@ function goToStudio() {
   navigateTo("/app");
 }
 
-function goToMarketplace() {
-  navigateTo("/marketplace");
-}
+
 
 function goToChangelog() {
   navigateTo("/changelog");

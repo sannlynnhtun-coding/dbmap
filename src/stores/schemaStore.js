@@ -6,7 +6,6 @@ import { reactive, computed, watch, ref, nextTick } from 'vue';
 import { SAMPLE_PROJECTS, INITIAL_FOLDERS, createDefaultBlankProject } from '../utils/sampleSchemas.js';
 import { generateDBML, parseDBML, exportToSQL, extractCleanNote, updateTableHeaderColorInDBML } from '../utils/dbmlParser.js';
 import { parseSQLSchema } from '../utils/sqlImporter.js';
-import { MARKETPLACE_TEMPLATES } from '../utils/marketplaceTemplates.js';
 
 // Load stored theme safely
 const storedDark = typeof localStorage !== 'undefined' ? localStorage.getItem('db_schema_dark') : null;
@@ -400,17 +399,11 @@ export const state = reactive({
     aiGen: false,
     billing: false,
     adminDashboard: false,
-    marketplace: false,
-    submitToMarketplace: false
   },
 
   // Auth prompt context for onboarding (e.g. 'ai_presto')
   authModalPromptReason: null,
 
-  // Marketplace Submissions & Templates
-  marketplaceSubmissions: [],
-  isMarketplaceLoading: false,
-  editingMarketplaceTemplate: null,
 
   // Real-time Collaboration Access Restrictions & Password Protection
   collaborationAccessRestricted: {
@@ -463,7 +456,7 @@ export const state = reactive({
           return '/learn-dbml';
         }
         if (path === '/marketplace' || path === '/templates' || urlParams.get('marketplace') === '1' || urlParams.get('templates') === '1') {
-          return '/marketplace';
+          return '/app';
         }
         return '/';
       })()
@@ -685,7 +678,7 @@ export async function finishTour(isComplete = true) {
   } catch (e) {}
 
   if (isComplete) {
-    addToast('Tour Completed! 🎉', 'You are ready to architect databases. Launch the walkthrough anytime from the More menu.', 'success');
+    addToast('Tour Completed! ðŸŽ‰', 'You are ready to architect databases. Launch the walkthrough anytime from the More menu.', 'success');
   } else {
     addToast('Tour Dismissed', 'You can restart the interactive walkthrough anytime from the More menu.', 'info');
   }
@@ -1374,18 +1367,7 @@ export function setProjectDialect(dialect) {
 }
 
 // Create New Project
-export function createProject(projectName, folderId, description = '', template = null, customAccessMode = null, customPassword = '', dialect = 'postgres') {
-  let initialTables = [];
-  let initialRelationships = [];
-
-  if (template) {
-    const sample = SAMPLE_PROJECTS.find(s => s.name === template || s.id === template);
-    if (sample) {
-      initialTables = JSON.parse(JSON.stringify(sample.tables || []));
-      initialRelationships = JSON.parse(JSON.stringify(sample.relationships || []));
-    }
-  }
-
+export function createProject(projectName, folderId, description = '', customAccessMode = null, customPassword = '', dialect = 'postgres') {
   const currentOwnerUid = 'guest';
   const currentOwnerEmail = '';
 
@@ -1402,8 +1384,8 @@ export function createProject(projectName, folderId, description = '', template 
     accessMode: determinedAccessMode,
     sharePassword: customPassword || '',
     allowedEmails: [],
-    tables: initialTables,
-    relationships: initialRelationships,
+    tables: [],
+    relationships: [],
     history: [],
     ownerUid: currentOwnerUid,
     ownerEmail: currentOwnerEmail
@@ -1500,139 +1482,6 @@ export function importSchema({ name, script, dialect = 'auto', folderId = null, 
 }
 
 // Import all sample schemas on explicit user action
-export function importSampleSchemas(targetFolderId = null) {
-  const currentOwnerUid = 'guest';
-  const currentOwnerEmail = state.currentUser.email || '';
-  const folder = targetFolderId || state.folders[0]?.id || 'folder-1';
-
-  const importedProjects = SAMPLE_PROJECTS.map((sample, idx) => {
-    return {
-      id: `sample-${Date.now().toString(36)}-${idx}`,
-      folderId: folder,
-      name: sample.name,
-      description: sample.description,
-      updatedAt: new Date().toISOString(),
-      dialect: sample.dialect || 'postgres',
-      accessMode: 'public',
-      allowedEmails: [],
-      tables: JSON.parse(JSON.stringify(sample.tables || [])),
-      relationships: JSON.parse(JSON.stringify(sample.relationships || [])),
-      history: JSON.parse(JSON.stringify(sample.history || [])),
-      ownerUid: currentOwnerUid,
-      ownerEmail: currentOwnerEmail
-    };
-  });
-
-  // If user only had the default untouched blank project, replace it
-  if (state.projects.length === 1 && isUntouchedBlankStarter(state.projects[0])) {
-    state.projects = [...importedProjects];
-  } else {
-    state.projects.push(...importedProjects);
-  }
-
-  if (importedProjects.length > 0) {
-    selectProject(importedProjects[0].id);
-    saveGuestProjectsToStorage();
-  }
-
-  addToast('Sample Schemas Imported', `Loaded ${importedProjects.length} sample templates (E-Commerce & SaaS Billing)`, 'success');
-}
-
-// Import a single sample schema by name
-export function importSampleSchemaByName(name, targetFolderId = null) {
-  const sample = SAMPLE_PROJECTS.find(s => s.name.toLowerCase() === name.toLowerCase()) || SAMPLE_PROJECTS[0];
-  if (!sample) return;
-
-  const currentOwnerUid = 'guest';
-  const currentOwnerEmail = state.currentUser.email || '';
-  const folder = targetFolderId || state.folders[0]?.id || 'folder-1';
-
-  const newProj = {
-    id: `sample-${Date.now().toString(36)}`,
-    folderId: folder,
-    name: sample.name,
-    description: sample.description,
-    updatedAt: new Date().toISOString(),
-    dialect: sample.dialect || 'postgres',
-    accessMode: 'public',
-    allowedEmails: [],
-    tables: JSON.parse(JSON.stringify(sample.tables || [])),
-    relationships: JSON.parse(JSON.stringify(sample.relationships || [])),
-    history: JSON.parse(JSON.stringify(sample.history || [])),
-    ownerUid: currentOwnerUid,
-    ownerEmail: currentOwnerEmail
-  };
-
-  if (state.projects.length === 1 && isUntouchedBlankStarter(state.projects[0])) {
-    state.projects = [newProj];
-  } else {
-    state.projects.push(newProj);
-  }
-
-  selectProject(newProj.id);
-  saveGuestProjectsToStorage();
-  addToast('Sample Schema Imported', `Loaded "${newProj.name}"`, 'success');
-}
-
-export const allMarketplaceTemplates = computed(() =>
-  MARKETPLACE_TEMPLATES.map(template => ({ ...template, isBuiltIn: true }))
-);
-
-export function cloneMarketplaceTemplate(template, targetFolderId = null) {
-  if (!template) return null;
-
-  const currentOwnerUid = 'guest';
-  const currentOwnerEmail = state.currentUser.email || '';
-  const folder = targetFolderId || state.folders[0]?.id || 'folder-1';
-
-  const clonedTables = JSON.parse(JSON.stringify(template.tables || []));
-  sanitizeTableColumns(clonedTables);
-
-  const newProj = {
-    id: `tpl-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`,
-    folderId: folder,
-    name: template.name,
-    description: template.description || `Cloned from ${template.name}`,
-    updatedAt: new Date().toISOString(),
-    dialect: template.dialect || 'postgres',
-    accessMode: 'public',
-    allowedEmails: [],
-    tables: clonedTables,
-    relationships: JSON.parse(JSON.stringify(template.relationships || [])),
-    history: [
-      {
-        id: 'v-cloned',
-        versionName: 'v1.0 - Template Baseline',
-        description: `Cloned from dbmaps Marketplace: ${template.name}`,
-        createdAt: new Date().toISOString(),
-        author: template.author?.name || 'dbmaps Community',
-        tablesCount: clonedTables.length,
-        relationshipsCount: (template.relationships || []).length
-      }
-    ],
-    ownerUid: currentOwnerUid,
-    ownerEmail: currentOwnerEmail
-  };
-
-  if (state.projects.length === 1 && isUntouchedBlankStarter(state.projects[0])) {
-    state.projects = [newProj];
-  } else {
-    state.projects.push(newProj);
-  }
-
-  selectProject(newProj.id);
-  saveGuestProjectsToStorage();
-
-  addToast('Template Cloned', `Cloned "${template.name}" with ${clonedTables.length} tables & ${(template.relationships || []).length} relations.`, 'success');
-
-  state.modals.marketplace = false;
-  if (state.currentRoute !== '/app') {
-    navigateTo('/app');
-  }
-
-  return newProj;
-}
-
 // Delete Project
 export async function deleteProject(projectId) {
   const idx = state.projects.findIndex(p => p.id === projectId);

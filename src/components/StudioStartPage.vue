@@ -15,7 +15,7 @@
           <button class="start-action" @click="state.modals.newProject = true"><Plus :size="20" /><span><strong>New project</strong><small>Start with an empty database schema</small></span><ArrowUpRight :size="16" /></button>
           <button class="start-action" @click="state.modals.importSchema = true"><FileCode :size="20" /><span><strong>Import SQL / DBML</strong><small>Turn an existing schema into a diagram</small></span><ArrowUpRight :size="16" /></button>
           <button class="start-action" @click="state.modals.backupImport = true"><Upload :size="20" /><span><strong>Import JSON backup</strong><small>Restore one project or an entire workspace</small></span><ArrowUpRight :size="16" /></button>
-          <button class="start-action" @click="state.modals.marketplace = true"><LayoutTemplate :size="20" /><span><strong>Browse templates</strong><small>Explore ready-to-use database designs</small></span><ArrowUpRight :size="16" /></button>
+
           <div class="start-backup">
             <Download :size="20" />
             <strong>Keep a copy you can take anywhere.</strong>
@@ -47,7 +47,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import { ArrowUpRight, ChevronRight, Database, Download, FileCode, HardDrive, LayoutTemplate, Moon, Plus, Sun, Upload } from 'lucide-vue-next';
+import { ArrowUpRight, ChevronRight, Database, Download, FileCode, HardDrive, Moon, Plus, Sun, Upload } from 'lucide-vue-next';
 import DbMapLogo from './DbMapLogo.vue';
 import { state, selectProject, navigateTo, toggleDarkMode, exportWorkspaceBackup, addToast } from '../stores/schemaStore.js';
 import { recentProjects, downloadJsonBackup } from '../utils/workspaceBackup.js';

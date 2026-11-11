@@ -15,7 +15,7 @@
           </div>
           <div>
             <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">New database</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">Start blank or use a template.</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Create a blank database schema.</p>
           </div>
         </div>
         <button
@@ -67,19 +67,6 @@
               <span class="text-[9px] font-normal opacity-70">{{ d.badge }}</span>
             </button>
           </div>
-        </div>
-
-        <!-- Starter Template Selection -->
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5">Starting template</label>
-          <select
-            v-model="template"
-            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 text-xs cursor-pointer"
-          >
-            <option value="">Blank Database (Start clean with empty canvas)</option>
-            <option value="E-Commerce Database">E-Commerce Template (Users, Orders, Products, Payments - 6 tables)</option>
-            <option value="SaaS Billing & Subscriptions">SaaS Billing & Subscriptions (Plans, Workspaces, Invoices - 3 tables)</option>
-          </select>
         </div>
 
         <!-- Database Folder / Group -->
@@ -164,7 +151,6 @@ const isCreatingNewGroup = ref(false);
 const newGroupName = ref('');
 const dialect = ref('postgres');
 const description = ref('');
-const template = ref('');
 
 const dialects = [
   { id: 'postgres', name: 'PostgreSQL', badge: 'PG' },
@@ -179,7 +165,6 @@ watch(
     if (isOpen) {
       projectName.value = '';
       description.value = '';
-      template.value = '';
       dialect.value = 'postgres';
       isCreatingNewGroup.value = false;
       newGroupName.value = '';
@@ -209,7 +194,6 @@ function confirm() {
     trimmedName,
     targetFolderId,
     description.value,
-    template.value || null,
     null,
     null,
     dialect.value
