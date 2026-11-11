@@ -1,4 +1,4 @@
-# DBMaps Desktop 1.0.1
+# DBMaps Desktop 1.1.1
 
 Windows x64 desktop host for the existing Vue editor. The installer includes a
 Fixed Version WebView2 runtime and embedded editor assets. No server or account
@@ -39,7 +39,7 @@ Visual C++ runtime installation.
 $sourceExe = (Resolve-Path rust-desktop/target/release/DBMaps.exe).Path
 $runtimeDir = 'C:\path\to\Microsoft.WebView2.FixedVersionRuntime.VERSION.x64'
 & 'C:\path\to\Inno Setup 6\ISCC.exe' "/DSourceExe=$sourceExe" "/DRuntimeDir=$runtimeDir" rust-desktop/installer.iss
-Get-FileHash rust-desktop/Output/DBMaps-Setup-1.0.1-x64.exe -Algorithm SHA256
+Get-FileHash rust-desktop/Output/DBMaps-Setup-1.1.1-x64.exe -Algorithm SHA256
 ```
 
 The installer grants the runtime renderer read access required on Windows 10.
