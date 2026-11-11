@@ -1749,3 +1749,20 @@ html.dark .tst-viewport {
     bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Compact workspace actions wrap independently of the view switcher. */
+.workspace-tools-container { min-width: 0; justify-self: end; }
+.workspace-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 4px; }
+.workspace-tools button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 36px; min-height: 36px; padding: 6px 8px; border: 1px solid var(--board-border); border-radius: 8px; color: var(--page-ink); font-size: 12px; cursor: pointer; }
+.workspace-tools button:hover { background: var(--page-well); }
+.workspace-tools button:focus-visible { outline: 2px solid var(--page-accent); outline-offset: 2px; }
+.workspace-tools button:disabled { opacity: .5; cursor: default; }
+.workspace-tools svg { width: 16px; height: 16px; }
+.workspace-tools-divider { height: 20px; border-left: 1px solid var(--board-border); margin-inline: 3px; }
+@media (max-width: 1100px) { .workspace-tools button span { display: none; } }
+@media (max-width: 700px) {
+  .studio-shell > .studio-header { grid-template-columns: minmax(0, 1fr) auto; }
+  .workspace-tools-container { grid-column: 1 / -1; width: 100%; }
+  .workspace-tools { justify-content: flex-end; }
+  .workspace-tools button { min-width: 40px; min-height: 40px; }
+}
