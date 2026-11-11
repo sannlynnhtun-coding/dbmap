@@ -1611,10 +1611,11 @@ select:focus-visible {
 .canvas-tools-settings summary::-webkit-details-marker { display: none; }
 .canvas-tools-settings[open] summary { background: var(--page-well); }
 .canvas-tools-options { position: absolute; top: calc(100% + 6px); right: 0; width: 300px; display: grid; gap: 8px; }
-.canvas-tools-options label { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; color: var(--page-muted); font-size: 13px; line-height: 1.4; }
-.canvas-tools-options select { width: 180px; max-width: 70%; background: var(--page-surface); border-color: var(--board-border); }
-.canvas-tools-options .canvas-tools-checkbox { justify-content: flex-start; }
-.canvas-tools-checkbox { padding: 6px; cursor: pointer; }
+.canvas-tools-options label { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 36px; color: var(--page-muted); font-size: 13px; line-height: 1.4; }
+.canvas-tools-options select { width: 100%; max-width: 100%; min-width: 0; background: var(--page-surface); border-color: var(--board-border); }
+.canvas-tools-options > button { margin-left: 64px; justify-content: flex-start; border-color: var(--board-border); }
+.canvas-tools-options .canvas-tools-checkbox { display: flex; gap: 8px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--board-border); }
+.canvas-tools-checkbox { padding: 0; cursor: pointer; }
 .canvas-tools-checkbox input { accent-color: #2563eb; }
 @media (max-width: 767px) {
   .canvas-tools-row { gap: 4px; }
@@ -1705,6 +1706,7 @@ html body .board-dropdown-panel {
   animation: board-dropdown-appear 150ms ease-out;
   transform-origin: top right;
 }
+html body .board-dropdown-panel.canvas-tools-options { padding: 16px; }
 html body .board-dropdown-panel button {
   min-height: 36px;
   padding: 8px 10px;
