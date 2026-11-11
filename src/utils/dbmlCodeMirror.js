@@ -523,3 +523,17 @@ export const dbmlAutocompleteExtension = autocompletion({
   defaultKeymap: true
 });
 export { completionKeymap };
+
+export const sqlLanguage = StreamLanguage.define({
+  ...dbmlLanguage.streamParser,
+  token(stream, context) {
+    if (!context.inBlockComment && !context.inString) {
+      if (stream.match('--')) {
+        stream.skipToEnd();
+        return 'lineComment';
+      }
+      if (stream.match(/^(CREATE|ALTER|DROP|TABLE|ADD|COLUMN|CONSTRAINT|REFERENCES|FOREIGN|KEY|PRIMARY|DEFAULT|CHECK|INDEX|UNIQUE|NOT|NULL|GO|USE|IF|EXISTS|ON|DELETE|CASCADE)\b/i)) return 'keyword';
+    }
+    return dbmlLanguage.streamParser.token(stream, context);
+  }
+});

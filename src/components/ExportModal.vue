@@ -1,6 +1,6 @@
 <template>
   <div v-if="state.modals.export" class="app-dialog-backdrop fixed inset-0 z-50 bg-slate-900/60  flex items-center justify-center p-3 sm:p-4 select-none">
-    <div v-dialog role="dialog" aria-modal="true" aria-label="Export schema" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
+    <div v-dialog role="dialog" aria-modal="true" aria-label="Export schema" class="app-dialog bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl  w-full max-w-4xl overflow-hidden flex flex-col max-h-[88vh] animate-in fade-in zoom-in-95 duration-150">
 
       <!-- Modal Header -->
       <div class="app-dialog-heading px-5 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
@@ -42,7 +42,7 @@
             <Image class="w-3.5 h-3.5" />
             <span>Diagram</span>
             <span class="text-[9px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 rounded font-bold">
-              JPG • PNG • PDF • SVG
+              JPG â€¢ PNG â€¢ PDF â€¢ SVG
             </span>
           </button>
 
@@ -79,224 +79,75 @@
           </button>
         </div>
 
-        <div v-if="activeMainTab === 'diagram'" class="hidden md:flex items-center gap-2 text-[11px] text-slate-400">
-          <span>Targeted for CS students &amp; research papers</span>
-        </div>
+
       </div>
 
-      <!-- TAB 1 CONTENT: VISUAL DIAGRAM EXPORT -->
-      <div v-if="activeMainTab === 'diagram'" class="flex-1 overflow-y-auto p-5 space-y-5">
+      <!-- Diagram controls and a fitted preview share the available space. -->
+      <div v-if="activeMainTab === 'diagram'" class="diagram-export flex-1 min-h-0 overflow-y-auto">
+        <div class="export-settings border-slate-200 dark:border-slate-700 text-xs">
+          <fieldset>
+            <legend class="font-semibold text-slate-800 dark:text-slate-100 mb-2">File format</legend>
+            <div class="grid grid-cols-4 gap-1 rounded-lg bg-slate-100 dark:bg-slate-900 p-1">
+              <label v-for="format in ['png', 'jpg', 'svg', 'pdf']" :key="format" class="relative cursor-pointer">
+                <input v-model="diagramFormat" type="radio" name="diagram-export-format" :value="format" class="peer sr-only" />
+                <span class="block text-center py-2 rounded-md font-semibold uppercase text-slate-500 peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-blue-600 dark:peer-checked:text-blue-300 peer-focus-visible:outline-2 peer-focus-visible:outline-blue-500">{{ format }}</span>
+              </label>
+            </div>
+            <p class="mt-2 text-slate-500 dark:text-slate-400">{{ { png: 'Lossless image with crisp text.', jpg: 'Smaller file with a solid background.', svg: 'Scalable vector for any screen size.', pdf: 'Print-ready A4 or Letter document.' }[diagramFormat] }}</p>
+          </fieldset>
 
-        <!-- Format Selector Grid (JPG, PNG, PDF, SVG) -->
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-            1. Select Output Format
+          <label class="export-field" for="export-scale">
+            <span>Image resolution</span>
+            <select id="export-scale" aria-describedby="export-resolution-help" v-model="diagramScale" :disabled="diagramFormat === 'svg'">
+              <option :value="1">1x - Standard size</option>
+              <option :value="2">2x - Sharper text (recommended)</option>
+              <option :value="3">3x - Largest image</option>
+            </select>
+            <small id="export-resolution-help" class="text-slate-500 dark:text-slate-400 font-normal">{{ diagramFormat === 'svg' ? 'SVG stays sharp at any size; resolution does not apply.' : '2x doubles image width and height for sharper text. Higher resolution creates a larger file.' }}</small>
           </label>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <!-- HD PNG -->
-            <button
-              type="button"
-              @click="diagramFormat = 'png'"
-              class="p-3 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer group"
-              :class="diagramFormat === 'png'
-                ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-blue-500'
-                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800/60'"
-            >
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-xs text-slate-900 dark:text-slate-100">HD PNG</span>
-                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-semibold">.png</span>
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-snug">
-                Lossless raster (300 DPI). Best for Word, LaTeX, Google Docs &amp; slides.
-              </p>
-            </button>
 
-            <!-- HD JPG -->
-            <button
-              type="button"
-              @click="diagramFormat = 'jpg'"
-              class="p-3 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer group"
-              :class="diagramFormat === 'jpg'
-                ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-blue-500'
-                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800/60'"
-            >
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-xs text-slate-900 dark:text-slate-100">HD JPG</span>
-                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-semibold">.jpg</span>
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-snug">
-                Compact high-res image with solid background for portal uploads.
-              </p>
-            </button>
+          <label class="export-field" for="export-background">
+            <span>Background</span>
+            <select id="export-background" v-model="diagramTheme">
+              <option value="light">White</option>
+              <option value="dark">Dark</option>
+              <option value="transparent" :disabled="diagramFormat === 'jpg' || diagramFormat === 'pdf'">Transparent</option>
+            </select>
+          </label>
 
-            <!-- Vector SVG -->
-            <button
-              type="button"
-              @click="diagramFormat = 'svg'"
-              class="p-3 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer group"
-              :class="diagramFormat === 'svg'
-                ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-blue-500'
-                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800/60'"
-            >
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-xs text-slate-900 dark:text-slate-100">Vector SVG</span>
-                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-semibold">.svg</span>
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-snug">
-                Infinite vector scalability. Zero pixelation at any zoom level in papers.
-              </p>
-            </button>
+          <label class="export-field" for="export-detail">
+            <span>Table details</span>
+            <select id="export-detail" v-model="tableDensity">
+              <option value="all">All fields</option>
+              <option value="keys">Primary &amp; foreign keys</option>
+              <option value="tables">Table names only</option>
+            </select>
+          </label>
 
-            <!-- Academic PDF -->
-            <button
-              type="button"
-              @click="diagramFormat = 'pdf'"
-              class="p-3 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer group"
-              :class="diagramFormat === 'pdf'
-                ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-blue-500'
-                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800/60'"
-            >
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-xs text-slate-900 dark:text-slate-100">Academic PDF</span>
-                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-semibold">.pdf</span>
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-snug">
-                Formatted A4 / Letter page ready for academic thesis &amp; coursework submission.
-              </p>
-            </button>
-          </div>
-        </div>
-
-        <!-- Customization Controls Grid -->
-        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/80 space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              2. Customization &amp; Academic Settings
-            </span>
-            <span class="text-[11px] text-slate-400 font-medium">Fine-tune for your report</span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-
-            <!-- Resolution / Scale (For PNG & JPG) -->
-            <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
-                Resolution &amp; DPI
-              </label>
-              <select
-                v-model="diagramScale"
-                :disabled="diagramFormat === 'svg'"
-                class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 disabled:opacity-50"
-              >
-                <option :value="1">1x Standard (Web 1080p, ~72 DPI)</option>
-                <option :value="2">2x HD (Academic Print, 300 DPI - Recommended)</option>
-                <option :value="3">3x Ultra HD (4K Crisp, ~600 DPI)</option>
-              </select>
-              <span class="text-[10px] text-slate-400 mt-1 block">
-                {{ diagramFormat === 'svg' ? 'SVG is natively vector scalable' : '2x gives razor-sharp text in Word & LaTeX' }}
-              </span>
-            </div>
-
-            <!-- Background Theme -->
-            <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
-                Background Theme
-              </label>
-              <select
-                v-model="diagramTheme"
-                class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              >
-                <option value="light">Paper White (Ideal for Academic Printing)</option>
-                <option value="dark">Dark Slate (For Modern Presentations)</option>
-                <option value="transparent" :disabled="diagramFormat === 'jpg'">
-                  Transparent (PNG &amp; SVG Only)
-                </option>
-              </select>
-              <span class="text-[10px] text-slate-400 mt-1 block">
-                Paper White saves printer ink and matches research papers
-              </span>
-            </div>
-
-            <!-- PDF Page Options (if PDF chosen) or Table Density -->
-            <div v-if="diagramFormat === 'pdf'">
-              <label class="block font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
-                PDF Page Size &amp; Layout
-              </label>
-              <div class="grid grid-cols-2 gap-2">
-                <select
-                  v-model="pdfFormat"
-                  class="px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 outline-none"
-                >
-                  <option value="a4">A4 Paper</option>
-                  <option value="letter">US Letter</option>
-                </select>
-                <select
-                  v-model="pdfOrientation"
-                  class="px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 outline-none"
-                >
-                  <option value="landscape">Landscape</option>
-                  <option value="portrait">Portrait</option>
-                </select>
-              </div>
-              <span class="text-[10px] text-slate-400 mt-1 block">
-                Landscape matches wide database diagrams cleanly
-              </span>
-            </div>
-
-            <!-- Table Density (For image/svg) -->
-            <div v-else>
-              <label class="block font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
-                Diagram Details Level
-              </label>
-              <select
-                v-model="tableDensity"
-                class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              >
-                <option value="all">All Fields (Full columns, data types &amp; keys)</option>
-                <option value="keys">Keys Only (Primary &amp; Foreign keys)</option>
-                <option value="tables">Tables Only (Compact entity headers)</option>
-              </select>
-              <span class="text-[10px] text-slate-400 mt-1 block">
-                Controls level of column detail shown in exported cards
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- Live Diagram Preview Box -->
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <Eye class="w-3.5 h-3.5 text-blue-500" />
-              <span>3. Live Diagram Preview</span>
+          <div v-if="diagramFormat === 'pdf'" class="grid grid-cols-2 gap-2">
+            <label class="export-field" for="export-paper"><span>Paper</span>
+              <select id="export-paper" v-model="pdfFormat"><option value="a4">A4</option><option value="letter">Letter</option></select>
             </label>
-            <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
-              <span>{{ activeProject?.tables?.length || 0 }} Tables</span>
-              <span>•</span>
-              <span>{{ activeProject?.relationships?.length || 0 }} Relationships</span>
-              <span>•</span>
-              <span class="font-semibold text-blue-600 dark:text-blue-400">{{ previewDimensionsText }}</span>
-            </div>
-          </div>
-
-          <!-- SVG Preview Container -->
-          <div
-            class="w-full max-h-[300px] sm:max-h-[360px] overflow-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950 p-3 flex items-center justify-center relative select-none"
-            :class="{ 'bg-white': diagramTheme === 'light' }"
-          >
-            <div
-              v-if="previewSvg"
-              v-html="previewSvg"
-              class="w-full h-auto flex items-center justify-center max-w-full [&>svg]:max-w-full [&>svg]:h-auto  rounded-lg"
-            ></div>
-            <div v-else class="text-slate-400 text-xs py-10">
-              No tables available to preview.
-            </div>
+            <label class="export-field" for="export-orientation"><span>Orientation</span>
+              <select id="export-orientation" v-model="pdfOrientation"><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select>
+            </label>
           </div>
         </div>
 
+        <section class="export-preview min-w-0 bg-slate-50 dark:bg-slate-900/40" aria-label="Diagram export preview">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span class="font-semibold text-slate-700 dark:text-slate-200">Preview</span>
+            <span class="text-slate-500">{{ activeProject?.tables?.length || 0 }} tables · {{ activeProject?.relationships?.length || 0 }} relationships</span>
+          </div>
+          <div class="export-preview-stage border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden" :class="diagramTheme === 'dark' ? 'bg-slate-950' : 'bg-white'">
+            <div v-if="previewSvg" v-html="previewSvg" class="export-preview-svg" />
+            <p v-else class="text-xs text-slate-500">Add a table to preview your diagram.</p>
+          </div>
+          <div class="flex flex-wrap justify-between gap-2 text-[11px] text-slate-500">
+            <span>{{ diagramFormat === 'svg' ? 'Vector · scales to any size' : previewDimensionsText }}</span>
+            <span class="uppercase">.{{ diagramFormat }}</span>
+          </div>
+        </section>
       </div>
 
       <!-- TAB 2 CONTENT: ACADEMIC MARKDOWN TABLES -->
@@ -320,14 +171,15 @@
                 class="px-2.5 py-1 rounded-md font-medium text-[11px] transition cursor-pointer"
                 :class="markdownFormat === 'combined' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'"
               >
-                Combined Master Table
+                Combined table
               </button>
             </div>
-            <span class="text-[11px] text-slate-400 hidden sm:inline">
-              Pure Markdown tables • No fluff • Perfect for reports
-            </span>
+
           </div>
 
+          <div role="group" aria-label="Markdown view" class="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 p-0.5">
+            <button v-for="view in ['preview', 'code']" :key="view" type="button" :aria-pressed="markdownView === view" @click="markdownView = view" class="px-3 py-1.5 rounded-md capitalize" :class="markdownView === view ? 'bg-blue-600 text-white' : 'text-slate-500'">{{ view }}</button>
+          </div>
           <div class="flex flex-wrap items-center gap-2">
             <button
               @click="copyMarkdownToClipboard"
@@ -347,8 +199,17 @@
         </div>
 
         <!-- Markdown Preview Box -->
-        <div class="p-4 flex-1 overflow-y-auto bg-slate-950 text-slate-200 font-mono text-xs leading-relaxed select-text">
-          <pre class="whitespace-pre-wrap">{{ generatedMarkdown }}</pre>
+        <div :class="markdownView === 'preview' ? 'bg-white dark:bg-slate-900' : 'bg-slate-950 text-slate-200'" class="p-4 flex-1 overflow-auto min-h-[240px] font-mono text-xs leading-relaxed select-text">
+          <div v-if="markdownView === 'preview'" class="space-y-3 font-sans text-slate-800 dark:text-slate-200">
+            <section v-for="(section, index) in markdownSections" :key="index" class="overflow-x-auto">
+              <h4 v-if="section.title" class="font-semibold text-sm mb-2">{{ section.title }}</h4>
+              <table class="w-full text-left text-xs border-collapse">
+                <thead><tr><th v-for="(cell, i) in section.headers" :key="i" class="p-2 border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">{{ cell }}</th></tr></thead>
+                <tbody><tr v-for="(row, r) in section.rows" :key="r"><td v-for="(cell, c) in row" :key="c" class="p-2 border border-slate-200 dark:border-slate-700 whitespace-pre-wrap">{{ cell }}</td></tr></tbody>
+              </table>
+            </section>
+          </div>
+          <pre v-else class="whitespace-pre-wrap">{{ generatedMarkdown }}</pre>
         </div>
       </div>
 
@@ -389,68 +250,20 @@
           </div>
         </div>
 
-        <!-- Code Preview Area -->
-        <div class="p-4 flex-1 overflow-y-auto bg-slate-950 text-slate-200 font-mono text-xs leading-relaxed select-text">
-          <pre class="whitespace-pre-wrap">{{ generatedScript }}</pre>
-        </div>
+        <ExportCodePreview :code="generatedScript" :language="scriptFormat" />
 
       </div>
 
       <!-- Modal Footer -->
       <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
 
-        <!-- Quick format buttons when on diagram tab -->
-        <div v-if="activeMainTab === 'diagram'" class="flex items-center gap-1.5 flex-wrap">
-          <span class="text-[11px] text-slate-500 font-medium mr-1">Quick Downloads:</span>
-
-          <button
-            type="button"
-            @click="quickDownload('png')"
-            :disabled="isGenerating"
-            title="Download HD PNG (300 DPI)"
-            class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200 text-[11px] transition cursor-pointer"
-          >
-            PNG
-          </button>
-
-          <button
-            type="button"
-            @click="quickDownload('jpg')"
-            :disabled="isGenerating"
-            title="Download HD JPG"
-            class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200 text-[11px] transition cursor-pointer"
-          >
-            JPG
-          </button>
-
-          <button
-            type="button"
-            @click="quickDownload('svg')"
-            :disabled="isGenerating"
-            title="Download Vector SVG"
-            class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200 text-[11px] transition cursor-pointer"
-          >
-            SVG
-          </button>
-
-          <button
-            type="button"
-            @click="quickDownload('pdf')"
-            :disabled="isGenerating"
-            title="Download Academic PDF"
-            class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200 text-[11px] transition cursor-pointer"
-          >
-            PDF
-          </button>
-        </div>
-
-        <div v-else-if="activeMainTab === 'markdown'" class="text-slate-500 text-[11px]">
-          Pure Markdown tables extracted with database tables, columns &amp; data types.
-        </div>
-
-        <div v-else class="text-slate-500 text-[11px]">
-          Target SQL dialect syntax validated for production databases.
-        </div>
+        <details class="text-slate-600 dark:text-slate-300">
+          <summary class="cursor-pointer font-medium">JSON backups</summary>
+          <div class="flex flex-wrap gap-3 mt-2">
+            <button v-if="activeProject" @click="downloadProjectBackup" class="text-left hover:underline">Current project (.dbmap.json)<small class="block text-slate-500">Schema, layout and project settings</small></button>
+            <button @click="downloadWorkspaceBackup" class="text-left hover:underline">All projects (.json)<small class="block text-slate-500">Entire workspace, including folders</small></button>
+          </div>
+        </details>
 
         <!-- Primary Action Buttons -->
         <div class="flex items-center gap-2">
@@ -478,18 +291,7 @@
           >
             <Loader2 v-if="isGenerating" class="w-4 h-4 animate-spin" />
             <Download v-else class="w-4 h-4" />
-            <span>Download HD {{ diagramFormat.toUpperCase() }}</span>
-          </button>
-
-          <!-- Copy Markdown Button when on Markdown tab -->
-          <button
-            v-if="activeMainTab === 'markdown'"
-            type="button"
-            @click="copyMarkdownToClipboard"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition flex items-center gap-2  cursor-pointer"
-          >
-            <Copy class="w-4 h-4" />
-            <span>Copy Markdown</span>
+            <span>Download {{ diagramFormat.toUpperCase() }}</span>
           </button>
 
           <button
@@ -499,15 +301,7 @@
           >
             Close
           </button>
-          <button
-            v-if="activeProject"
-            type="button"
-            @click="downloadProjectBackup"
-            class="px-4 py-2 text-blue-700 dark:text-blue-300 font-medium rounded-xl hover:underline"
-          >
-            Export Full Project Backup
-          </button>
-          <button type="button" @click="downloadWorkspaceBackup" class="px-4 py-2 text-blue-700 dark:text-blue-300 font-medium rounded-xl hover:underline">Export All Projects (JSON)</button>
+
         </div>
 
       </div>
@@ -518,10 +312,12 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { projectDbml, markdownTableSections } from '../utils/schemaExport.js';
+import ExportCodePreview from './ExportCodePreview.vue';
 import { state, activeProject, addToast, exportWorkspaceBackup } from '../stores/schemaStore.js';
 import { downloadJsonBackup } from '../utils/workspaceBackup.js';
 import { createProjectBackup } from '../utils/projectBackup.js';
-import { exportToSQL, generateDBML } from '../utils/dbmlParser.js';
+import { exportToSQL } from '../utils/dbmlParser.js';
 import {
   generateDiagramSvg,
   exportDiagramAsPng,
@@ -558,10 +354,16 @@ const pdfFormat = ref('a4'); // 'a4' | 'letter'
 const pdfOrientation = ref('landscape'); // 'landscape' | 'portrait'
 
 // Markdown Export Controls
+const markdownView = ref('preview');
+const markdownSections = computed(() => markdownTableSections(generatedMarkdown.value));
 const markdownFormat = ref('per_table'); // 'per_table' | 'combined'
 
 // Script Export Controls
 const scriptFormat = ref('postgres');
+
+watch(diagramFormat, format => {
+  if ((format === 'jpg' || format === 'pdf') && diagramTheme.value === 'transparent') diagramTheme.value = 'light';
+});
 
 // Loading state
 const isGenerating = ref(false);
@@ -571,6 +373,7 @@ watch(
   () => state.modals.export,
   (isOpen) => {
     if (isOpen) {
+      markdownView.value = 'preview';
       if (state.exportTab) {
         activeMainTab.value = state.exportTab;
       }
@@ -624,7 +427,7 @@ const previewDimensionsText = computed(() => {
   const w = parseInt(match[1], 10);
   const h = parseInt(match[2], 10);
   const mult = diagramFormat.value === 'svg' ? 1 : diagramScale.value;
-  return `${w * mult} × ${h * mult} px`;
+  return `${w * mult} Ã— ${h * mult} px`;
 });
 
 // Download primary selected diagram format
@@ -655,12 +458,6 @@ async function handlePrimaryDownload() {
   } finally {
     isGenerating.value = false;
   }
-}
-
-// Quick download buttons on footer
-async function quickDownload(format) {
-  diagramFormat.value = format;
-  await handlePrimaryDownload();
 }
 
 // Copy PNG Image to Clipboard
@@ -705,16 +502,7 @@ const generatedScript = computed(() => {
   const proj = activeProject.value;
   if (!proj) return '';
   if (scriptFormat.value === 'dbml') {
-    return proj.customDbml || generateDBML(
-      proj.tables || [],
-      proj.relationships || [],
-      proj.name,
-      {
-        enums: proj.enums || [],
-        tableGroups: proj.tableGroups || [],
-        projectConfig: proj.projectConfig || null
-      }
-    );
+    return projectDbml(proj);
   }
   return exportToSQL(proj.tables || [], proj.relationships || [], scriptFormat.value);
 });
@@ -753,3 +541,23 @@ function downloadScript() {
   addToast('Download Started', `Saved ${a.download}`, 'success');
 }
 </script>
+
+<style scoped>
+.diagram-export { display: grid; grid-template-columns: 240px minmax(0, 1fr); }
+.export-settings { padding: 20px; border-right-width: 1px; display: flex; flex-direction: column; gap: 20px; }
+.export-field { display: flex; flex-direction: column; gap: 7px; font-weight: 500; color: var(--page-ink); min-width: 0; }
+.export-field select { width: 100%; min-height: 36px; padding: 7px 9px; border: 1px solid var(--board-border, #cbd5e1); border-radius: 7px; background: var(--page-well, transparent); color: inherit; font-size: 12px; }
+.export-field select:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.export-field select:disabled { opacity: .5; }
+.export-preview { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+.export-preview-stage { height: clamp(260px, 46vh, 460px); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.export-preview-svg { width: 100%; height: 100%; }
+.export-preview-svg :deep(svg) { width: 100%; height: 100%; }
+@media (max-width: 640px) {
+  .diagram-export { grid-template-columns: minmax(0, 1fr); }
+  .export-settings { border-right-width: 0; border-bottom-width: 1px; padding: 16px; gap: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .export-settings fieldset { grid-column: 1 / -1; }
+  .export-preview { padding: 16px; }
+  .export-preview-stage { height: 240px; }
+}
+</style>

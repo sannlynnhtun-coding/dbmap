@@ -158,8 +158,8 @@
 import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue';
 import { EditorView, lineNumbers } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
-import { StreamLanguage, syntaxHighlighting } from '@codemirror/language';
-import { dbmlLanguage, dbmlHighlightStyleDark } from '../utils/dbmlCodeMirror.js';
+import { syntaxHighlighting } from '@codemirror/language';
+import { dbmlLanguage, sqlLanguage, dbmlHighlightStyleDark } from '../utils/dbmlCodeMirror.js';
 import { state, activeProject, importSchema, addToast } from '../stores/schemaStore.js';
 import { parseSQLSchema, SAMPLE_IMPORT_TEMPLATES } from '../utils/sqlImporter.js';
 import {
@@ -188,19 +188,7 @@ const parseError = ref(null);
 const editorHost = ref(null);
 const language = new Compartment();
 let editor;
-const sqlLanguage = StreamLanguage.define({
-  ...dbmlLanguage.streamParser,
-  token(stream, context) {
-    if (!context.inBlockComment && !context.inString) {
-      if (stream.match('--')) {
-        stream.skipToEnd();
-        return 'lineComment';
-      }
-      if (stream.match(/^(CREATE|ALTER|DROP|TABLE|ADD|COLUMN|CONSTRAINT|REFERENCES|FOREIGN|KEY|PRIMARY|DEFAULT|CHECK|INDEX|UNIQUE|NOT|NULL|GO|USE|IF|EXISTS|ON|DELETE|CASCADE)\b/i)) return 'keyword';
-    }
-    return dbmlLanguage.streamParser.token(stream, context);
-  }
-});
+
 
 watch(() => state.modals.importSchema, async isOpen => {
   editor?.destroy();
