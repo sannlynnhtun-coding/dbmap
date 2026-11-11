@@ -1,3 +1,4 @@
+import { tourSteps } from '../utils/tourSteps.js';
 import { createWorkspaceBackup, prepareBackupImport, recentProjects } from '../utils/workspaceBackup.js';
 import { createProjectStorage, validateLegacyStorage } from '../utils/projectStorage.js';
 import { toast } from '@yusufceng1z/ding';
@@ -368,7 +369,7 @@ export const state = reactive({
   tour: {
     active: false,
     step: 0,
-    totalSteps: 8
+    totalSteps: tourSteps.length
   },
 
   // System Configurations
@@ -640,7 +641,7 @@ export const activeProject = computed(() => {
 export function startTour(stepIndex = 0) {
   // Ensure workspace elements are visible for tour spotlights
   state.isSidebarCollapsed = false;
-  state.viewMode = 'split';
+  state.viewMode = window.innerWidth < 1024 ? 'canvas' : 'split';
   // Dismiss any overlapping modals
   Object.keys(state.modals).forEach(k => {
     state.modals[k] = false;
@@ -678,9 +679,9 @@ export async function finishTour(isComplete = true) {
   } catch (e) {}
 
   if (isComplete) {
-    addToast('Tour Completed! ðŸŽ‰', 'You are ready to architect databases. Launch the walkthrough anytime from the More menu.', 'success');
+    addToast('Tour Completed! 🎉', 'You are ready to architect databases. Launch the walkthrough anytime from the toolbar.', 'success');
   } else {
-    addToast('Tour Dismissed', 'You can restart the interactive walkthrough anytime from the More menu.', 'info');
+    addToast('Tour Dismissed', 'You can restart the interactive walkthrough anytime from the toolbar.', 'info');
   }
 }
 

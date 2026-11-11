@@ -174,6 +174,7 @@
 </template>
 
 <script setup>
+import { tourSteps as workflowSteps } from '../utils/tourSteps.js';
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import {
   state,
@@ -202,78 +203,15 @@ const popoverRef = ref(null);
 const targetRect = ref(null);
 const isTargetVisible = ref(false);
 
-const tourSteps = [
-  {
-    id: 'header-project',
-    target: '#tour-header-project',
-    icon: Columns,
-    title: 'Project & Live Cloud Sync',
-    badge: 'Workspace',
-    description: 'Name your database schema project and monitor real-time sync status. Click directly on the title to rename your project at any time.',
-    tips: 'Changes are saved automatically in this browser.',
-    preferredPosition: 'bottom'
-  },
-  {
-    id: 'sidebar-structure',
-    target: '#tour-sidebar',
-    icon: FolderTree,
-    title: 'Schema Explorer & Structure',
-    badge: 'Navigation',
-    description: 'Manage every layer of your database: inspect Tables & Columns, define Relationships (Foreign Keys), organize multi-schema systems into Folders, or restore commit Snapshots.',
-    tips: 'Use the quick filter bar to instantly locate specific tables and fields in complex databases.',
-    preferredPosition: 'right',
-    onEnter: () => {
-      state.isSidebarCollapsed = false;
-      state.activeTab = 'tables';
-    }
-  },
-  {
-    id: 'code-editor',
-    target: '#tour-code-editor',
-    icon: FileCode2,
-    title: 'Declarative DBML Code Editor',
-    badge: 'Schema Scripting',
-    description: 'Write schemas rapidly using DBML (Database Markup Language). Features instant syntax linting, error diagnostics drawer, and auto-formatting.',
-    tips: 'Two-way synchronization: any code changes immediately update the visual diagram, and visual canvas edits update the code!',
-    preferredPosition: 'right',
-    onEnter: () => {
-      state.viewMode = 'split';
-    }
-  },
-  {
-    id: 'canvas-diagram',
-    target: '#tour-canvas-toolbar',
-    icon: LayoutGrid,
-    title: 'Interactive ERD Canvas & Tools',
-    badge: 'Visual Modeling',
-    description: 'Drag and reposition tables freely. Use the top toolbar to Pan canvas, Zoom in/out, switch between Orthogonal and Curved links, or click Auto Arrange to untangle lines automatically.',
-    tips: 'Hold Space and click-drag anywhere on the canvas to pan smoothly around large diagrams.',
-    preferredPosition: 'bottom',
-    onEnter: () => {
-      state.viewMode = 'split';
-    }
-  },
-  {
-    id: 'view-modes',
-    target: '#tour-view-modes',
-    icon: Columns,
-    title: 'Customizable View Layouts',
-    badge: 'Workspace Views',
-    description: 'Tailor your workspace to your preferred workflow. Switch between Split View (editor + canvas), Full Canvas (maximum visual diagram space), or Code View (focused DBML scripting).',
-    tips: 'In Split View, drag the center vertical divider bar to resize the editor and canvas panes.',
-    preferredPosition: 'bottom'
-  },
-  {
-    id: 'actions-export-docs',
-    target: '#tour-actions-menu',
-    icon: FolderUp,
-    title: 'Import, Export & Data Dictionary',
-    badge: 'Import & Export',
-    description: 'Import existing schemas from MySQL, PostgreSQL, or Microsoft SQL Server (MSSQL) DDL files, or export production-ready SQL and diagrams. You can also generate and publish interactive public Data Dictionaries for your engineering team with one click.',
-    tips: 'Easily import SQL files or paste DDL statements directly to visualize existing database architectures in seconds.',
-    preferredPosition: 'bottom-left'
+const tourSteps = workflowSteps.map(step => ({
+  ...step,
+  icon: { project: Columns, explorer: FolderTree, editor: FileCode2, canvas: LayoutGrid, views: Columns, 'import-docs': FolderUp, export: FolderUp, dbml: FileCode2 }[step.id],
+  onEnter: () => {
+    state.isSidebarCollapsed = !step.sidebar;
+    if (step.sidebar) state.activeTab = 'tables';
+    if (step.view) state.viewMode = step.view;
   }
-];
+}));
 
 const totalSteps = computed(() => tourSteps.length);
 const currentStepIndex = computed(() => Math.min(Math.max(0, state.tour.step), totalSteps.value - 1));
