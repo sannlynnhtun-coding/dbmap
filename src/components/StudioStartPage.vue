@@ -26,7 +26,7 @@
         <section aria-labelledby="start-recent-title">
           <div class="start-section-heading"><h2 id="start-recent-title">Recent projects</h2><span>{{ projects.length }}</span></div>
           <p class="start-sort">Most recently saved first</p>
-          <div v-if="!projects.length" class="start-empty"><Database :size="28" /><h3>Your workspace starts here</h3><p>Create a project, import a backup, or choose a template. Your projects will appear here.</p></div>
+          <div v-if="!projects.length" class="start-empty"><Database :size="28" /><h3>Your workspace starts here</h3><p>Create a project or import a backup. Your projects will appear here.</p></div>
           <ul v-else class="start-recents">
             <li v-for="project in projects" :key="project.id">
               <button class="start-project" @click="selectProject(project.id)">
