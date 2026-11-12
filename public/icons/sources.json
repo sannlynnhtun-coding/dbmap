@@ -1,0 +1,26 @@
+{
+  "postgresql.png": {
+    "source": "https://www.postgresql.org/media/img/about/press/elephant.png",
+    "sha256": "ff92fb5d12a7fa6b23c2eb403d2edf4fbc58ced802021e1f02c3583cb70957be"
+  },
+  "mysql.png": {
+    "source": "https://www.mysql.com/common/logos/logo-mysql-170x115.png",
+    "sha256": "2d59bc428916752528280eac03330d712164163e2f3c476409f5c25d8a7c2778"
+  },
+  "sqlite.svg": {
+    "source": "https://sqlite.org/images/sqlite370_banner.svg",
+    "sha256": "462c4ce8229b585dd6880cd308b121d9de63eb619db05e469598594e80d7b151"
+  },
+  "mariadb.svg": {
+    "source": "https://mariadb.com/images/mariadb-logo.svg",
+    "sha256": "259daab8a9ee0fd580a399d264376567c54f339c92dc52d453b81a07d45f2399"
+  },
+  "dbml.svg": {
+    "source": "https://raw.githubusercontent.com/holistics/dbml/02e692308a4315d9ee99ee8f291b972786ef828b/dbml-homepage/static/img/dbml-favicon.svg",
+    "sha256": "1f74cbbe2378f2e53398986511cd05e2fa83083df2c1f96f646f0d1ce9ea9a6c"
+  },
+  "mssql.svg": {
+    "source": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/1065066-Icon-SQLServer-16x16?resMode=sharp2&op_usm=1.5,0.65,15,0&qlt=100&fit=constrain",
+    "sha256": "b6edca95da7ee5278dcdb6e446f9eec6f66ab4d03198f0ec00ca22be2f1dffae"
+  }
+}

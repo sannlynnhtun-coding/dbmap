@@ -1766,3 +1766,5 @@ html.dark .tst-viewport {
   .workspace-tools { justify-content: flex-end; }
   .workspace-tools button { min-width: 40px; min-height: 40px; }
 }
+
+.brand-engine-logo { width: 64px; height: 32px; padding: 3px; object-fit: contain; flex-shrink: 0; background: white; border-radius: 4px; }

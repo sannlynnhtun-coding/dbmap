@@ -1,0 +1,2 @@
+# Preserve publisher artwork bytes across Windows and Unix checkouts.
+public/icons/*.svg -text

@@ -63,6 +63,7 @@
                   : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'
               ]"
             >
+              <img :src="d.icon" alt="" class="h-6 w-10 object-contain bg-white rounded p-0.5" />
               <span>{{ d.name }}</span>
               <span class="text-[9px] font-normal opacity-70">{{ d.badge }}</span>
             </button>
@@ -153,10 +154,10 @@ const dialect = ref('postgres');
 const description = ref('');
 
 const dialects = [
-  { id: 'postgres', name: 'PostgreSQL', badge: 'PG' },
-  { id: 'mysql', name: 'MySQL', badge: 'v8' },
-  { id: 'sqlite', name: 'SQLite', badge: 'Embedded' },
-  { id: 'mssql', name: 'SQL Server', badge: 'T-SQL' }
+  { id: 'postgres', name: 'PostgreSQL', badge: 'PG', icon: '/icons/postgresql.png' },
+  { id: 'mysql', name: 'MySQL', badge: 'v8', icon: '/icons/mysql.png' },
+  { id: 'sqlite', name: 'SQLite', badge: 'Embedded', icon: '/icons/sqlite.svg' },
+  { id: 'mssql', name: 'SQL Server', badge: 'T-SQL', icon: '/icons/mssql.svg' }
 ];
 
 watch(

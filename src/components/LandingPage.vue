@@ -253,6 +253,7 @@
             :key="engine.id"
             @click="launchWithDialect(engine.id, engine.sample)"
           >
+            <img :src="engine.icon" alt="" class="brand-engine-logo" />
             <span>{{ engine.name }}</span>
           </button>
         </div>
@@ -270,7 +271,7 @@
     </main>
     <footer class="home-footer">
       <div>
-        <span class="footer-wordmark">dbmaps</span>
+        <span class="footer-wordmark inline-flex items-center gap-2"><DbMapLogo class-name="w-7 h-7" />dbmaps</span>
         <p>A clearer picture of your data.</p>
       </div>
       <nav aria-label="Footer">
@@ -358,13 +359,13 @@ const supportedEngines = [
   {
     id: "postgresql",
     name: "PostgreSQL",
-    icon: "/icons/postgresql.svg",
+    icon: "/icons/postgresql.png",
     sample: "ecommerce",
   },
   {
     id: "mysql",
     name: "MySQL",
-    icon: "/icons/mysql.svg",
+    icon: "/icons/mysql.png",
     sample: "social",
   },
   {
